@@ -1,0 +1,40 @@
+
+# XIAOZHI-ESPHOME
+
+**Use your Xiaozhi AI devices in ESPHome as voice assistants for Home Assistant.**
+
+![Xiaozhi Device](https://github.com/user-attachments/assets/8e66a3d6-527b-4047-9f0c-fb7c9cb2490f)
+
+By request, this GitHub project provides a simple way to use Xiaozhi-based devices with ESPHome. These compact devices can serve as voice assistants integrated with Home Assistant.
+
+## 🚀 Quick Start Guide
+
+### Step-by-step Installation:
+
+1. **Connect your device** to your computer via USB. Open [ESPHome Web](https://web.esphome.io), click “**+ NEW DEVICE**”, and follow the prompts to set it up and connect it to Wi-Fi.
+2. In ESPHome, **take over the newly discovered device**, edit the configuration, but keep the original device `name`. You can customize the `friendly_name` as desired.
+3. **Save and install** the configuration **wirelessly**. Wait for it to reboot and begin running your code.
+4. Once it’s online, go to **Home Assistant > Devices**, and **accept the new device**. This will start the voice assistant setup process.
+
+> **Note for Step 3:**
+> If wireless installation fails and you're prompted to use USB flashing:
+>
+> * Reconnect the device to your computer if needed.
+> * Save and install again, choose “Plug into this computer,” wait for the firmware to compile, download, and use ESPHome Web to install it via USB.
+>   This only happens the first time, when the partition table needs to be updated. Future updates can be done wirelessly.
+
+## ✅ Supported Devices
+
+* Spotpear Ball v1
+* Spotpear Ball v2
+* Spotpear Muma (v1?)
+
+  > *Note: There is a version of Muma with legs, possibly a v2, but this hasn’t been confirmed yet.*
+
+## 🛒 Where to Buy
+
+You can find these and many similar devices on AliExpress by searching:
+**`deepseek xiaozhi`**
+
+---EOF
+
