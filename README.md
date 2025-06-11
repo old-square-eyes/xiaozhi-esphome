@@ -2,6 +2,7 @@
 # XIAOZHI-ESPHOME
 
 **Use your Xiaozhi AI devices in ESPHome as voice assistants for Home Assistant.**
+
 (fully working with on-device wake word and custom graphics.)
 
 ![Xiaozhi Device](https://github.com/user-attachments/assets/8e66a3d6-527b-4047-9f0c-fb7c9cb2490f)
