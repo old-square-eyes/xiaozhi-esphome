@@ -14,7 +14,7 @@ By request, this GitHub project provides a simple way to use Xiaozhi-based devic
 ### Step-by-step Installation:
 
 1. **Connect your device** to your computer via USB. Open [ESPHome Web](https://web.esphome.io), click “**+ NEW DEVICE**”, and follow the prompts to set it up and connect it to Wi-Fi.
-2. In ESPHome, **take over the newly discovered device**, edit the configuration, but keep the original device `name`. You can customize the `friendly_name` as desired.
+2. In ESPHome, **take over the newly discovered device**, edit the configuration, paste in thie code for your device but keep the original device `name`. (You can customize the `friendly_name` as desired.)
 3. **Save and install** the configuration **wirelessly**. Wait for it to reboot and begin running your code.
 4. Once it’s online, go to **Home Assistant > Devices**, and **accept the new device**. This will start the voice assistant setup process.
 
@@ -25,7 +25,7 @@ By request, this GitHub project provides a simple way to use Xiaozhi-based devic
 > * Save and install again, choose “Plug into this computer,” wait for the firmware to compile, download, and use ESPHome Web to install it via USB.
 >   This only happens the first time, when the partition table needs to be updated. Future updates can be done wirelessly.
 
-## ✅ Supported Devices
+## ✅ Supported Devices (so far)
 
 * Spotpear Ball v1
 * Spotpear Ball v2
