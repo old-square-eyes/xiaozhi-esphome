@@ -163,13 +163,18 @@ binary_sensor:
       then:
         - if:
             condition:
-              lambda: 'return !id(touch_locked);'
+              switch.is_on: timer_ringing
             then:
-              - light.toggle: led
-              - lambda: 'id(touch_locked) = true;'
-    on_release:
-      then:
-        - lambda: 'id(touch_locked) = false;'
+              - switch.turn_off: timer_ringing
+            else:
+              - if:
+                  condition:
+                    not:
+                      voice_assistant.is_running:
+                  then:
+                    - voice_assistant.start:                     
+                  else:
+                    - voice_assistant.stop:     
 
 output:
   - platform: ledc
@@ -718,9 +723,6 @@ globals:
   - id: global_is_timer
     type: bool
     restore_value: false
-  - id: touch_locked
-    type: bool
-    initial_value: 'false'
 
 image:
   - file: ${error_illustration_file}
