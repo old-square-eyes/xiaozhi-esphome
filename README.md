@@ -29,9 +29,9 @@ By request, this GitHub project provides a simple way to use Xiaozhi-based devic
 
 * Spotpear Ball v1
 * Spotpear Ball v2
-* Spotpear Muma (v1?)
+* Spotpear Muma v1
 
-  > *Note: There is a version of Muma with legs, possibly a v2, but this hasn’t been confirmed yet.*
+  > *Muma v2 will follow soon.
 
 ## 🛒 Where to Buy
 
