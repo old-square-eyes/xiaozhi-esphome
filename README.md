@@ -35,6 +35,8 @@ By request, this GitHub project provides a simple way to use Xiaozhi-based devic
 
 ## 🛒 Where to Buy
 
+V1 V2 Ball https://vi.aliexpress.com/item/1005008627679270.html 】muma https://vi.aliexpress.com/item/1005008884232596.html
+
 You can find these and many similar devices on AliExpress by searching:
 **`deepseek xiaozhi`**
 
