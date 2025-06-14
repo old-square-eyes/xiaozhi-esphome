@@ -1,7 +1,7 @@
 
 ## DIY Breadboard Compatibility – Spotgear Ball v1
 
-DIY breadboard devices will work with the Spotgear Ball v1 firmware if you wire them using the following pin assignments:
+DIY breadboard devices will work with the Spotpear Ball v1 firmware if you wire them using the following pin assignments:
 
 ### 🎤 INMP441 Microphone
 
