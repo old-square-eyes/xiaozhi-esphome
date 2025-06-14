@@ -2,33 +2,15 @@ substitutions:
   name: esphome-web-619cd4
   friendly_name: Xiaozhi Ball
 
- # loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/EVE/240x240/loading.png
- # idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/EVE/240x240/idle.png
- # listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/EVE/240x240/listening.png
- # thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/EVE/240x240/thinking.png
- # replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/EVE/240x240/replying.png
- # error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/EVE/240x240/error.png
- # timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/EVE/240x240/timer_finished.png
+  imagemodel: "Harley" # options are: Casita,EVE,Robot,Guy1,Harley
 
-# another robot, alternative custom images.
-
-  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Robot/240x240/loading.jpeg
-  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Robot/240x240/idle.jpeg
-  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Robot/240x240/listening.jpeg
-  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Robot/240x240/thinking.jpeg
-  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Robot/240x240/replying.jpeg
-  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Robot/240x240/error.jpeg
-  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Robot/240x240/timer_finished.jpeg
-
-# original images used in ESP-S3-BOX-3:
-
-#  loading_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/loading_320_240.png
-#  idle_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/idle_320_240.png
-#  listening_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/listening_320_240.png
-#  thinking_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/thinking_320_240.png
-#  replying_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/replying_320_240.png
-#  error_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/error_320_240.png
-#  timer_finished_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/timer_finished_320_240.png
+  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/loading.png
+  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/idle.png
+  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/listening.png
+  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/thinking.png
+  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/replying.png
+  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/error.png
+  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/timer_finished.png
 
   loading_illustration_background_color: "000000"
   idle_illustration_background_color: "000000"
@@ -157,7 +139,7 @@ output:
 
 light:
   - platform: monochromatic
-    id: led
+    id: Sled
     name: Screen
     icon: "mdi:television"
     entity_category: config
@@ -165,7 +147,7 @@ light:
     restore_mode: RESTORE_DEFAULT_ON
     default_transition_length: 250ms
   - platform: esp32_rmt_led_strip
-    id: ledlight
+    id: led
     name: none
     disabled_by_default: false
     entity_category: config
