@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-6199a4
   friendly_name: Xiaozhi Cube
 
-  imagemodel: "Harley" # options are: Casita,EVE,Robot,Guy1,Harley
+  imagemodel: "EVE" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Robot,Robotgirl
 
   loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/loading.png
   idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/idle.png
