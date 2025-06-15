@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-619cd4
   friendly_name: Xiaozhi Ball
 
-  imagemodel: "Robotgirl" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Robot,Robotgirl
+  imagemodel: "Robotgirl" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Robot,Robotgirl,Prime
 
   loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/loading.png
   idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/idle.png
@@ -253,6 +253,7 @@ micro_wake_word:
     - okay_nabu
     - hey_mycroft
     - hey_jarvis
+    - alexa
   on_wake_word_detected:
     - voice_assistant.start:
         wake_word: !lambda return wake_word;
