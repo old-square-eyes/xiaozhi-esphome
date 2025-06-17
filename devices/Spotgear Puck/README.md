@@ -3,7 +3,7 @@
 The Spotpear **“Puck”** (as I like to call it) uses the same code as Ball v2. It features the same hardware and pin configuration.
 
 > **Note**
-> If you plan to use your Puck for “walk and talk” scenarios, touch functionality can be problematic—every time the display touches your shirt, it may start or stop the conversation.
+> If you plan to use your Puck for hansdfree “walk and talk” scenarios, touch functionality can be problematic—every time the display touches your shirt, it may start or stop the conversation.
 >
 > If your Puck has a touch screen and you mainly want to use it while walking, you can easily disable the touch feature in the ESPHome code.
 
