@@ -7,6 +7,7 @@
 
 ![20250614_195218](https://github.com/user-attachments/assets/5d364985-a4ce-4b49-bf03-af7ce22bbc35)
 ![Xiaozhi Device](https://github.com/user-attachments/assets/8e66a3d6-527b-4047-9f0c-fb7c9cb2490f)
+![identify your model](https://github.com/user-attachments/assets/4aa49b9e-ab2c-4949-aefc-9d51ecf6ac40)
 
 
 By request, this GitHub project provides a simple way to use Xiaozhi-based devices with ESPHome. These compact devices can serve as voice assistants integrated with Home Assistant.
@@ -35,6 +36,7 @@ By request, this GitHub project provides a simple way to use Xiaozhi-based devic
 
   > *Muma v2 will follow soon.
 
+* Spotpear Puck
 
 ## 🛒 Where to Buy
 
