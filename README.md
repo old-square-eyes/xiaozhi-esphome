@@ -44,6 +44,8 @@ Ball v1 & v2 https://vi.aliexpress.com/item/1005008627679270.html
 
 Muma v2 https://vi.aliexpress.com/item/1005008884232596.html
 
+Puck https://www.aliexpress.com/item/1005009016529496.html
+
 You can find these and many similar devices on AliExpress by searching:
 **`deepseek xiaozhi`**
 
