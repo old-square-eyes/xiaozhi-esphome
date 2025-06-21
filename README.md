@@ -32,19 +32,20 @@ By request, this GitHub project provides a simple way to use Xiaozhi-based devic
 
 * Spotpear Ball v1
 * Spotpear Ball v2
-* Spotpear Muma v1
-
-  > *Muma v2 will follow soon.
-
+* Spotpear Muma Box v1
+* Spotpear Muma Box v2
+* Spotpear Muma Horse (not testet but should work with Muma Box code)
 * Spotpear Puck
 
 ## 🛒 Where to Buy
 
-Ball v1 & v2 https://vi.aliexpress.com/item/1005008627679270.html
+Ball v1 & v2: https://vi.aliexpress.com/item/1005008627679270.html
 
-Muma v2 https://vi.aliexpress.com/item/1005008884232596.html
+Muma Box: https://vi.aliexpress.com/item/1005009043526078.html
 
-Puck https://www.aliexpress.com/item/1005009016529496.html
+Muma Horse: https://vi.aliexpress.com/item/1005008884232596.html
+
+Puck: https://www.aliexpress.com/item/1005009016529496.html
 
 You can find these and many similar devices on AliExpress by searching:
 **`deepseek xiaozhi`**
