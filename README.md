@@ -28,13 +28,17 @@ By request, this GitHub project provides a simple way to use Xiaozhi-based devic
 > * Save and install again, choose “Plug into this computer,” wait for the firmware to compile, download, and use ESPHome Web to install it via USB.
 >   This only happens the first time, when the partition table needs to be updated. Future updates can be done wirelessly.
 
+Video going through the esphome install of devices
+https://www.youtube.com/watch?v=rxVftwm8Om0
+
 ## ✅ Supported Devices (so far)
 
 * Spotpear Ball v1
 * Spotpear Ball v2
 * Spotpear Muma Box v1
 * Spotpear Muma Box v2
-* Spotpear Muma Horse (not testet but should work with Muma Box code)
+* Spotpear Muma Horse v1
+* Spotpear Muma Horse v2
 * Spotpear Puck
 
 ## 🛒 Where to Buy
