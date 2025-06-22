@@ -91,6 +91,8 @@ https://www.aliexpress.com/item/1005003340565935.html
 MAX98357 Amplifier for speaker:
 https://www.aliexpress.com/item/1005006382608935.html
 
+Speaker:
+https://www.aliexpress.com/item/32593991938.html
 
 Display of choice: (2.4" for the speakerbox 3d print.)
 
@@ -104,4 +106,5 @@ Button: https://www.aliexpress.com/item/1005006889252643.html
 
 Powercable: https://www.aliexpress.com/item/1005007569336813.html
 
+And of course a Breadboard if you are going that way :)
 ---
