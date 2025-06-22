@@ -1,16 +1,20 @@
 substitutions:
-  name: esphome-web-c7aeb0
-  friendly_name: Xiaozhi Breadboard
+  name: esphome-web-d11acc
+  friendly_name: Speakerbox
 
-  imagemodel: "Alfred" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Robot,Robotgirl,Prime
+  imagemodel: "Harley" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Robot,Robotgirl,Prime
+  imagesize: "240x320" # 240x240 or 240x320
 
-  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/loading.png
-  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/idle.png
-  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/listening.png
-  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/thinking.png
-  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/replying.png
-  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/error.png
-  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/timer_finished.png
+  displaymodel: "ILI9341" # ILI9341 or GC9A01A
+  invertcolors: "false" # true or false (ILI9341 false, GC9A01A true)
+
+  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/loading.png
+  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/idle.png
+  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/listening.png
+  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/thinking.png
+  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/replying.png
+  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/error.png
+  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/timer_finished.png
 
   loading_illustration_background_color: "000000"
   idle_illustration_background_color: "000000"
@@ -45,6 +49,7 @@ esphome:
   on_boot:
     priority: 600
     then:
+      - light.turn_on: Sled
       - script.execute: draw_display
       - delay: 30s
       - if:
@@ -105,6 +110,7 @@ binary_sensor:
     pin:
       number: 0
       mode: INPUT_PULLUP
+      ignore_strapping_warning: true
       inverted: true
     id: left_top_button
     internal: true
@@ -134,8 +140,11 @@ binary_sensor:
 
 output:
   - platform: ledc
-    pin: GPIO3
     id: backlight_output
+    pin:
+      number: 3
+      ignore_strapping_warning: true # Add this line
+
 
 light:
   - platform: monochromatic
@@ -779,47 +788,47 @@ globals:
 image:
   - file: ${error_illustration_file}
     id: casita_error
-    resize: 240x240
+    resize: ${imagesize}
     type: RGB
     transparency: alpha_channel
   - file: ${idle_illustration_file}
     id: casita_idle
-    resize: 240x240
+    resize: ${imagesize}
     type: RGB
     transparency: alpha_channel
   - file: ${listening_illustration_file}
     id: casita_listening
-    resize: 240x240
+    resize: ${imagesize}
     type: RGB
     transparency: alpha_channel
   - file: ${thinking_illustration_file}
     id: casita_thinking
-    resize: 240x240
+    resize: ${imagesize}
     type: RGB
     transparency: alpha_channel
   - file: ${replying_illustration_file}
     id: casita_replying
-    resize: 240x240
+    resize: ${imagesize}
     type: RGB
     transparency: alpha_channel
   - file: ${timer_finished_illustration_file}
     id: casita_timer_finished
-    resize: 240x240
+    resize: ${imagesize}
     type: RGB
     transparency: alpha_channel
   - file: ${loading_illustration_file}
     id: casita_initializing
-    resize: 240x240
+    resize: ${imagesize}
     type: RGB
     transparency: alpha_channel
   - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-wifi.png
     id: error_no_wifi
-    resize: 240x240
+    resize: ${imagesize}
     type: RGB
     transparency: alpha_channel
   - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-ha.png
     id: error_no_ha
-    resize: 240x240
+    resize: ${imagesize}
     type: RGB
     transparency: alpha_channel
 
@@ -897,8 +906,8 @@ spi:
 display:
   - platform: ili9xxx
     id: s3_box_lcd
-    model: GC9A01A
-    invert_colors: true
+    model: ${displaymodel}
+    invert_colors: ${invertcolors}
     data_rate: 40MHz
     cs_pin: 13
     dc_pin: 10
@@ -907,7 +916,7 @@ display:
 #      inverted: true
     update_interval: never
     dimensions:
-        height: 240
+        height: 320
         width: 240
     pages:
       - id: idle_page
