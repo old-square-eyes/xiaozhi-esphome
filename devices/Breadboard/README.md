@@ -1,22 +1,18 @@
 
-## DIY Breadboard Compatibility – Spotgear Ball v1
+## Speakerbox project
+![20250622_142135](https://github.com/user-attachments/assets/8d0e4a0f-259d-4263-8972-b5bf33dd5540)
+https://makerworld.com/en/models/1475284-a-i-speakerbox-for-xiaozhi-a-i-or-home-assistant
 
-DIY breadboard devices will work with the Spotpear Ball v1 firmware if you wire them using the following pin assignments:
+## DIY Breadboard Compatibility
+---
 
-ESP32-S3 N16R8 Developer module:
-https://www.aliexpress.com/item/1005006002965361.html
 
-INMP441 Microphone:
-https://www.aliexpress.com/item/1005003340565935.html
 
-MAX98357 Amplifier for speaker:
-https://www.aliexpress.com/item/1005006382608935.html
+ESPHome/Home Assistant:
+Use yaml for breadboard with options for setting screen size/type (round 1.28" or square 2.4" as used in the speakerbox makerworld project).
 
-Display of choice: (only round 1.28" is compatible with Ball v1 code, other displays needs change of code)
-
-1.28" Round: https://www.aliexpress.com/item/1005006111616872.html
-
-2.4" Square: https://www.aliexpress.com/item/1005006624846563.html
+Xiaozhi AI:
+Using same pins will als make it work with the Xiaozhi firmware for breadboard.
 
 Connections:
 
@@ -84,4 +80,23 @@ Connections:
 
 ---
 
+### 🧠 parts used
 
+ESP32-S3 N16R8 Developer module:
+https://www.aliexpress.com/item/1005006002965361.html
+
+INMP441 Microphone:
+https://www.aliexpress.com/item/1005003340565935.html
+
+MAX98357 Amplifier for speaker:
+https://www.aliexpress.com/item/1005006382608935.html
+
+
+Display of choice: (only round 1.28" is compatible with Ball v1 code, other displays needs change of code)
+
+1.28" Round: https://www.aliexpress.com/item/1005006111616872.html
+
+2.4" Square: https://www.aliexpress.com/item/1005006624846563.html
+
+And a Button.. ;)
+---
