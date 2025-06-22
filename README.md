@@ -58,8 +58,8 @@ Muma Horse: https://vi.aliexpress.com/item/1005008884232596.html
 
 Puck: https://www.aliexpress.com/item/1005009016529496.html
 
-You can find these and many similar devices on AliExpress by searching:
-**`deepseek xiaozhi`**
+Breadboard: Look in devices/Breadboard: https://github.com/RealDeco/xiaozhi-esphome/tree/main/devices/Breadboard
+
 
 ---EOF
 
