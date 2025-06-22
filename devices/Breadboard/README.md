@@ -92,11 +92,16 @@ MAX98357 Amplifier for speaker:
 https://www.aliexpress.com/item/1005006382608935.html
 
 
-Display of choice: (only round 1.28" is compatible with Ball v1 code, other displays needs change of code)
+Display of choice: (2.4" for the speakerbox 3d print.)
 
 1.28" Round: https://www.aliexpress.com/item/1005006111616872.html
 
 2.4" Square: https://www.aliexpress.com/item/1005006624846563.html
 
-And a Button.. ;)
+And a Button & Powercable:
+
+Button: https://www.aliexpress.com/item/1005006889252643.html
+
+Powercable: https://www.aliexpress.com/item/1005007569336813.html
+
 ---
