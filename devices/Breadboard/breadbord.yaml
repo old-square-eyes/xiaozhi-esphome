@@ -1,20 +1,22 @@
 substitutions:
-  name: esphome-web-d11acc
-  friendly_name: Speakerbox
+  name: esphome-web-c7aeb0
+  friendly_name: Xiaozhi Breadboard
 
-  imagemodel: "Harley" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Robot,Robotgirl,Prime
-  imagesize: "240x320" # 240x240 or 240x320
+  imagemodel: "Alfred" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Robot,Robotgirl,Prime
 
-  displaymodel: "ILI9341" # ILI9341 or GC9A01A
-  invertcolors: "false" # true or false (ILI9341 false, GC9A01A true)
+  imagewidth: "240"
+  imageheight: "240" # 240 or 320 (round or square)
 
-  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/loading.png
-  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/idle.png
-  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/listening.png
-  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/thinking.png
-  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/replying.png
-  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/error.png
-  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagesize}/timer_finished.png
+  displaymodel: "GC9A01A" # ILI9341 or GC9A01A
+  invertcolors: "true" # true or false (ILI9341 false, GC9A01A true)
+
+  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
+  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/idle.png
+  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/listening.png
+  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/thinking.png
+  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/replying.png
+  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/error.png
+  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
 
   loading_illustration_background_color: "000000"
   idle_illustration_background_color: "000000"
@@ -788,47 +790,47 @@ globals:
 image:
   - file: ${error_illustration_file}
     id: casita_error
-    resize: ${imagesize}
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${idle_illustration_file}
     id: casita_idle
-    resize: ${imagesize}
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${listening_illustration_file}
     id: casita_listening
-    resize: ${imagesize}
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${thinking_illustration_file}
     id: casita_thinking
-    resize: ${imagesize}
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${replying_illustration_file}
     id: casita_replying
-    resize: ${imagesize}
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${timer_finished_illustration_file}
     id: casita_timer_finished
-    resize: ${imagesize}
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${loading_illustration_file}
     id: casita_initializing
-    resize: ${imagesize}
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-wifi.png
     id: error_no_wifi
-    resize: ${imagesize}
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-ha.png
     id: error_no_ha
-    resize: ${imagesize}
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
 
@@ -916,8 +918,8 @@ display:
 #      inverted: true
     update_interval: never
     dimensions:
-        height: 320
-        width: 240
+        height: ${imageheight}
+        width: ${imagewidth}
     pages:
       - id: idle_page
         lambda: |-
