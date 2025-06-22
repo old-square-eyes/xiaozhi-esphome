@@ -8,11 +8,11 @@ https://makerworld.com/en/models/1475284-a-i-speakerbox-for-xiaozhi-a-i-or-home-
 
 
 
-ESPHome/Home Assistant:
+ESPHome / Home Assistant:
 Use yaml for breadboard with options for setting screen size/type (round 1.28" or square 2.4" as used in the speakerbox makerworld project).
 
 Xiaozhi AI:
-Using same pins will als make it work with the Xiaozhi firmware for breadboard.
+Using same pins will also be compatible with the Xiaozhi firmware for breadboard. (with minor modification of 1 file, but that's another topic)
 
 Connections:
 
