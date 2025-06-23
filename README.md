@@ -36,7 +36,7 @@ By request, this GitHub project provides a simple way to use Xiaozhi-based devic
 >   This only happens the first time, when the partition table needs to be updated. Future updates can be done wirelessly.
 
 Video going through the esphome install of devices
-https://www.youtube.com/watch?v=rxVftwm8Om0
+Sorry video removed by youtube and my account blocked. strange world we live in.
 
 ## ✅ Supported Devices (so far)
 
