@@ -1,8 +1,15 @@
-It's been confirmed that all Muma devices (Horse and Box v1 & v2) is using same firmware, so same yaml: Muma.yaml
+These are two small, box-shaped electronic devices called **Muma "Horse"** and **Muma "Box"**. Each has a digital display on one face, and both have a similar black outer casing. The most obvious difference is the **orientation and placement of the screen**:
 
-Muma "Horse" (v1 & v2) have optional legs and display is mounted on a sloped/angled face, so the screen is tilted upwards.
+* **Muma "Horse"**:
 
-Muma "Box" (v1 & v2) don't have legs and the screen is upright and facing directly forward.
+  * The display is mounted on a sloped/angled face, so the screen is tilted upwards.
+  * The name "Horse" could reference the (optional) legs and how the screen's angle is reminiscent of a "horse" in gymnastics (the pommel horse) or simply a sloped back.
+
+* **Muma "Box"**:
+
+  * The display is mounted on the vertical, front face of the device, so the screen is upright and facing directly forward.
+  * The name "Box" fits the straightforward, boxy shape with no angle to the display.
+
 
 
 ![Screenshot 2025-06-26 at 05 55 52](https://github.com/user-attachments/assets/c4464924-b38b-449e-94ec-147092278d2a)
