@@ -47,6 +47,7 @@ Sorry video removed by youtube and my account blocked. strange world we live in.
 * Spotpear Muma Horse v1
 * Spotpear Muma Horse v2
 * Spotpear Puck
+* DIY (breadboard)
 
 ## 🛒 Where to Buy
 
@@ -60,6 +61,8 @@ Puck: https://www.aliexpress.com/item/1005009016529496.html
 
 Breadboard: Look in devices/Breadboard: https://github.com/RealDeco/xiaozhi-esphome/tree/main/devices/Breadboard
 
+3D file of "Eggvenger" figure used to hold the Ball in image above, use 115% for v2 since it's larger than v1.
+https://makerworld.com/en/models/1238732-eggvenger-superhero-egg-holder
 
 ---EOF
 
