@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
-## v1.01 30-jun-2025 #############################################################################################################################
+## v1.02 30-jun-2025 #############################################################################################################################
 
   imagemodel: "Jarvis" # (options are: Alfred,Astrobot,Casita,Dory,EVE,Eyes,Girl1,GLaDOS,Guy1,Guy2,Harley,Jarvis,Mario,Prime,Robot,Robotgirl)
 
@@ -16,8 +16,10 @@ substitutions:
 ##################################################################################################################################################
 
   # Hardware v2 pin mappings
-  sda_pin: "15"              # I2C SDA
-  scl_pin: "14"              # I2C SCL
+  sda_pin_bus_a: "15"        # I2C Bus A SDA
+  scl_pin_bus_a: "14"        # I2C BUS A SCL
+  sda_pin_bus_b: "11"        # I2C Bus B SDA
+  scl_pin_bus_b: "7"         # I2C BUS B SCL
 
   i2s_lrclk_pin: "45"        # I2S LRCLK (Word Select)
   i2s_bclk_pin: "9"          # I2S BCLK (Bit Clock)
@@ -26,7 +28,8 @@ substitutions:
   i2s_dout_pin: "8"          # I2S Data Out (Speaker)
 
   speaker_enable_pin: "46"   # Speaker Enable
-  touch_input_pin: "12"      # Touch Input
+  touch_input_pin: "12"      # Touch interrupt
+  touch_reset_pin: "6"       # Touch Reset
 
   backlight_output_pin: "42" # Display Backlight
   lcd_cs_pin: "5"            # Display CS (Chip Select)
@@ -191,11 +194,58 @@ sensor:
               id(last_battery_percent) = current;
               id(draw_display).execute();
             }
-#    on_value:
-#      then:
-#        - script.execute: draw_display
+
+touchscreen:
+  - platform: cst816
+    i2c_id: bus_b
+    interrupt_pin: ${touch_input_pin}
+    reset_pin: ${touch_reset_pin}
+    id: touch_dp
+    on_touch:
+      then:
+        - binary_sensor.template.publish:
+            id: touch_input
+            state: ON
+    on_release:
+      then:
+        - binary_sensor.template.publish:
+            id: touch_input
+            state: OFF
 
 binary_sensor:
+  - platform: template
+    name: "Touch Button"
+    id: touch_input
+    device_class: presence
+    on_multi_click:
+      # Single tap
+      - timing:
+          - ON for 40ms to 400ms
+          - OFF for at least 330ms
+        then:
+          - if:
+              condition:
+                switch.is_on: timer_ringing
+              then:
+                - switch.turn_off: timer_ringing
+              else:
+                - if:
+                    condition:
+                      not:
+                        voice_assistant.is_running:
+                    then:
+                      - voice_assistant.start:                     
+                    else:
+                      - voice_assistant.stop:  
+      # Long press (hold)
+      - timing:
+          - ON for at least 1s
+        then:
+          - lambda: |-
+              id(show_battery_status) = !id(show_battery_status);
+          - logger.log: "Toggled battery status!"
+          - script.execute: draw_display
+
   - platform: gpio
     pin:
       number: GPIO${left_top_button_pin}
@@ -227,32 +277,6 @@ binary_sensor:
           - ON for at least 10s
         then:
           - button.press: factory_reset_btn
-
-  - platform: gpio
-    pin:
-      number: GPIO${touch_input_pin}
-      mode: INPUT_PULLUP
-      inverted: true
-    id: touch_input
-    filters:
-      - delayed_on: 10ms
-      - delayed_off: 10ms
-    on_press:
-      then:
-        - if:
-            condition:
-              switch.is_on: timer_ringing
-            then:
-              - switch.turn_off: timer_ringing
-            else:
-              - if:
-                  condition:
-                    not:
-                      voice_assistant.is_running:
-                  then:
-                    - voice_assistant.start:                     
-                  else:
-                    - voice_assistant.stop:     
 
 output:
   - platform: ledc
@@ -294,10 +318,14 @@ light:
           max_brightness: 100%
 
 i2c:
-  sda: GPIO${sda_pin}
-  scl: GPIO${scl_pin}
-  scan: true
-  id: bus_a
+  - id: bus_a
+    sda: GPIO${sda_pin_bus_a}
+    scl: GPIO${scl_pin_bus_a}
+    scan: true
+  - id: bus_b
+    sda: GPIO${sda_pin_bus_b}
+    scl: GPIO${scl_pin_bus_b}
+    scan: true
 
 i2s_audio:
   - id: i2s_audio_bus
@@ -307,6 +335,7 @@ i2s_audio:
 
 audio_dac:
   - platform: es8311
+    i2c_id: bus_a 
     id: es8311_dac
     bits_per_sample: 16bit
     sample_rate: 16000
@@ -792,6 +821,10 @@ globals:
     type: int
     restore_value: no
     initial_value: '-1'
+  - id: show_battery_status
+    type: bool
+    restore_value: yes
+    initial_value: ${show_battery_status}
 
 image:
   - file: ${error_illustration_file}
@@ -945,15 +978,15 @@ display:
           it.fill(id(idle_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_idle), ImageAlign::CENTER);
 
-          #if ${show_battery_status}
-          const int box_top = 2;
-          const int box_height = 28;
-          it.filled_rectangle((it.get_width()/2)-40, box_top, 80, box_height, Color::WHITE);
-          it.rectangle((it.get_width()/2)-40, box_top, 80, box_height, Color::BLACK);
-          char battery_text[16];
-          snprintf(battery_text, sizeof(battery_text), "%.0f%%", id(battery_percentage).state);
-          it.printf(it.get_width() / 2, 4, id(font_battery), Color::BLACK, TextAlign::TOP_CENTER, "%s", battery_text);
-          #endif
+          if (id(show_battery_status)) {
+            const int box_top = 2;
+            const int box_height = 28;
+            it.filled_rectangle((it.get_width()/2)-40, box_top, 80, box_height, Color::WHITE);
+            it.rectangle((it.get_width()/2)-40, box_top, 80, box_height, Color::BLACK);
+            char battery_text[16];
+            snprintf(battery_text, sizeof(battery_text), "%.0f%%", id(battery_percentage).state);
+            it.printf(it.get_width() / 2, 4, id(font_battery), Color::BLACK, TextAlign::TOP_CENTER, "%s", battery_text);
+          }
 
           id(draw_timer_timeline).execute();
           id(draw_active_timer_widget).execute();
