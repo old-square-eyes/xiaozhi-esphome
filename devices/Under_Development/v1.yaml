@@ -4,7 +4,7 @@ substitutions:
 
 ## v1.01 30-jun-2025 #############################################################################################################################
 
-  imagemodel: "Dory" # (options are: Alfred,Astrobot,Casita,Dory,EVE,Eyes,Girl1,GLaDOS,Guy1,Guy2,Harley,Mario,Robot,Robotgirl,Prime)
+  imagemodel: "Jarvis" # (options are: Alfred,Astrobot,Casita,Dory,EVE,Eyes,Girl1,GLaDOS,Guy1,Guy2,Harley,Jarvis,Mario,Prime,Robot,Robotgirl)
 
   imagewidth: "240" # ILI9341 (breadboard 2.4") "240" or GC9A01A (Ball v1) "240"
   imageheight: "240" # ILI9341 (breadboard 2.4") "320" or GC9A01A (Ball v1) "240"
