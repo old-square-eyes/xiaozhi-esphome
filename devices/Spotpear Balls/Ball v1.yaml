@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-619cd4
   friendly_name: Xiaozhi Ball
 
-  imagemodel: "Robotgirl" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Robot,Robotgirl,Prime
+  imagemodel: "Robotgirl" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Jarvis,Robot,Robotgirl,Prime
 
   loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/loading.png
   idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/idle.png

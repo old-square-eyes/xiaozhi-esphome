@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-c7aeb0
   friendly_name: Xiaozhi Breadboard
 
-  imagemodel: "Harley" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Robot,Robotgirl,Prime
+  imagemodel: "Harley" # options are: Alfred,Casita,EVE,Girl1,Guy1,Guy2,Harley,Jarvis,Robot,Robotgirl,Prime
 
   imagewidth: "240"
   imageheight: "240" # 240 or 320 (round or square)
