@@ -30,8 +30,9 @@ At the top of each YAML file, you’ll need to change a few values to match your
 
 * **v2.yaml** – for Ball v2 / Puck / Muma:
 
-  ![Screenshot 2025-06-30 at 11 39 19](https://github.com/user-attachments/assets/2e18bad8-5765-40dc-9f22-4f822f8ee389)
+  ![Screenshot 2025-06-30 at 12 58 48](https://github.com/user-attachments/assets/ef4dc7b4-3325-478d-9fd5-3b6327019752)
 
 ---
 
 Change as needed and remember to keep your own "name" and "friendly_name", then install.
+
