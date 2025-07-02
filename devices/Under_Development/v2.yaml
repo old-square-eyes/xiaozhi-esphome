@@ -4,7 +4,7 @@ substitutions:
 
 ## v1.02 30-jun-2025 #############################################################################################################################
 
-  imagemodel: "Jarvis" # (options are: Alfred,Astrobot,Casita,Dory,EVE,Eyes,Girl1,GLaDOS,Guy1,Guy2,Harley,Jarvis,Mario,Prime,Robot,Robotgirl)
+  imagemodel: "Max" # (options are: Alfred,Astrobot,Casita,Dory,EVE,Eyes,Girl1,GLaDOS,Guy1,Guy2,Harley,Jarvis,Mario,Prime,Robot,Robotgirl)
 
   show_battery_status: "false" # or "false"
 
