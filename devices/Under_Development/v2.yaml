@@ -6,7 +6,7 @@ substitutions:
 
   imagemodel: "Jarvis" # (options are: Alfred,Astrobot,Casita,Dory,EVE,Eyes,Girl1,GLaDOS,Guy1,Guy2,Harley,Jarvis,Mario,Prime,Robot,Robotgirl)
 
-  show_battery_status: "true" # or "false"
+  show_battery_status: "false" # or "false"
 
   imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
   imageheight: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
@@ -216,7 +216,6 @@ binary_sensor:
   - platform: template
     name: "Touch Button"
     id: touch_input
-    device_class: presence
     on_multi_click:
       # Single tap
       - timing:
