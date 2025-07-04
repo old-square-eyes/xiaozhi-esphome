@@ -139,12 +139,6 @@ button:
     id: factory_reset_btn
     internal: true
 
-external_components:
-  - source: github://pr#7942
-    refresh: 30s
-    components:
-      - adc
-
 sensor:
   - platform: adc
     pin: GPIO${battery_adc_pin}
