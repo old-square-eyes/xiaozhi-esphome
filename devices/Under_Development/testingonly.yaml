@@ -6,7 +6,8 @@ substitutions:
 
   imagemodel: "Cybergirl" # (options are: Alfred,Astrobot,Casita,Dory,EVE,Eyes,Girl1,GLaDOS,Guy1,Guy2,Harley,Jarvis,Mario,Prime,Robot,Robotgirl)
 
-  show_battery_status: "false" # or "false"
+  show_battery_status: "false" # "true" or "false"
+  show_text: "true" # "true" or "false"
 
   imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
   imageheight: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
@@ -217,6 +218,7 @@ binary_sensor:
     name: "Touch Button"
     id: touch_input
     on_multi_click:
+      # Single tap
       - timing:
           - ON for 40ms to 400ms
           - OFF for at least 330ms
@@ -229,19 +231,17 @@ binary_sensor:
               else:
                 - if:
                     condition:
-                      switch.is_off: use_wake_word
+                      lambda: return id(wake_word_engine_location).state == "On device";
                     then:
                       - if:
-                          condition: voice_assistant.is_running
+                          condition:
+                            not:
+                              voice_assistant.is_running:
                           then:
-                            - voice_assistant.stop:
-                          else:
                             - voice_assistant.start:
-                    else:
-                      - voice_assistant.stop
-                      - delay: 1s
-                      - voice_assistant.start_continuous:
-      # Long press (hold)
+                          else:
+                            - voice_assistant.stop:  
+
       - timing:
           - ON for at least 1s
         then:
@@ -260,8 +260,8 @@ binary_sensor:
     internal: true
     on_multi_click:
       - timing:
-          - ON for 40ms to 400ms
-          - OFF for at least 330ms
+          - ON for at least 50ms
+          - OFF for at least 50ms
         then:
           - if:
               condition:
@@ -271,23 +271,27 @@ binary_sensor:
               else:
                 - if:
                     condition:
-                      switch.is_off: use_wake_word
+                      lambda: return id(wake_word_engine_location).state == "On device";
                     then:
                       - if:
-                          condition: voice_assistant.is_running
+                          condition:
+                            not:
+                              voice_assistant.is_running:
                           then:
-                            - voice_assistant.stop:
+                            - voice_assistant.start:                     
                           else:
-                            - voice_assistant.start:
-                    else:
-                      - voice_assistant.stop
-                      - delay: 1s
-                      - voice_assistant.start_continuous:          
+                            - voice_assistant.stop:  
       - timing:
           - ON for at least 1s
         then:
-          - switch.toggle: use_wake_word
-          - logger.log: "Toggled Use Wake Word mode!"
+          - lambda: |-
+              id(show_text) = !id(show_text);
+          - logger.log: "Toggled show text!"
+          - script.execute: draw_display
+      - timing:
+          - ON for at least 10s
+        then:
+          - button.press: factory_reset_btn
 
 output:
   - platform: ledc
@@ -715,25 +719,6 @@ script:
 
 switch:
   - platform: template
-    name: Use wake word
-    id: use_wake_word
-    optimistic: true
-    restore_mode: RESTORE_DEFAULT_ON
-    entity_category: config
-    on_turn_on:
-      - lambda: id(va).set_use_wake_word(true);
-      - if:
-          condition:
-            not:
-              - voice_assistant.is_running
-          then:
-            - voice_assistant.start_continuous
-      - script.execute: draw_display
-    on_turn_off:
-      - voice_assistant.stop
-      - lambda: id(va).set_use_wake_word(false);
-      - script.execute: draw_display
-  - platform: template
     name: Mute
     id: mute
     icon: "mdi:microphone-off"
@@ -855,6 +840,10 @@ globals:
     type: bool
     restore_value: yes
     initial_value: ${show_battery_status}
+  - id: show_text
+    type: bool
+    restore_value: yes
+    initial_value: ${show_text}
 
 image:
   - file: ${error_illustration_file}
@@ -1007,7 +996,6 @@ display:
         lambda: |-
           it.fill(id(idle_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_idle), ImageAlign::CENTER);
-
           if (id(show_battery_status)) {
             const int box_top = 2;
             const int box_height = 28;
@@ -1016,14 +1004,7 @@ display:
             char battery_text[16];
             snprintf(battery_text, sizeof(battery_text), "%.0f%%", id(battery_percentage).state);
             it.printf(it.get_width() / 2, 4, id(font_battery), Color::BLACK, TextAlign::TOP_CENTER, "%s", battery_text);
-
-            if (id(use_wake_word).state) {
-              int dot_x = (it.get_width()/2) + 40 + 10;
-              int dot_y = box_top + box_height/2;
-              it.filled_circle(dot_x, dot_y, 5, Color(0xFF0000));
-            }
           }
-
           id(draw_timer_timeline).execute();
           id(draw_active_timer_widget).execute();
       - id: listening_page
@@ -1035,25 +1016,26 @@ display:
         lambda: |-
           it.fill(id(thinking_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_thinking), ImageAlign::CENTER);
-          it.filled_rectangle(20 , 20 , 200 , 30 , Color::WHITE );
-          it.rectangle(20 , 20 , 200 , 30 , Color::BLACK );
-          it.printf(30, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
+          if (id(show_text)) {
+            it.filled_rectangle(20 , 20 , 200 , 30 , Color::WHITE );
+            it.rectangle(20 , 20 , 200 , 30 , Color::BLACK );
+            it.printf(30, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
+          }
           id(draw_timer_timeline).execute();
       - id: replying_page
         lambda: |-
-            it.fill(id(replying_color));
-            it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_replying), ImageAlign::CENTER);
-
-            int y_offset = 190; // default for 240px display
-            if (it.get_height() == 320) {
-                  y_offset = 270; // Move box lower for 320px tall screens
-            }
-
+          it.fill(id(replying_color));
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_replying), ImageAlign::CENTER);
+          int y_offset = 190; // default for 240px display
+          if (it.get_height() == 320) {
+            y_offset = 270; // Move box lower for 320px tall screens
+          }
+            if (id(show_text)) {
             it.filled_rectangle(20, y_offset, 200, 30, Color::WHITE);
             it.rectangle(20, y_offset, 200, 30, Color::BLACK);
             it.printf(30, y_offset + 5, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
-            id(draw_timer_timeline).execute();
-
+          }
+          id(draw_timer_timeline).execute();
       - id: timer_finished_page
         lambda: |-
           it.fill(id(idle_color));
