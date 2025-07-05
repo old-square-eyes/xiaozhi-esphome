@@ -284,9 +284,10 @@ binary_sensor:
                       - delay: 1s
                       - voice_assistant.start_continuous:          
       - timing:
-          - ON for at least 10s
+          - ON for at least 1s
         then:
-          - button.press: factory_reset_btn
+          - switch.toggle: use_wake_word
+          - logger.log: "Toggled Use Wake Word mode!"
 
 output:
   - platform: ledc
