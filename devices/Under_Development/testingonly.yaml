@@ -728,9 +728,11 @@ switch:
               - voice_assistant.is_running
           then:
             - voice_assistant.start_continuous
+      - script.execute: draw_display
     on_turn_off:
       - voice_assistant.stop
       - lambda: id(va).set_use_wake_word(false);
+      - script.execute: draw_display
   - platform: template
     name: Mute
     id: mute
@@ -1014,6 +1016,12 @@ display:
             char battery_text[16];
             snprintf(battery_text, sizeof(battery_text), "%.0f%%", id(battery_percentage).state);
             it.printf(it.get_width() / 2, 4, id(font_battery), Color::BLACK, TextAlign::TOP_CENTER, "%s", battery_text);
+
+            if (id(use_wake_word).state) {
+              int dot_x = (it.get_width()/2) + 40 + 10;
+              int dot_y = box_top + box_height/2;
+              it.filled_circle(dot_x, dot_y, 5, Color(0xFF0000));
+            }
           }
 
           id(draw_timer_timeline).execute();
