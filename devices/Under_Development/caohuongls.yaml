@@ -3,16 +3,16 @@ substitutions:
   friendly_name: "Xiaozhi Ball V2"
 
 ## v1.04 13-jul-2025 #############################################################################################################################
-## Added: optional wake sound, delays time before you can talk to it, so optional.
+## Added: optional wake sound, delays the time before listening, so optional switch in HA.
+## Moved: show_text and show_battery_status to switches in HA.
 ## v1.03 08-jul-2025 #############################################################################################################################
-## Added: optional show text boxes, holding rear button for 1+ second will enable/disable and default set in top of this yaml
+## Added: optional show text boxes
+## v1.02 30-jun-2025 #############################################################################################################################
+## Added optional Battery Status
 
-##################################################################################################################################################
+## SETTINGS ######################################################################################################################################
 
   imagemodel: "Dory" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,GLaDOS,Girl1,Guy1,Guy2,Harley,Jarvis,Mario,Max,Prime,Robot,Robotgirl)
-
-  show_battery_status: "false" # "true" or "false"
-  show_text: "false" # "true" or "false"
 
   imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
   imageheight: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
@@ -250,9 +250,7 @@ binary_sensor:
       - timing:
           - ON for at least 1s
         then:
-          - lambda: |-
-              id(show_battery_status) = !id(show_battery_status);
-          - logger.log: "Toggled battery status!"
+          - switch.toggle: show_battery_status
           - script.execute: draw_display
 
   - platform: gpio
@@ -286,13 +284,6 @@ binary_sensor:
                             - voice_assistant.start:                     
                           else:
                             - voice_assistant.stop:  
-      - timing:
-          - ON for at least 1s
-        then:
-          - lambda: |-
-              id(show_text) = !id(show_text);
-          - logger.log: "Toggled show text!"
-          - script.execute: draw_display
       - timing:
           - ON for at least 10s
         then:
@@ -362,7 +353,7 @@ audio_dac:
 
 microphone:
   - platform: i2s_audio
-    id: box_mic
+    id: i2s_mics
     sample_rate: 16000
     i2s_din_pin: GPIO${i2s_din_pin}
     bits_per_sample: 16bit
@@ -371,7 +362,7 @@ microphone:
 
 speaker:
   - platform: i2s_audio
-    id: box_speaker
+    id: i2s_audio_speaker
     i2s_dout_pin: GPIO${i2s_dout_pin}
     dac_type: external
     sample_rate: 48000
@@ -383,11 +374,11 @@ speaker:
 media_player:
   - platform: speaker
     name: None
-    id: speaker_media_player
+    id: external_media_player
     volume_min: 0.5
     volume_max: 0.8
     announcement_pipeline:
-      speaker: box_speaker
+      speaker: i2s_audio_speaker
       format: FLAC
       sample_rate: 48000
       num_channels: 1  # S3 Box only has one output channel
@@ -430,7 +421,6 @@ micro_wake_word:
   id: mww
   models:
     - okay_nabu
-    - hey_mycroft
     - hey_jarvis
     - alexa
   on_wake_word_detected:
@@ -448,8 +438,8 @@ micro_wake_word:
 
 voice_assistant:
   id: va
-  microphone: box_mic
-  media_player: speaker_media_player
+  microphone: i2s_mics
+  media_player: external_media_player
   micro_wake_word: mww
   noise_suppression_level: 2
   auto_gain: 31dBFS
@@ -741,14 +731,14 @@ script:
     then:
       - lambda: |-
           if (priority) {
-            id(speaker_media_player)
+            id(external_media_player)
               ->make_call()
               .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_STOP)
               .set_announcement(true)
               .perform();
           }
-          if ( (id(speaker_media_player).state != media_player::MediaPlayerState::MEDIA_PLAYER_STATE_ANNOUNCING ) || priority) {
-            id(speaker_media_player)
+          if ( (id(external_media_player).state != media_player::MediaPlayerState::MEDIA_PLAYER_STATE_ANNOUNCING ) || priority) {
+            id(external_media_player)
               ->play_file(sound_file, true, false);
           }
 
@@ -775,22 +765,22 @@ switch:
     restore_mode: ALWAYS_OFF
     on_turn_off:
       - lambda: |-
-              id(speaker_media_player)
+              id(external_media_player)
                 ->make_call()
                 .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_OFF)
                 .set_announcement(true)
                 .perform();
-              id(speaker_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 0);
+              id(external_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 0);
       - media_player.stop:
           announcement: true
     on_turn_on:
       - lambda: |-
-            id(speaker_media_player)
+            id(external_media_player)
               ->make_call()
               .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_ONE)
               .set_announcement(true)
               .perform();
-            id(speaker_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 1000);
+            id(external_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 1000);
       - media_player.speaker.play_on_device_media_file:
           media_file: timer_finished_sound
           announcement: true
@@ -798,7 +788,9 @@ switch:
       - switch.turn_off: timer_ringing
 
   - platform: gpio
-    name: "Speaker Enable"
+    name: Speaker Enable
+    icon: "mdi:speaker"
+    entity_category: config
     pin: GPIO${speaker_enable_pin}
     restore_mode: RESTORE_DEFAULT_ON
 
@@ -809,6 +801,26 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: show_text
+    name: Show Text
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: show_battery_status
+    name: Show Battery Status
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - script.execute: draw_display
+    on_turn_off:
+      - script.execute: draw_display
 
 select:
   - platform: template
@@ -879,14 +891,6 @@ globals:
     type: int
     restore_value: no
     initial_value: '-1'
-  - id: show_battery_status
-    type: bool
-    restore_value: no
-    initial_value: ${show_battery_status}
-  - id: show_text
-    type: bool
-    restore_value: no
-    initial_value: ${show_text}
 
 image:
   - file: ${error_illustration_file}
@@ -1039,7 +1043,7 @@ display:
         lambda: |-
           it.fill(id(idle_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_idle), ImageAlign::CENTER);
-          if (id(show_battery_status)) {
+          if (id(show_battery_status).state) {
             const int box_top = 2;
             const int box_height = 28;
             it.filled_rectangle((it.get_width()/2)-40, box_top, 80, box_height, Color::WHITE);
@@ -1059,7 +1063,7 @@ display:
         lambda: |-
           it.fill(id(thinking_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_thinking), ImageAlign::CENTER);
-          if (id(show_text)) {
+          if (id(show_text).state) {
             it.filled_rectangle(20 , 20 , 200 , 30 , Color::WHITE );
             it.rectangle(20 , 20 , 200 , 30 , Color::BLACK );
             it.printf(30, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
@@ -1073,7 +1077,7 @@ display:
           if (it.get_height() == 320) {
             y_offset = 270; // Move box lower for 320px tall screens
           }
-            if (id(show_text)) {
+            if (id(show_text).state) {
             it.filled_rectangle(20, y_offset, 200, 30, Color::WHITE);
             it.rectangle(20, y_offset, 200, 30, Color::BLACK);
             it.printf(30, y_offset + 5, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
