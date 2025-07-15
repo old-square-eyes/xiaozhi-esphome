@@ -2,9 +2,13 @@ substitutions:
   name: esphome-web-619cd4
   friendly_name: "Xiaozhi Ball v1"
 
-## v1.01 30-jun-2025 #############################################################################################################################
+## v1.04 15-jul-2025 #############################################################################################################################
+## Added: optional wake sound, delays the time before listening, so optional switch in HA.
+## Moved: show_text and show_battery_status to switches in HA.
+## v1.03 11-jul-2025 #############################################################################################################################
+## Added: optional show text boxes
 
-  imagemodel: "Jarvis" # (options are: Alfred,Astrobot,Casita,Dory,EVE,Eyes,Girl1,GLaDOS,Guy1,Guy2,Harley,Jarvis,Mario,Prime,Robot,Robotgirl)
+  imagemodel: "Dory" # (options are: Alfred,Astrobot,Casita,Dory,EVE,Eyes,Girl1,GLaDOS,Guy1,Guy2,Harley,Mario,Robot,Robotgirl,Prime)
 
   imagewidth: "240" # ILI9341 (breadboard 2.4") "240" or GC9A01A (Ball v1) "240"
   imageheight: "240" # ILI9341 (breadboard 2.4") "320" or GC9A01A (Ball v1) "240"
@@ -199,14 +203,14 @@ microphone:
     i2s_audio_id: i2s_mic
     adc_type: external
     i2s_din_pin: GPIO6 #SD
-    id: box_mic
+    id: i2s_mics
     channel: left
     pdm: false
     bits_per_sample: 16bit
 
 speaker:
   - platform: i2s_audio
-    id: box_speaker
+    id: i2s_audio_speaker
     i2s_audio_id: i2s_audio_bus
     dac_type: external
     i2s_dout_pin:   
@@ -217,17 +221,17 @@ speaker:
 media_player:
   - platform: speaker
     name: None
-    id: speaker_media_player
-    volume_min: 0.5
-    volume_max: 0.8
+    id: external_media_player
     announcement_pipeline:
-      speaker: box_speaker
+      speaker: i2s_audio_speaker
       format: FLAC
       sample_rate: 48000
       num_channels: 1  # S3 Box only has one output channel
     files:
       - id: timer_finished_sound
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
+      - id: wake_word_triggered_sound
+        file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/wake_word_triggered.flac
     on_announcement:
       # Stop the wake word (mWW or VA) if the mic is capturing
       - if:
@@ -260,8 +264,8 @@ media_player:
             not:
               voice_assistant.is_running:
           then:
-            - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
-            - script.execute: draw_display
+ #           - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+ #           - script.execute: draw_display
     on_idle:
       # Since VA isn't running, this is the end of user-intiated media playback. Restart the wake word.
       - script.execute: reset_led
@@ -278,17 +282,25 @@ micro_wake_word:
   id: mww
   models:
     - okay_nabu
-    - hey_mycroft
     - hey_jarvis
     - alexa
   on_wake_word_detected:
+    - if:
+        condition:
+          switch.is_on: wake_sound
+        then:
+          - script.execute:
+              id: play_sound
+              priority: true
+              sound_file: !lambda return id(wake_word_triggered_sound);
+          - delay: 300ms
     - voice_assistant.start:
         wake_word: !lambda return wake_word;
 
 voice_assistant:
   id: va
-  microphone: box_mic
-  media_player: speaker_media_player
+  microphone: i2s_mics
+  media_player: external_media_player
   micro_wake_word: mww
   noise_suppression_level: 2
   auto_gain: 31dBFS
@@ -667,6 +679,25 @@ script:
           else:
             - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
 
+  # Script executed when we want to play sounds on the device.
+  - id: play_sound
+    parameters:
+      priority: bool
+      sound_file: "audio::AudioFile*"
+    then:
+      - lambda: |-
+          if (priority) {
+            id(external_media_player)
+              ->make_call()
+              .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_STOP)
+              .set_announcement(true)
+              .perform();
+          }
+          if ( (id(external_media_player).state != media_player::MediaPlayerState::MEDIA_PLAYER_STATE_ANNOUNCING ) || priority) {
+            id(external_media_player)
+              ->play_file(sound_file, true, false);
+          }
+
 switch:
   - platform: template
     name: Use listen light
@@ -701,29 +732,45 @@ switch:
     on_turn_off:
       # Turn off the repeat mode and disable the pause between playlist items
       - lambda: |-
-              id(speaker_media_player)
+              id(external_media_player)
                 ->make_call()
                 .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_OFF)
                 .set_announcement(true)
                 .perform();
-              id(speaker_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 0);
+              id(external_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 0);
       # Stop playing the alarm
       - media_player.stop:
           announcement: true
     on_turn_on:
       # Turn on the repeat mode and pause for 1000 ms between playlist items/repeats
       - lambda: |-
-            id(speaker_media_player)
+            id(external_media_player)
               ->make_call()
               .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_ONE)
               .set_announcement(true)
               .perform();
-            id(speaker_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 1000);
+            id(external_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 1000);
       - media_player.speaker.play_on_device_media_file:
           media_file: timer_finished_sound
           announcement: true
       - delay: 15min
       - switch.turn_off: timer_ringing
+
+  - platform: template
+    id: wake_sound
+    name: Wake sound
+    icon: "mdi:bullhorn"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: show_text
+    name: Show Text
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
 
 select:
   - platform: template
@@ -945,25 +992,26 @@ display:
         lambda: |-
           it.fill(id(thinking_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_thinking), ImageAlign::CENTER);
-          it.filled_rectangle(20 , 20 , 200 , 30 , Color::WHITE );
-          it.rectangle(20 , 20 , 200 , 30 , Color::BLACK );
-          it.printf(30, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
+          if (id(show_text).state) {
+            it.filled_rectangle(20 , 20 , 200 , 30 , Color::WHITE );
+            it.rectangle(20 , 20 , 200 , 30 , Color::BLACK );
+            it.printf(30, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
+          }
           id(draw_timer_timeline).execute();
       - id: replying_page
         lambda: |-
-            it.fill(id(replying_color));
-            it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_replying), ImageAlign::CENTER);
-
-            int y_offset = 190; // default for 240px display
-            if (it.get_height() == 320) {
-                  y_offset = 270; // Move box lower for 320px tall screens
-            }
-
+          it.fill(id(replying_color));
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_replying), ImageAlign::CENTER);
+          int y_offset = 190; // default for 240px display
+          if (it.get_height() == 320) {
+            y_offset = 270; // Move box lower for 320px tall screens
+          }
+          if (id(show_text).state) {
             it.filled_rectangle(20, y_offset, 200, 30, Color::WHITE);
             it.rectangle(20, y_offset, 200, 30, Color::BLACK);
             it.printf(30, y_offset + 5, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
-            id(draw_timer_timeline).execute();
-
+          }
+          id(draw_timer_timeline).execute();
       - id: timer_finished_page
         lambda: |-
           it.fill(id(idle_color));
