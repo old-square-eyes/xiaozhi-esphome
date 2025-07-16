@@ -375,8 +375,6 @@ media_player:
   - platform: speaker
     name: None
     id: external_media_player
-    volume_min: 0.5
-    volume_max: 0.8
     announcement_pipeline:
       speaker: i2s_audio_speaker
       format: FLAC
