@@ -201,7 +201,7 @@ speaker:
     i2s_audio_id: i2s_audio_bus
     i2s_dout_pin: GPIO17
     dac_type: external
-    channel: mono
+    channel: stereo
 
 media_player:
   - platform: speaker
@@ -728,6 +728,12 @@ image:
     resize: 360x360
     type: RGB
     transparency: alpha_channel
+  - file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Mute/360x360/mute.png
+    id: casita_muted
+    resize: 360x360
+    type: RGB
+    transparency: alpha_channel
+
 
 font:
   - file:
@@ -886,6 +892,7 @@ display:
       - id: muted_page
         lambda: |-
           it.fill(Color::BLACK);
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_muted), ImageAlign::CENTER);
           id(draw_timer_timeline).execute();
           id(draw_active_timer_widget).execute();
       - id: now_playing_page
