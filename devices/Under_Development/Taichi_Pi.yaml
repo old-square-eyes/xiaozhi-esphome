@@ -2,15 +2,23 @@ substitutions:
   name: esphome-web-e9f624
   friendly_name: Xiaozhi Taichi Pi
 
-  imagemodel: "Gwen" # Gwen or Dory
-  
-  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/360x360/loading.png
-  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/360x360/idle.png
-  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/360x360/listening.png
-  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/360x360/thinking.png
-  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/360x360/replying.png
-  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/360x360/error.png
-  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/360x360/timer_finished.png
+## SETTINGS ######################################################################################################################################
+
+  imagemodel: "Gwen" # (options are: Dory,Gwen
+
+  imagewidth: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
+  imageheight: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
+
+##################################################################################################################################################
+
+  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
+  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/idle.png
+  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/listening.png
+  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/thinking.png
+  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/replying.png
+  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/error.png
+  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
+  mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Mute/${imagewidth}x${imageheight}/mute.png
 
   loading_illustration_background_color: "000000"
   idle_illustration_background_color: "000000"
@@ -133,6 +141,7 @@ binary_sensor:
     pin:
       number: 0
       mode: INPUT_PULLUP
+      ignore_strapping_warning: true
       inverted: true
     id: left_top_button
     internal: true
@@ -209,7 +218,7 @@ media_player:
     id: speaker_media_player
     announcement_pipeline:
       speaker: box_speaker
-      format: WAV
+      format: FLAC
       sample_rate: 16000
       num_channels: 1  # S3 Box only has one output channel
     files:
@@ -685,52 +694,52 @@ globals:
 image:
   - file: ${error_illustration_file}
     id: casita_error
-    resize: 360x360
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${idle_illustration_file}
     id: casita_idle
-    resize: 360x360
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${listening_illustration_file}
     id: casita_listening
-    resize: 360x360
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${thinking_illustration_file}
     id: casita_thinking
-    resize: 360x360
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${replying_illustration_file}
     id: casita_replying
-    resize: 360x360
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${timer_finished_illustration_file}
     id: casita_timer_finished
-    resize: 360x360
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${loading_illustration_file}
     id: casita_initializing
-    resize: 360x360
+    resize: ${imagewidth}x${imageheight}
+    type: RGB
+    transparency: alpha_channel
+  - file: ${mute_illustration_file}
+    id: casita_muted
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-wifi.png
     id: error_no_wifi
-    resize: 360x360
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-ha.png
     id: error_no_ha
-    resize: 360x360
-    type: RGB
-    transparency: alpha_channel
-  - file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Mute/360x360/mute.png
-    id: casita_muted
-    resize: 360x360
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
 
@@ -841,8 +850,8 @@ display:
 #      inverted: true
     update_interval: never
     dimensions:
-        height: 360
-        width: 360
+        height: ${imageheight}
+        width: ${imagewidth}
     pages:
       - id: idle_page
         lambda: |-
