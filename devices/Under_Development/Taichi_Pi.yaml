@@ -4,10 +4,10 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "Gwen" # (options are: Dory,Gwen
+  imagemodel: "Gwen" # (options are: Dory,Gwen)
 
-  imagewidth: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
-  imageheight: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
+  imagewidth: "360" 
+  imageheight: "360"
 
 ##################################################################################################################################################
 
