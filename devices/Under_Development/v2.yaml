@@ -1075,7 +1075,7 @@ display:
           if (it.get_height() == 320) {
             y_offset = 270; // Move box lower for 320px tall screens
           }
-            if (id(show_text).state) {
+          if (id(show_text).state) {
             it.filled_rectangle(20, y_offset, 200, 30, Color::WHITE);
             it.rectangle(20, y_offset, 200, 30, Color::BLACK);
             it.printf(30, y_offset + 5, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
