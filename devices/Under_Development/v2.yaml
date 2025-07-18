@@ -2,6 +2,8 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
+## v1.05 18-jul-2025 #############################################################################################################################
+## Fixes: minor bugfixes, sound level to max, show muted mic when playing music or playing TTS, not when playing internal sounds.
 ## v1.04 13-jul-2025 #############################################################################################################################
 ## Added: optional wake sound, delays the time before listening, so optional switch in HA.
 ## Moved: show_text and show_battery_status to switches in HA.
@@ -302,7 +304,7 @@ light:
     icon: "mdi:television"
     entity_category: config
     output: backlight_output
-    restore_mode: RESTORE_DEFAULT_ON
+    restore_mode: ALWAYS_ON
     default_transition_length: 250ms
   - platform: esp32_rmt_led_strip
     id: led
@@ -403,8 +405,14 @@ media_player:
             not:
               voice_assistant.is_running:
           then:
-#            - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
-#            - script.execute: draw_display
+            - if:
+                condition:
+                  lambda: 'return id(playing_internal_sound);'
+                then:
+                  - lambda: 'id(playing_internal_sound) = false;'
+                else:
+                  - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+                  - script.execute: draw_display
     on_idle:
       - if:
           condition:
@@ -728,6 +736,7 @@ script:
       sound_file: "audio::AudioFile*"
     then:
       - lambda: |-
+          id(playing_internal_sound) = true;
           if (priority) {
             id(external_media_player)
               ->make_call()
@@ -889,6 +898,10 @@ globals:
     type: int
     restore_value: no
     initial_value: '-1'
+  - id: playing_internal_sound
+    type: bool
+    restore_value: no
+    initial_value: 'false'
 
 image:
   - file: ${error_illustration_file}
