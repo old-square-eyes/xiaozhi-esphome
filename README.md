@@ -60,6 +60,8 @@ Muma Horse: https://vi.aliexpress.com/item/1005008884232596.html
 
 Puck: https://www.aliexpress.com/item/1005009016529496.html
 
+Guition Taichi pi: https://vi.aliexpress.com/item/1005007420092928.html
+
 Breadboard: Look in devices/Breadboard: https://github.com/RealDeco/xiaozhi-esphome/tree/main/devices/Breadboard
 
 3D file of "Eggvenger" figure used to hold the Ball in image above, use 115% for v2 since it's larger than v1.
