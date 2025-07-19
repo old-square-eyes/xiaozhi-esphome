@@ -2,6 +2,8 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
+## v1.06 19-jul-2025 #############################################################################################################################
+## Added: Startup sound when connected to HA.
 ## v1.05 18-jul-2025 #############################################################################################################################
 ## Fixes: minor bugfixes, sound level to max, show muted mic when playing music or playing TTS, not when playing internal sounds.
 ## v1.04 13-jul-2025 #############################################################################################################################
@@ -119,6 +121,10 @@ psram:
 api:
   on_client_connected:
     - script.execute: draw_display
+    - script.execute:
+        id: play_sound
+        priority: true
+        sound_file: !lambda return id(ready_sound);
   on_client_disconnected:
     - script.execute: draw_display
 
@@ -387,6 +393,8 @@ media_player:
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
       - id: wake_word_triggered_sound
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/wake_word_triggered.flac
+      - id: ready_sound
+        file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/available.flac
     on_announcement:
       - if:
           condition:
