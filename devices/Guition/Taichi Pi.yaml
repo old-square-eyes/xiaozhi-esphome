@@ -4,10 +4,12 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "Gwen" # (options are: Dory,Gwen
+  imagemodel: "Gwen" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,Gwen)
+  startup_sound: "available" # no other options right now
 
   imagewidth: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
   imageheight: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
+  rotate_display: "180" # Set to "180" to flip the display
 
 ##################################################################################################################################################
 
@@ -19,6 +21,8 @@ substitutions:
   error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/error.png
   timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
   mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Mute/${imagewidth}x${imageheight}/mute.png
+
+  startup_sound_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
   loading_illustration_background_color: "000000"
   idle_illustration_background_color: "000000"
@@ -80,10 +84,15 @@ psram:
 api:
   on_client_connected:
     - script.execute: draw_display
-    - script.execute:
-        id: play_sound
-        priority: true
-        sound_file: !lambda return id(ready_sound);
+    - if:
+        condition:
+          switch.is_on: startup_sound_switch
+        then:
+          - script.execute:
+              id: play_sound
+              priority: true
+              sound_file: !lambda return id(ready_sound);
+          - delay: 300ms
   on_client_disconnected:
     - script.execute: draw_display
 
@@ -230,10 +239,8 @@ media_player:
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
       - id: wake_word_triggered_sound
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/wake_word_triggered.flac
-      - id: available_sound
-        file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
       - id: ready_sound
-        file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/available.flac
+        file: ${startup_sound_file}
     on_announcement:
       # Stop the wake word (mWW or VA) if the mic is capturing
       - if:
@@ -673,6 +680,14 @@ switch:
     restore_mode: RESTORE_DEFAULT_ON
 
   - platform: template
+    id: startup_sound_switch
+    name: Startup sound
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
     id: show_text
     name: Show Text
     icon: "mdi:card-text-outline"
@@ -904,6 +919,7 @@ display:
   - platform: qspi_dbi
     id: main_display
     model: JC3636W518
+    rotation: ${rotate_display}
     invert_colors: true
     data_rate: 40MHz
     cs_pin: 10
