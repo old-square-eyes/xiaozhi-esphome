@@ -8,7 +8,8 @@ substitutions:
 
   imagewidth: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
   imageheight: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
-
+  rotate_display: "180" # Set to "180" to flip the display
+  
 ##################################################################################################################################################
 
   loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
@@ -904,6 +905,7 @@ display:
   - platform: qspi_dbi
     id: main_display
     model: JC3636W518
+    rotation: ${rotate_display}
     invert_colors: true
     data_rate: 40MHz
     cs_pin: 10
