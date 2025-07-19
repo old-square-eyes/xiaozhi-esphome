@@ -4,7 +4,7 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "Gwen" # (options are: Dory,Gwen)
+  imagemodel: "Gwen" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,Gwen)
   startup_sound: "available" # no other options right now
 
   imagewidth: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
@@ -84,10 +84,15 @@ psram:
 api:
   on_client_connected:
     - script.execute: draw_display
-    - script.execute:
-        id: play_sound
-        priority: true
-        sound_file: !lambda return id(ready_sound);
+    - if:
+        condition:
+          switch.is_on: startup_sound_switch
+        then:
+          - script.execute:
+              id: play_sound
+              priority: true
+              sound_file: !lambda return id(ready_sound);
+          - delay: 300ms
   on_client_disconnected:
     - script.execute: draw_display
 
@@ -670,6 +675,14 @@ switch:
     id: wake_sound
     name: Wake sound
     icon: "mdi:bullhorn"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: startup_sound_switch
+    name: Startup sound
+    icon: "mdi:card-text-outline"
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
