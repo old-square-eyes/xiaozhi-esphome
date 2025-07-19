@@ -2,14 +2,12 @@ substitutions:
   name: esphome-web-e9f624
   friendly_name: Xiaozhi Taichi Pi
 
-## v1.00 18-jul-2025 #############################################################################################################################
-## First working release.
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "Gwen" # (options are: Dory,Gwen)
+  imagemodel: "Gwen" # (options are: Dory,Gwen
 
-  imagewidth: "360" 
-  imageheight: "360"
+  imagewidth: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
+  imageheight: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
 
 ##################################################################################################################################################
 
@@ -416,46 +414,46 @@ script:
                         - lambda: |
                             switch(id(voice_assistant_phase)) {
                               case ${voice_assist_listening_phase_id}:
-                                id(s3_box_lcd).show_page(listening_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(listening_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_thinking_phase_id}:
-                                id(s3_box_lcd).show_page(thinking_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(thinking_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_replying_phase_id}:
-                                id(s3_box_lcd).show_page(replying_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(replying_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_error_phase_id}:
-                                id(s3_box_lcd).show_page(error_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(error_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_muted_phase_id}:
-                                id(s3_box_lcd).show_page(muted_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(muted_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_not_ready_phase_id}:
-                                id(s3_box_lcd).show_page(no_ha_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(no_ha_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_timer_finished_phase_id}:
-                                id(s3_box_lcd).show_page(timer_finished_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(timer_finished_page);
+                                id(main_display).update();
                                 break;
                               default:
-                                id(s3_box_lcd).show_page(idle_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(idle_page);
+                                id(main_display).update();
                             }
                       else:
                         - display.page.show: no_ha_page
-                        - component.update: s3_box_lcd
+                        - component.update: main_display
                 else:
                   - display.page.show: no_wifi_page
-                  - component.update: s3_box_lcd
+                  - component.update: main_display
           else:
             - display.page.show: initializing_page
-            - component.update: s3_box_lcd
+            - component.update: main_display
 
   - id: fetch_first_active_timer
     then:
@@ -511,15 +509,15 @@ script:
             id(fetch_first_active_timer).execute();
             int active_pixels = round( 320 * id(global_first_active_timer).seconds_left / max(id(global_first_active_timer).total_seconds , static_cast<uint32_t>(1)) );
             if (active_pixels > 0){
-              id(s3_box_lcd).filled_rectangle(0 , 225 , 240 , 15 , Color::WHITE );
-              id(s3_box_lcd).filled_rectangle(0 , 226 , active_pixels , 13 , id(active_timer_color) );
+              id(main_display).filled_rectangle(0 , 225 , 240 , 15 , Color::WHITE );
+              id(main_display).filled_rectangle(0 , 226 , active_pixels , 13 , id(active_timer_color) );
             }
           } else if (id(global_is_timer)){
             id(fetch_first_timer).execute();
             int active_pixels = round( 320 * id(global_first_timer).seconds_left / max(id(global_first_timer).total_seconds , static_cast<uint32_t>(1)));
             if (active_pixels > 0){
-              id(s3_box_lcd).filled_rectangle(0 , 225 , 240 , 15 , Color::WHITE );
-              id(s3_box_lcd).filled_rectangle(0 , 226 , active_pixels , 13 , id(paused_timer_color) );
+              id(main_display).filled_rectangle(0 , 225 , 240 , 15 , Color::WHITE );
+              id(main_display).filled_rectangle(0 , 226 , active_pixels , 13 , id(paused_timer_color) );
             }
           }
   - id: draw_active_timer_widget
@@ -527,8 +525,8 @@ script:
       - lambda: |
           id(check_if_timers_active).execute();
           if (id(global_is_timer_active)){
-            id(s3_box_lcd).filled_rectangle(80 , 40 , 160 , 50 , Color::WHITE );
-            id(s3_box_lcd).rectangle(80 , 40 , 160 , 50 , Color::BLACK );
+            id(main_display).filled_rectangle(80 , 40 , 160 , 50 , Color::WHITE );
+            id(main_display).rectangle(80 , 40 , 160 , 50 , Color::BLACK );
 
             id(fetch_first_active_timer).execute();
             int hours_left = floor(id(global_first_active_timer).seconds_left / 3600);
@@ -544,7 +542,7 @@ script:
             } else {
               display_string = display_minute + ":" + display_seconds;
             }
-            id(s3_box_lcd).printf(120, 47, id(font_timer), Color::BLACK, "%s", display_string.c_str());
+            id(main_display).printf(120, 47, id(font_timer), Color::BLACK, "%s", display_string.c_str());
           }
   # Starts either mWW or the streaming wake word, depending on the configured location
   - id: start_wake_word
@@ -835,9 +833,10 @@ font:
 text_sensor:
   - id: text_request
     platform: template
+    name: "Text Request"
     on_value:
       lambda: |-
-        if(id(text_request).state.length()>32) {
+        if(id(text_request).state.length()>30) {
           std::string name = id(text_request).state.c_str();
           std::string truncated = esphome::str_truncate(name.c_str(),31);
           id(text_request).state = (truncated+"...").c_str();
@@ -845,9 +844,10 @@ text_sensor:
 
   - id: text_response
     platform: template
+    name: "Text Response"
     on_value:
       lambda: |-
-        if(id(text_response).state.length()>32) {
+        if(id(text_response).state.length()>30) {
           std::string name = id(text_response).state.c_str();
           std::string truncated = esphome::str_truncate(name.c_str(),31);
           id(text_response).state = (truncated+"...").c_str();
@@ -887,7 +887,7 @@ touchscreen:
     id: my_touchscreen
     interrupt_pin: GPIO41
     reset_pin: GPIO40
-    display: s3_box_lcd
+    display: main_display
     i2c_id: touchscreen_bus
     on_touch:
       then:
@@ -902,7 +902,7 @@ touchscreen:
 
 display:
   - platform: qspi_dbi
-    id: s3_box_lcd
+    id: main_display
     model: JC3636W518
     invert_colors: true
     data_rate: 40MHz
@@ -930,9 +930,9 @@ display:
           it.fill(id(thinking_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_thinking), ImageAlign::CENTER);
           if (id(show_text).state) {
-            it.filled_rectangle(20 , 20 , 200 , 30 , Color::WHITE );
-            it.rectangle(20 , 20 , 200 , 30 , Color::BLACK );
-            it.printf(30, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
+            it.filled_rectangle(75 , 20 , 210 , 30 , Color::WHITE );
+            it.rectangle(75 , 20 , 210 , 30 , Color::BLACK );
+            it.printf(75, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
           }
           id(draw_timer_timeline).execute();
       - id: replying_page
@@ -947,9 +947,9 @@ display:
             y_offset = 310; // Move box lower for 360px tall screens
           }
           if (id(show_text).state) {
-            it.filled_rectangle(20, y_offset, 200, 30, Color::WHITE);
-            it.rectangle(20, y_offset, 200, 30, Color::BLACK);
-            it.printf(30, y_offset + 5, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
+            it.filled_rectangle(75, y_offset, 210, 30, Color::WHITE);
+            it.rectangle(75, y_offset, 210, 30, Color::BLACK);
+            it.printf(75, y_offset + 5, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
           }
           id(draw_timer_timeline).execute();
       - id: timer_finished_page
@@ -979,5 +979,5 @@ display:
       - id: now_playing_page
         lambda: |-
           it.fill(Color::BLACK);
-          it.printf((it.get_width()/2)-50, 180, id(font_response), Color::WHITE, "Mediaplayr is Playing...");
+          it.printf((it.get_width()/2)-50, 180, id(font_response), Color::WHITE, "Mediaplayer is Playing...");
           // Optionally add icon/image here
