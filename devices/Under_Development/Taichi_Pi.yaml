@@ -4,12 +4,13 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "Gwen" # (options are: Dory,Gwen
+  imagemodel: "Gwen" # (options are: Dory,Gwen)
+  startup_sound: "available" # no other options right now
 
   imagewidth: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
   imageheight: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
   rotate_display: "180" # Set to "180" to flip the display
-  
+
 ##################################################################################################################################################
 
   loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
@@ -20,6 +21,8 @@ substitutions:
   error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/error.png
   timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
   mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Mute/${imagewidth}x${imageheight}/mute.png
+
+  startup_sound_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
   loading_illustration_background_color: "000000"
   idle_illustration_background_color: "000000"
@@ -231,10 +234,8 @@ media_player:
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
       - id: wake_word_triggered_sound
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/wake_word_triggered.flac
-      - id: available_sound
-        file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
       - id: ready_sound
-        file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/available.flac
+        file: ${startup_sound_file}
     on_announcement:
       # Stop the wake word (mWW or VA) if the mic is capturing
       - if:
