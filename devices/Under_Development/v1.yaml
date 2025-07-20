@@ -28,9 +28,9 @@ substitutions:
 
   loading_illustration_background_color: "000000"
   idle_illustration_background_color: "000000"
-  listening_illustration_background_color: "FFFFFF"
-  thinking_illustration_background_color: "FFFFFF"
-  replying_illustration_background_color: "FFFFFF"
+  listening_illustration_background_color: "000000"
+  thinking_illustration_background_color: "000000"
+  replying_illustration_background_color: "000000"
   error_illustration_background_color: "000000"
 
   voice_assist_idle_phase_id: "1"
