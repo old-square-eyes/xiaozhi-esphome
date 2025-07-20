@@ -5,7 +5,7 @@ substitutions:
 ## SETTINGS ######################################################################################################################################
 
   imagemodel: "Gwen" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,Gwen)
-  startup_sound: "available" # no other options right now
+  startup_sound: "Home_Connected" # (options are: available,Home_Connected)
 
   imagewidth: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
   imageheight: "360" # GC9A01A (Ball v2 & Muma & Puck) "240"
