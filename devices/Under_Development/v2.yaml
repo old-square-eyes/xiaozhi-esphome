@@ -4,6 +4,7 @@ substitutions:
 
 ## v1.06 19-jul-2025 #############################################################################################################################
 ## Added: Startup sound when connected to HA, optional with switch, and option to select other sounds in settings below.
+## Added: Mute and Playing icon to all emos.
 ## v1.05 18-jul-2025 #############################################################################################################################
 ## Fixes: minor bugfixes, sound level to max, show muted mic when playing music or playing TTS, not when playing internal sounds.
 ## v1.04 13-jul-2025 #############################################################################################################################
@@ -16,7 +17,7 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "Gwen" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,GLaDOS,Girl1,Guy1,Guy2,Harley,Jarvis,Luffy,Mario,Max,Prime,Robot,Robotgirl,Shaun)
+  imagemodel: "Eyes2" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,Eyes2,GLaDOS,Girl1,Guy1,Guy2,Gwen,Harley,Jarvis,Luffy,Mario,Max,Prime,Robochibi,Robocop,Robot,Robotgirl,Shaun)
   startup_sound: "available" # no other options right now
 
   imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
@@ -62,7 +63,7 @@ substitutions:
   replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/replying.png
   error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/error.png
   timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
-  mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Mute/${imagewidth}x${imageheight}/mute.png
+  mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/mute.png
 
   startup_sound_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
