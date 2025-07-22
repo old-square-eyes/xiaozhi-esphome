@@ -8,13 +8,13 @@
 <p align="center">
   <img src="https://github.com/user-attachments/assets/958a2d99-5752-481b-be1e-d9ad797e6e33" alt="fam" width="250"/>
   <img src="https://github.com/user-attachments/assets/931189c1-d7eb-444c-b6be-e83a17111abc" alt="DIY" width="250"/>
+  <img src="https://github.com/user-attachments/assets/2ca77edd-89fd-473a-9b5c-542b7dbed1e9" alt="DIY" width="250"/>
 </p>
 <p align="center">
   <img src="https://github.com/user-attachments/assets/5d364985-a4ce-4b49-bf03-af7ce22bbc35" alt="20250614_195218" width="250"/>
   <img src="https://github.com/user-attachments/assets/8e66a3d6-527b-4047-9f0c-fb7c9cb2490f" alt="Xiaozhi Device" width="250"/>
   <img src="https://github.com/user-attachments/assets/4aa49b9e-ab2c-4949-aefc-9d51ecf6ac40" alt="identify your model" width="250"/>
 </p>
-
 
 
 By request, this GitHub project provides a simple way to use Xiaozhi-based devices with ESPHome. These compact devices can serve as voice assistants integrated with Home Assistant.
