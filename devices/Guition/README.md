@@ -22,4 +22,4 @@ Currently, only one Guition Device is available:
 ---
 
 > **Note:**
-> Unlike other Guition devices, Taichi Pi does **not** include a built-in speaker. Audio output is available via the minijack port, perfect for connecting to larger, powered speakers or stereo systems.
+> Unlike the other devices, Taichi Pi does **not** include a built-in speaker. Audio output is available via the minijack port, perfect for connecting to larger, powered speakers or stereo systems.
