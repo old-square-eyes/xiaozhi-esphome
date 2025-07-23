@@ -36,6 +36,7 @@ By request, this GitHub project provides a simple way to use Xiaozhi-based devic
 >   This only happens the first time, when the partition table needs to be updated. Future updates can be done wirelessly.
 
 Video going through the esphome install of device was emoved by youtube and my account blocked. strange world we live in.
+
 [▶️ Download the install video](https://github.com/RealDeco/xiaozhi-esphome/raw/main/install-xiaozhi-esphome.mp4?raw=true)
 
 
