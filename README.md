@@ -37,6 +37,8 @@ By request, this GitHub project provides a simple way to use Xiaozhi-based devic
 
 Video going through the esphome install of devices
 Sorry video removed by youtube and my account blocked. strange world we live in.
+[▶️ Watch the install video](https://github.com/RealDeco/xiaozhi-esphome/blob/main/install-xiaozhi-esphome.mp4?raw=true)
+
 
 ## ✅ Supported Devices (so far)
 
