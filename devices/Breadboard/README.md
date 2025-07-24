@@ -1,4 +1,4 @@
-
+o
 ## Speakerbox project
 ![20250622_142135](https://github.com/user-attachments/assets/8d0e4a0f-259d-4263-8972-b5bf33dd5540)
 https://makerworld.com/en/models/1475284-a-i-speakerbox-for-xiaozhi-a-i-or-home-assistant
