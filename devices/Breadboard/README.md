@@ -75,7 +75,7 @@ Connections:
 
 | Component | GPIO   |
 | --------- | ------ |
-| Button      | GPIO0  |
+| Button      | GPIO0 (to GND) |
 | Onboard LED | GPIO48 |
 
 ---
