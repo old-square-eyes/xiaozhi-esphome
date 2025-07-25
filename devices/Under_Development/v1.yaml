@@ -2,20 +2,41 @@ substitutions:
   name: esphome-web-619cd4
   friendly_name: "Xiaozhi Ball v1"
 
+## v1.05 25-jul-2025 #############################################################################################################################
+## Added: Support for Xingzhi Cube 1.45 and added startup sound (optional switch in HA)
 ## v1.04 15-jul-2025 #############################################################################################################################
 ## Added: optional wake sound, delays the time before listening, so optional switch in HA.
 ## Moved: show_text and show_battery_status to switches in HA.
 ## v1.03 11-jul-2025 #############################################################################################################################
 ## Added: optional show text boxes
 
-  imagemodel: "Dory" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,Eyes2,GLaDOS,Girl1,Guy1,Guy2,Gwen,Harley,Jarvis,Luffy,Mario,Max,Prime,Robochibi,Robocop,Robot,Robotgirl,Shaun)
+#####SETTINGS:####################################################################################################################################
 
-  imagewidth: "240" # ILI9341 (breadboard 2.4") "240" or GC9A01A (Ball v1) "240"
-  imageheight: "240" # ILI9341 (breadboard 2.4") "320" or GC9A01A (Ball v1) "240"
-  displaymodel: "GC9A01A" # ILI9341 (breadboard 2.4") or GC9A01A (Ball v1)
-  invertcolors: "true" # ILI9341 (breadboard 2.4") "false" or GC9A01A (Ball v1) "true"
+  imagemodel: "Eyes2" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,Eyes2,GLaDOS,Girl1,Guy1,Guy2,Gwen,Harley,Jarvis,Luffy,Mario,Max,Prime,Robochibi,Robocop,Robot,Robotgirl,Shaun)
+  startup_sound: "Home_Connected" # (options are: available,Home_Connected)
 
-##################################################################################################################################################
+  imagewidth: "240" # ILI9341 (breadboard 2.4") "240" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
+  imageheight: "240" # ILI9341 (breadboard 2.4") "320" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
+  displaymodel: "GC9A01A" # ILI9341 (breadboard 2.4"), GC9A01A (Ball v1) or ST7789V (Xingzhi Cube)
+  invertcolors: "true" # ILI9341 (breadboard 2.4") "false" or GC9A01A (Ball v1) "true" or ST7789V (Xingzhi Cube) "true"
+
+###### Uncomment for breadboard 2.4" & Ball v1
+  backlight_output_pin: "3" # Display Backlight
+  lcd_cs_pin: "13"          # Display CS (Chip Select)
+  lcd_dc_pin: "10"          # Display DC (Data/Command)
+  lcd_reset_pin: "18"       # Display Reset
+  spi_clk_pin: "14"         # SPI Clock
+  spi_mosi_pin: "17"        # SPI MOSI (Data Out)
+
+###### Uncomment for Xingzhi Cube 1,54
+#  backlight_output_pin: "13" # Display Backlight
+#  lcd_cs_pin: "14"           # Display CS (Chip Select)
+#  lcd_dc_pin: "8"            # Display DC (Data/Command)
+#  lcd_reset_pin: "18"        # Display Reset
+#  spi_clk_pin: "9"           # SPI Clock
+#  spi_mosi_pin: "10"         # SPI MOSI (Data Out)
+
+#####END OF SETTINGS##############################################################################################################################
 
   loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
   idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/idle.png
@@ -25,6 +46,8 @@ substitutions:
   error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/error.png
   timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
   mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Mute/${imagewidth}x${imageheight}/mute.png
+
+  startup_sound_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
   loading_illustration_background_color: "000000"
   idle_illustration_background_color: "000000"
@@ -87,6 +110,13 @@ psram:
 api:
   on_client_connected:
     - script.execute: draw_display
+    - lambda: |-
+        if (!id(boot_sound_played)) {
+          id(boot_sound_played) = true;
+          if (id(startup_sound_switch).state) {
+            id(play_sound)->execute(true, id(ready_sound));
+          }
+        }
   on_client_disconnected:
     - script.execute: draw_display
 
@@ -148,13 +178,41 @@ binary_sensor:
         then:
           - button.press: factory_reset_btn
 
+  - platform: gpio
+    pin: 
+      number: GPIO39
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Left Button"
+    id: left_button
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - logger.log: "Button was pressed"
+    on_release:
+      - logger.log: "Button was released"
+
+  - platform: gpio
+    pin: 
+      number: GPIO40
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Right Button"
+    id: right_button
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - logger.log: "Button was pressed"
+    on_release:
+      - logger.log: "Button was released"
+
 output:
   - platform: ledc
     id: backlight_output
     pin:
-      number: 3
-      ignore_strapping_warning: true
-
+      number: ${backlight_output_pin}
 
 light:
   - platform: monochromatic
@@ -188,7 +246,6 @@ light:
           update_interval: 100ms
           min_brightness: 50%
           max_brightness: 100%
-
 
 i2s_audio:
   - id: i2s_mic # For microphone
@@ -232,6 +289,8 @@ media_player:
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
       - id: wake_word_triggered_sound
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/wake_word_triggered.flac
+      - id: ready_sound
+        file: ${startup_sound_file}
     on_announcement:
       # Stop the wake word (mWW or VA) if the mic is capturing
       - if:
@@ -679,7 +738,7 @@ script:
           else:
             - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
 
-  # Script executed when we want to play sounds on the device.
+
   - id: play_sound
     parameters:
       priority: bool
@@ -765,6 +824,14 @@ switch:
     restore_mode: RESTORE_DEFAULT_ON
 
   - platform: template
+    id: startup_sound_switch
+    name: Startup sound
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
     id: show_text
     name: Show Text
     icon: "mdi:card-text-outline"
@@ -837,6 +904,10 @@ globals:
   - id: global_is_timer
     type: bool
     restore_value: false
+  - id: boot_sound_played
+    type: bool
+    restore_value: no
+    initial_value: "false"
 
 image:
   - file: ${error_illustration_file}
@@ -958,8 +1029,8 @@ color:
 
 spi:
   - id: spi_bus
-    clk_pin: 14
-    mosi_pin: 17
+    clk_pin: ${spi_clk_pin}
+    mosi_pin: ${spi_mosi_pin}
 
 display:
   - platform: ili9xxx
@@ -967,11 +1038,9 @@ display:
     model: ${displaymodel}
     invert_colors: ${invertcolors}
     data_rate: 40MHz
-    cs_pin: 13
-    dc_pin: 10
-    reset_pin:
-      number: 18
-#      inverted: true
+    cs_pin: ${lcd_cs_pin}
+    dc_pin: ${lcd_dc_pin}
+    reset_pin: ${lcd_reset_pin}
     update_interval: never
     dimensions:
         height: ${imageheight}
