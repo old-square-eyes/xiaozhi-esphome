@@ -2,6 +2,8 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
+## v1.07 26-jul-2025 #############################################################################################################################
+## changed how to play startup sound to avoid double triggering
 ## v1.06 19-jul-2025 #############################################################################################################################
 ## Added: Startup sound when connected to HA, optional with switch, and option to select other sounds in settings below.
 ## Added: Mute and Playing icon to all emos.
@@ -125,15 +127,13 @@ psram:
 api:
   on_client_connected:
     - script.execute: draw_display
-    - if:
-        condition:
-          switch.is_on: startup_sound_switch
-        then:
-          - script.execute:
-              id: play_sound
-              priority: true
-              sound_file: !lambda return id(ready_sound);
-          - delay: 300ms
+    - lambda: |-
+        if (!id(boot_sound_played)) {
+          id(boot_sound_played) = true;
+          if (id(startup_sound_switch).state) {
+            id(play_sound)->execute(true, id(ready_sound));
+          }
+        }
   on_client_disconnected:
     - script.execute: draw_display
 
@@ -927,6 +927,10 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  - id: boot_sound_played
+    type: bool
+    restore_value: no
+    initial_value: "false"
 
 image:
   - file: ${error_illustration_file}
