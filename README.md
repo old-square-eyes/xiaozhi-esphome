@@ -69,8 +69,17 @@ Xingzhi Cube 1.54: https://www.aliexpress.com/item/1005008565082769.html
 
 Breadboard: Look in devices/Breadboard: https://github.com/RealDeco/xiaozhi-esphome/tree/main/devices/Breadboard
 
+## Accesories:
+
 3D file of "Eggvenger" figure used to hold the Ball in image above, use 115% for v2 since it's larger than v1.
 https://makerworld.com/en/models/1238732-eggvenger-superhero-egg-holder
+
+3D file for Wireless charger stand for the Guition JC3636W518 display
+https://makerworld.com/en/models/238543-wireless-charger-holder
+
+Wireless charger for the Guition JC3636W518 display: https://vi.aliexpress.com/item/1005005066837741.html
+
+Curled audio cable for Guition JC3636W518 display: https://vi.aliexpress.com/item/1005007061609551.html
 
 ---EOF
 
