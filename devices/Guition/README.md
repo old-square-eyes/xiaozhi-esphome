@@ -9,6 +9,7 @@ Currently, only one Guition Device is available:
 
 <div align="center">
   <img src="https://github.com/user-attachments/assets/709f60f4-6b1a-41c5-91c3-1d02119e5142" width="350" alt="Taichi Pi photo" />
+  <img src="https://github.com/user-attachments/assets/1f2c79c9-1963-415e-b43d-945bbc477cae" width="350" alt="Taichi Pi photo" />
 </div>
 
 ### Key Features
