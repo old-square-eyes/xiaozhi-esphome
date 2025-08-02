@@ -52,6 +52,7 @@ Video going through the esphome install of device was removed by youtube and my 
 * DIY (breadboard)
 * Guition 1.8" Taichi pi (JC3636W518C)
 * Xingzhi Cube 1.54
+* "Breadboard Mini", the $7 custom ESP32-S3 with everything onboard
 
 ## 🛒 Where to Buy
 
@@ -68,6 +69,8 @@ Guition Taichi pi: https://vi.aliexpress.com/item/1005007420092928.html
 Xingzhi Cube 1.54: https://www.aliexpress.com/item/1005008565082769.html
 
 Breadboard: Look in devices/Breadboard: https://github.com/RealDeco/xiaozhi-esphome/tree/main/devices/Breadboard
+
+Breadboard Mini: https://www.aliexpress.com/item/1005009448496585.html
 
 ## Accesories:
 
