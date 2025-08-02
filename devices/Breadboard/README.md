@@ -1,11 +1,11 @@
-o
 ## Speakerbox project
-![20250622_142135](https://github.com/user-attachments/assets/8d0e4a0f-259d-4263-8972-b5bf33dd5540)
-https://makerworld.com/en/models/1475284-a-i-speakerbox-for-xiaozhi-a-i-or-home-assistant
+<img src="https://github.com/user-attachments/assets/8d0e4a0f-259d-4263-8972-b5bf33dd5540" width="300"/>
+<img src="https://github.com/user-attachments/assets/bf9a101c-8dad-43c9-8e6b-879b4590aeab" width="300"/>
+<img src="https://github.com/user-attachments/assets/4b53fd31-12cd-4f52-b238-b3583c4aa970" width="300"/>
+
 
 ## DIY Breadboard Compatibility
 ---
-
 
 
 ESPHome / Home Assistant:
@@ -106,5 +106,13 @@ Button: https://www.aliexpress.com/item/1005006889252643.html
 
 Powercable: https://www.aliexpress.com/item/1005007569336813.html
 
+3D print file for "Speakerbox": https://makerworld.com/en/models/1475284-a-i-speakerbox-for-xiaozhi-a-i-or-home-assistant
+
+
 And of course a Breadboard if you are going that way :)
+
+
+Or the easy way, "Breadboard Mini", the $7 custom ESP32-S3 with everything onboard (speaker, mic, led) and a connector with pins for display and more. 
+https://www.aliexpress.com/item/1005009448496585.html
+
 ---
