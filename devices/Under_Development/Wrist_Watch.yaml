@@ -1003,3 +1003,15 @@ display:
           it.fill(Color::BLACK);
           it.printf((it.get_width()/2)-50, 180, id(font_response), Color::WHITE, "Mediaplayer is Playing...");
           // Optionally add icon/image here
+
+number:
+  - platform: template
+    name: "Screen Brightness"
+    id: screen_brightness
+    min_value: 0
+    max_value: 255
+    step: 1
+    initial_value: 200
+    set_action:
+      - lambda: |-
+          id(main_display).set_brightness((uint8_t)x);
