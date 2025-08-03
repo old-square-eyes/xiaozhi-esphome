@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-ac9df8
   friendly_name: Xiaozhi Watch
 
-### NOTICE! Under Development, but working without touch functionality ###
+### NOTICE! this is for the ESP32-S3-Touch-AMOLED-2.06 ###
 
 ## SETTINGS ######################################################################################################################################
 
