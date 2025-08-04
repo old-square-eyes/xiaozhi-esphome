@@ -7,7 +7,7 @@
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/958a2d99-5752-481b-be1e-d9ad797e6e33" alt="fam" width="250"/>
-  <img src="https://github.com/user-attachments/assets/9ead5897-414a-4885-b7c6-c6ae7bb8708e" alt="DIY" width="250"/>
+  <img src="https://github.com/user-attachments/assets/96f173cd-9d57-492d-906c-83f3ce603ff2" alt="DIY" width="250"/>
   <img src="https://github.com/user-attachments/assets/1f2c79c9-1963-415e-b43d-945bbc477cae" alt="DIY" width="250"/>
 </p>
 <p align="center">
