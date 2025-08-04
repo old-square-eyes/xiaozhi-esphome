@@ -53,7 +53,8 @@ Video going through the esphome install of device was removed by youtube and my 
 * Guition 1.8" Taichi pi (JC3636W518C)
 * Xingzhi Cube 1.54
 * "Breadboard Mini", the $7 custom ESP32-S3 with everything onboard
-
+* Waveshare 2.06" OLED Wrist Watch
+* 
 ## 🛒 Where to Buy
 
 Ball v1 & v2: https://vi.aliexpress.com/item/1005008627679270.html
@@ -71,6 +72,8 @@ Xingzhi Cube 1.54: https://www.aliexpress.com/item/1005008565082769.html
 Breadboard: Look in devices/Breadboard: https://github.com/RealDeco/xiaozhi-esphome/tree/main/devices/Breadboard
 
 Breadboard Mini: https://www.aliexpress.com/item/1005009448496585.html
+
+Waveshare 2.06" OLED Wrist Watch: https://vi.aliexpress.com/item/1005009516438849.html
 
 ## Accesories:
 
