@@ -1,7 +1,7 @@
 
 ## 🚧 Work-in-Progress Device Code
 
-Welcome! Here you'll find my **work-in-progress code** for all devices, organized into two main YAML files:
+Welcome! Here you'll find my **work-in-progress code** for all devices i currently work on:
 
 * **`v1.yaml`**
   For **Ball v1**, **DIY models** and **xingzhi-cube-1.54** (identical hardware).
@@ -14,6 +14,8 @@ Welcome! Here you'll find my **work-in-progress code** for all devices, organize
 
 * **`Wrist_Watch.yaml`**
   For Waveshare ESP32-S3-Touch-AMOLED-2.06 Watch.
+
+and more..
 
 ---
 
