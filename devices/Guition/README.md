@@ -7,9 +7,16 @@ Currently, only one Guition Device is available:
 
 **a.k.a. GUITION 1.8” 360x360 ESP32-S3 (JC3636W518)**
 
+It seems this display is also available in two "versions" V1 and V2 and many things have changed with hardware and pins used.
+
+I Only have V1 myself to test with, so thats the code you will find here for now. experimental V2 is in "Under Development".
+
+(image below for indentification)
+
 <div align="center">
   <img src="https://github.com/user-attachments/assets/709f60f4-6b1a-41c5-91c3-1d02119e5142" width="350" alt="Taichi Pi photo" />
   <img src="https://github.com/user-attachments/assets/1f2c79c9-1963-415e-b43d-945bbc477cae" width="350" alt="Taichi Pi photo" />
+  <img src="https://github.com/user-attachments/assets/a27cb006-72d2-4488-8219-5e16227eeb8f" width="350" alt="Taichi Pi photo" />
 </div>
 
 ### Key Features
