@@ -116,6 +116,16 @@ wifi:
 
 captive_portal:
 
+i2c:
+  - id: bus_a
+    sda: GPIO15
+    scl: GPIO14
+    scan: true
+
+pca9554:
+  - id: pca9554a_device
+    address: 0x34
+
 button:
   - platform: factory_reset
     id: factory_reset_btn
@@ -899,11 +909,6 @@ spi:
   type: quad
   clk_pin: 11
   data_pins: [4, 5, 6, 7]
-
-i2c:
-  sda: 15
-  scl: 14
-  id: bus_a
 
 touchscreen:
   - platform: cst816
