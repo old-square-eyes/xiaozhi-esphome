@@ -1,6 +1,6 @@
 substitutions:
   name: esphome-web-e9f624
-  friendly_name: Xiaozhi Taichi Pi
+  friendly_name: Xiaozhi Taichi Pi v1
 
 ## VERSION 1.01 dev. ##
 ## ADDED; clock when idle more than 30 seconds.
@@ -15,7 +15,8 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "HA-character" # options are:
+  imagemodel: "Gwen" # options are:
+
 ##################################################################################################################################################
 # Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, Harley, Jarvis, Luffy,
 # Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
@@ -31,6 +32,13 @@ substitutions:
   imageheight: "360"
   rotate_display: "180"
 
+## CUSTOM SETTINGS ###############################################################################################################################
+
+  clock_background_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/${imagewidth}x${imageheight}/clock.png
+
+## To use your own clock background, place it in /homeassistant/esphome/images/
+## Then change this path to "images/clock.png"
+
 ##################################################################################################################################################
 
   loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
@@ -42,7 +50,6 @@ substitutions:
   timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
   mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/mute.png
   playing_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/playing.png
-  clock_background_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/${imagewidth}x${imageheight}/clock.png
 
   startup_sound_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
@@ -1310,13 +1317,15 @@ display:
 
           const float PI = 3.1415926f;
 
-          // ---- Seconds ring: draw ONLY past seconds (0..sec), nothing ahead ----
+          // ---- Seconds ring: draw ONLY past seconds (0..sec), every 5th in white ----
           for (int i = 0; i <= sec; i++) {
             float angle = (i / 60.0f) * 2.0f * PI - PI/2.0f;  // start at 12 o'clock
             int x = cx + (int)(r_sec * cosf(angle));
             int y = cy + (int)(r_sec * sinf(angle));
             int rr = (i % 5 == 0) ? dot_r_sec_big : dot_r_sec_small;
-            it.filled_circle(x, y, rr, sec_active_col);
+
+            Color col = (i % 5 == 0) ? Color::WHITE : sec_active_col;
+            it.filled_circle(x, y, rr, col);
           }
 
           // ---- Minute dot (single larger dot on inner ring) ----
@@ -1339,4 +1348,3 @@ display:
           // ---- Center time & date ----
           it.strftime(cx, cy - 30, id(font_big_clock), Color::WHITE, TextAlign::CENTER, "%H:%M:%S", now);
           it.strftime(cx, cy + 30, id(font_big_date),  Color::WHITE, TextAlign::CENTER, "%a, %d %b", now);
-
