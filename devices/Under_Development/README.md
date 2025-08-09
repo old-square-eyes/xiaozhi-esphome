@@ -9,8 +9,11 @@ Welcome! Here you'll find my **work-in-progress code** for all devices i current
 * **`v2.yaml`**
   For **Ball v2**, **Puck v1 & v2**, and **Muma** (all covered here).
 
-* **`Taichi_Pi.yaml`**
-  For GUITION 1.8” 360x360 ESP32-S3-JC3636W518.
+* **`Taichi_Pi_V1.yaml`**
+  For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V1.
+
+* **`Taichi_Pi_V2.yaml`**
+  For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V2. **EXPERIMENTAL **
 
 * **`Wrist_Watch.yaml`**
   For Waveshare ESP32-S3-Touch-AMOLED-2.06 Watch.
