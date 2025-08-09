@@ -897,7 +897,7 @@ color:
 spi:
   id: display_qspi
   type: quad
-  clk_pin: 9
+  clk_pin: 11
   data_pins: [4, 5, 6, 7]
 
 i2c:
@@ -908,7 +908,7 @@ i2c:
 touchscreen:
   - platform: cst816
     id: my_touchscreen
-    interrupt_pin: GPIO41
+#   interrupt_pin: GPIO41
 #    reset_pin: GPIO40
 #    display: main_display
     i2c_id: bus_a
