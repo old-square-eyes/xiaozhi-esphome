@@ -203,6 +203,13 @@ i2s_audio:
     i2s_bclk_pin: GPIO9
     i2s_mclk_pin: GPIO16
 
+audio_dac:
+  - platform: es8311
+    i2c_id: bus_a 
+    id: es8311_dac
+    bits_per_sample: 16bit
+    sample_rate: 16000
+
 microphone:
   - platform: i2s_audio
     id: box_mic
@@ -896,7 +903,7 @@ spi:
 i2c:
   sda: 15
   scl: 14
-  id: touchscreen_bus
+  id: bus_a
 
 touchscreen:
   - platform: cst816
@@ -904,7 +911,7 @@ touchscreen:
     interrupt_pin: GPIO41
 #    reset_pin: GPIO40
 #    display: main_display
-    i2c_id: touchscreen_bus
+    i2c_id: bus_a
     on_touch:
       then:
         - binary_sensor.template.publish:
