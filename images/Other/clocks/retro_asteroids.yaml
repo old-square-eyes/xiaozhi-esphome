@@ -1,11 +1,10 @@
-interval:
-  - interval: 33ms
+esphome:
+  on_boot:
+    priority: 800
     then:
-      - if:
-          condition:
-            lambda: return id(show_clock);
-          then:
-            - component.update: main_display
+      - lambda: |-
+          // This clock needs fast redraws
+          id(clock_fast_refresh) = true;
 
 display:
   - id: !extend main_display
