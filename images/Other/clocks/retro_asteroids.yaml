@@ -21,49 +21,55 @@ display:
           const int cy = H / 2;
 
           // ====== ASTEROIDS VECTOR BACKDROP (classic wireframe) ======
-          // State persists across updates
           struct Ast {
-            float x, y, vx, vy;
-            float rot, vrot;
+            float x, y;       // position (px)
+            float vx, vy;     // velocity (px/s)
+            float rot, vrot;  // rotation (rad, rad/s)
             int   sides;
-            float r;         // base radius
-            uint32_t seed;   // tiny shape noise
+            float r;          // base radius
+            uint32_t seed;    // tiny shape noise
           };
           static bool ast_init = false;
           static const int AST_N = 6;
           static Ast ast[AST_N];
+          static uint32_t last_ms = 0;
 
           auto frand = [](uint32_t& s, float a, float b) -> float {
-            // simple LCG
-            s = s * 1664525UL + 1013904223UL;
+            s = s * 1664525UL + 1013904223UL;              // simple LCG
             return a + (float)(s & 0xFFFF) / 65535.0f * (b - a);
           };
 
+          uint32_t now_ms = millis();
           if (!ast_init) {
-            uint32_t s = 0xA57E01DUL; // any seed
+            uint32_t s = 0xA57E01DUL; // any seed (hex digits only)
             for (int i = 0; i < AST_N; i++) {
               ast[i].x = frand(s, 0, (float)W);
               ast[i].y = frand(s, 0, (float)H);
-              // gentle drift
-              ast[i].vx = frand(s, -0.35f, 0.35f);
-              ast[i].vy = frand(s, -0.35f, 0.35f);
+              // velocities in pixels per second (noticeably visible even at 1 fps)
+              ast[i].vx = frand(s, -14.0f, 14.0f);
+              ast[i].vy = frand(s, -14.0f, 14.0f);
               ast[i].rot  = frand(s, 0.0f, 6.28318f);
-              ast[i].vrot = frand(s, -0.02f, 0.02f);
+              ast[i].vrot = frand(s, -0.8f, 0.8f);     // rad/s
               ast[i].sides = (int)frand(s, 6.0f, 10.99f);
               ast[i].r = frand(s, 10.0f, 22.0f);
               ast[i].seed = s ^ (i * 92821u);
             }
             ast_init = true;
+            last_ms = now_ms;
           }
+
+          float dt = (now_ms - last_ms) / 1000.0f;  // seconds since last draw
+          if (dt < 0.0f || dt > 1.0f) dt = 0.033f;  // clamp silly gaps
+          last_ms = now_ms;
 
           // Update + draw
           for (int i = 0; i < AST_N; i++) {
-            // Integrate
-            ast[i].x += ast[i].vx;
-            ast[i].y += ast[i].vy;
-            ast[i].rot += ast[i].vrot;
+            // Integrate with time step
+            ast[i].x   += ast[i].vx * dt;
+            ast[i].y   += ast[i].vy * dt;
+            ast[i].rot += ast[i].vrot * dt;
 
-            // Wrap around screen
+            // Wrap around screen (with a small margin)
             if (ast[i].x < -30) ast[i].x = W + 29;
             if (ast[i].x > W + 30) ast[i].x = -29;
             if (ast[i].y < -30) ast[i].y = H + 29;
@@ -82,16 +88,10 @@ display:
               int x = (int)(ast[i].x + cosf(t) * rmod);
               int y = (int)(ast[i].y + sinf(t) * rmod);
 
-              if (k == 0) {
-                x0 = x; y0 = y;
-                xprev = x; yprev = y;
-              } else {
-                it.line(xprev, yprev, x, y, Color::WHITE);
-                xprev = x; yprev = y;
-              }
+              if (k == 0) { x0 = x; y0 = y; xprev = x; yprev = y; }
+              else { it.line(xprev, yprev, x, y, Color::WHITE); xprev = x; yprev = y; }
             }
-            // Close shape
-            it.line(xprev, yprev, x0, y0, Color::WHITE);
+            it.line(xprev, yprev, x0, y0, Color::WHITE); // close shape
           }
 
           // ===== CLOCK COLOR FROM HA COLOR WHEEL =====
@@ -101,7 +101,7 @@ display:
           if (rr == 0.0f && gg == 0.0f && bb == 0.0f) { rr = gg = bb = 1.0f; }
           Color clock_col((uint8_t)(rr * 255.0f), (uint8_t)(gg * 255.0f), (uint8_t)(bb * 255.0f));
 
-          // ===== SECONDS TICKS (if enabled) =====
+          // ===== SECONDS TICKS / DOTS / TIME / DATE =====
           const int margin = 8;
           const int r_outer = (std::min(W, H) / 2) - margin;
           const int r_sec = r_outer;
@@ -125,18 +125,15 @@ display:
           };
           Color sec_active_col = minute_palette[minute % 10];
           Color clock_yellow = Color(0xff,0xc1,0x07);
-
           const float PI = 3.1415926f;
 
           if (id(clock_show_dots).state) {
-            // Base white markers every 5 seconds
             for (int i = 0; i < 60; i += 5) {
               float ang = (i / 60.0f) * 2.0f * PI - PI/2.0f;
               int x = cx + (int)(r_sec * cosf(ang));
               int y = cy + (int)(r_sec * sinf(ang));
               it.filled_circle(x, y, dot_r_sec_big, Color::WHITE);
             }
-            // Elapsed seconds (skip 5s positions)
             for (int i = 0; i <= sec; i++) {
               if (i % 5 == 0) continue;
               float ang = (i / 60.0f) * 2.0f * PI - PI/2.0f;
@@ -146,15 +143,13 @@ display:
             }
           }
 
-          // Minute dot (yellow)
+          // Minute/Hour dots (yellow)
           {
             float m_angle = (minute / 60.0f) * 2.0f * PI - PI/2.0f;
             int mx = cx + (int)(r_min * cosf(m_angle));
             int my = cy + (int)(r_min * sinf(m_angle));
             it.filled_circle(mx, my, dot_r_min, clock_yellow);
           }
-
-          // Hour dot (yellow)
           {
             float h_pos = (hour12 + (minute / 60.0f)) / 12.0f;
             float h_angle = h_pos * 2.0f * PI - PI/2.0f;
@@ -166,30 +161,20 @@ display:
           // ===== TIME STRING =====
           char time_str[32];
           if (id(clock_24h).state) {
-            if (id(clock_show_seconds).state) {
-              snprintf(time_str, sizeof(time_str), "%02d:%02d:%02d", now.hour, minute, sec);
-            } else {
-              snprintf(time_str, sizeof(time_str), "%02d:%02d", now.hour, minute);
-            }
+            if (id(clock_show_seconds).state) snprintf(time_str, sizeof(time_str), "%02d:%02d:%02d", now.hour, minute, sec);
+            else                               snprintf(time_str, sizeof(time_str), "%02d:%02d",     now.hour, minute);
           } else {
             int h = now.hour % 12; if (h == 0) h = 12;
             const char* ampm = (now.hour < 12) ? "AM" : "PM";
-            if (id(clock_show_seconds).state) {
-              snprintf(time_str, sizeof(time_str), "%d:%02d:%02d%s", h, minute, sec, ampm);
-            } else {
-              snprintf(time_str, sizeof(time_str), "%d:%02d%s", h, minute, ampm);
-            }
+            if (id(clock_show_seconds).state) snprintf(time_str, sizeof(time_str), "%d:%02d:%02d%s", h, minute, sec, ampm);
+            else                               snprintf(time_str, sizeof(time_str), "%d:%02d%s",     h, minute, ampm);
           }
 
-          // If date is ON, shift clock up; if OFF, center
           int clock_y = id(clock_show_date).state ? (cy - 24) : cy;
           it.printf(cx, clock_y, id(font_big_clock_mono), clock_col, TextAlign::CENTER, "%s", time_str);
 
           // ===== DATE =====
           if (id(clock_show_date).state) {
-            if (id(clock_24h).state) {
-              it.strftime(cx, cy + 14, id(font_big_date), clock_col, TextAlign::CENTER, "%a, %d %b", now);
-            } else {
-              it.strftime(cx, cy + 14, id(font_big_date), clock_col, TextAlign::CENTER, "%a, %b %d", now);
-            }
+            if (id(clock_24h).state) it.strftime(cx, cy + 14, id(font_big_date), clock_col, TextAlign::CENTER, "%a, %d %b", now);
+            else                     it.strftime(cx, cy + 14, id(font_big_date), clock_col, TextAlign::CENTER, "%a, %b %d", now);
           }
