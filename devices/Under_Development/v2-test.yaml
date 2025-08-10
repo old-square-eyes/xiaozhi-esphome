@@ -23,11 +23,11 @@ substitutions:
 
 ## CUSTOM SETTINGS ###############################################################################################################################
 
-#  clock_background_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/${imagewidth}x${imageheight}/${clock_background_image}.png
-  clock_background_file: images/image.png
+  clock_background_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/${imagewidth}x${imageheight}/${clock_background_image}.png
 
 ## To use your own clock background, place it in /homeassistant/esphome/images/
 ## Then change this path to "images/clock.png"
+## example: clock_background_file: images/image.png
 
 ##################################################################################################################################################
 
