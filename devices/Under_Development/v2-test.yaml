@@ -1241,26 +1241,36 @@ display:
           it.fill(id(thinking_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_thinking), ImageAlign::CENTER);
           if (id(show_text).state) {
-            it.filled_rectangle(75 , 20 , 210 , 30 , Color::WHITE );
-            it.rectangle(75 , 20 , 210 , 30 , Color::BLACK );
-            it.printf(75, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
+            int box_width = 210;
+            int box_height = 30;
+            int x_pos = (it.get_width() - box_width) / 2;
+            int y_pos = 20;
+            it.filled_rectangle(x_pos, y_pos, box_width, box_height, Color::WHITE);
+            it.rectangle(x_pos, y_pos, box_width, box_height, Color::BLACK);
+            it.printf(x_pos + box_width / 2, y_pos + (box_height / 2), id(font_request), Color::BLACK, TextAlign::CENTER, "%s", id(text_request).state.c_str());
           }
           id(draw_timer_timeline).execute();
       - id: replying_page
         lambda: |-
           it.fill(id(replying_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_replying), ImageAlign::CENTER);
-          int y_offset = 190; // default for 240px display
-          if (it.get_height() == 320) {
-            y_offset = 270; // Move box lower for 320px tall screens
-          }
-          if (it.get_height() == 360) {
-            y_offset = 310; // Move box lower for 360px tall screens
+          int box_width = 210;
+          int box_height = 30;
+          int x_pos = (it.get_width() - box_width) / 2;
+          int y_offset;
+          if (it.get_height() <= 240) {
+            y_offset = 190;
+          } else if (it.get_height() <= 320) {
+            y_offset = 270;
+          } else if (it.get_height() <= 360) {
+            y_offset = 310;
+          } else {
+            y_offset = it.get_height() - box_height - 10;
           }
           if (id(show_text).state) {
-            it.filled_rectangle(75, y_offset, 210, 30, Color::WHITE);
-            it.rectangle(75, y_offset, 210, 30, Color::BLACK);
-            it.printf(75, y_offset + 5, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
+            it.filled_rectangle(x_pos, y_offset, box_width, box_height, Color::WHITE);
+            it.rectangle(x_pos, y_offset, box_width, box_height, Color::BLACK);
+            it.printf(x_pos + box_width / 2, y_offset + (box_height / 2), id(font_response), Color::BLACK, TextAlign::CENTER, "%s", id(text_response).state.c_str());
           }
           id(draw_timer_timeline).execute();
       - id: timer_finished_page
