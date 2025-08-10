@@ -1,3 +1,12 @@
+interval:
+  - interval: 33ms
+    then:
+      - if:
+          condition:
+            lambda: return id(show_clock);
+          then:
+            - component.update: main_display
+
 display:
   - id: !extend main_display
     pages:
