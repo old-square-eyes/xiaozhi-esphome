@@ -7,7 +7,10 @@ Welcome! Here you'll find my **work-in-progress code** for all devices i current
   For **Ball v1**, **DIY models** and **xingzhi-cube-1.54** (identical hardware).
 
 * **`v2.yaml`**
-  For **Ball v2**, **Puck v1 & v2**, and **Muma** (all covered here).
+  For **Ball v2**, **Puck v1 & v2**, and all **Muma**.
+
+* **`v2-test.yaml`**
+  Up for testing. For **Ball v2**, **Puck v1 & v2**, and all **Muma**.
 
 * **`Taichi_Pi_V1.yaml`**
   For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V1.
