@@ -3,244 +3,352 @@ display:
     pages:
       - id: clock_page
         lambda: |-
-          // ==== Lively Robo Eyes — low CPU, compile-safe ====
-          const uint32_t FRAME_MS_FAST = 120;   // faster while moving
-          const uint32_t FRAME_MS_IDLE = 300;   // chill when idle
+          // ==== Real-ish Robo Eyes — scanline renderer (no artifacts) ====
 
-          // Geometry
+          // --- Geometry ---
           const int W = it.get_width();
           const int H = it.get_height();
-          const int cx = W / 2;
-          const int cy = H / 2;
-          const int eye_gap = std::max(22, W / 8);
+          const int cx = W/2, cy = H/2;
+          const int eye_gap = std::max(22, W/8);
           const int R = std::min(W, H) / 6;
-          const int base_lx = cx - eye_gap;
-          const int base_rx = cx + eye_gap;
-          const int base_ey = cy;
+          const int base_lx = cx - eye_gap, base_rx = cx + eye_gap, base_ey = cy;
 
-          // Helpers (each self-contained)
-          auto lcg = [](uint32_t &s)->uint32_t { s = s * 1664525u + 1013904223u; return s; };
-          auto frand = [&](uint32_t &s, float a, float b)->float { return a + (float)(lcg(s) & 0xFFFF) / 65535.0f * (b - a); };
-          auto clampf = [](float v, float a, float b)->float { return v < a ? a : (v > b ? b : v); };
-          auto lerp = [](float a, float b, float t)->float { return a + (b - a) * t; };
-          auto tri01 = [](uint32_t t, uint32_t period)->float { uint32_t x=t%period; float f=(float)x/(float)period; return (x<period/2)?(2.0f*f):(2.0f-2.0f*f); };
-          auto ease_inout = [](float t)->float { return (t<0.5f) ? (2.0f*t*t) : (1.0f - powf(-2.0f*t+2.0f,2.0f)/2.0f); };
+          // --- helpers ---
+          auto clamp01 = [](float t){ return t < 0.0f ? 0.0f : (t > 1.0f ? 1.0f : t); };
+          auto clampf  = [](float v, float a, float b){ return v < a ? a : (v > b ? b : v); };
+          auto lerp    = [](float a, float b, float t){ return a + (b - a) * t; };
+          auto tri01   = [](uint32_t t, uint32_t period)->float { uint32_t x=t%period; float f=(float)x/(float)period; return (x<period/2)?(2.0f*f):(2.0f-2.0f*f); };
+          auto lcg     = [](uint32_t &s)->uint32_t { s = s*1664525u + 1013904223u; return s; };
+          auto frand   = [&](uint32_t &s, float a, float b)->float { return a + (float)(lcg(s)&0xFFFF)/65535.0f * (b-a); };
 
-          // State
-          enum Mode { SLEEPY, WAKE, IDLE, BLINK, LOOK, SQUINT, SURPRISED };
-          struct EyesState {
+          // --- behaviours ---
+          enum Mode { IDLE, BLINK, WINK_L, WINK_R, LOOK, SQUINT_SUS, SURPRISED, HEAD_TILT, SIDE_EYE };
+          enum SusPhase { SUS_L_DART=0, SUS_L_PAUSE=1, SUS_R_DART=2, SUS_R_PAUSE=3, SUS_RELAX=4 };
+
+          struct S {
             bool init;
-            uint32_t rng;
-            uint32_t last_ms;
-            uint32_t next_ms;      // self-throttle
+            uint32_t rng, last_ms;
             Mode mode;
             float t, dur;
-            float open;            // eyelid 0..1
-            float px, py;          // look dir -1..1
-            float tx, ty;          // target look
-            // prev for dirty-erase / early-out
-            int prev_lx, prev_rx, prev_ey;
-            int prev_open_px;
-            int prev_ix_l, prev_iy_l, prev_ix_r, prev_iy_r;
-            int prev_led_g;
-            bool bg_clear;
+            float open_l, open_r;      // 0..1
+            float px, py;              // gaze -1..1
+            float tx, ty;
+            int   repeat_blinks;
+            // suspicious scan
+            int   sus_phase;           // SusPhase
+            float sus_timer;
+            float sus_dur[5];
+            // head tilt
+            float tilt, tilt_target;   // -1..+1
+            // pupil dilation 0..1
+            float pupil, pupil_target;
           };
-          static EyesState s;
-          uint32_t now_ms = millis();
+          static S s;
+          uint32_t now = millis();
 
           if (!s.init) {
-            s.init = true;
-            s.rng = 0xC0FFEEu ^ now_ms;
-            s.last_ms = now_ms;
-            s.next_ms = 0;
-            s.mode = SLEEPY;
-            s.t = 0.0f; s.dur = 2.4f;
-            s.open = 0.08f;
-            s.px = s.py = 0.0f;
-            s.tx = s.ty = 0.0f;
-            s.prev_lx = s.prev_rx = s.prev_ey = -9999;
-            s.prev_open_px = -1;
-            s.prev_ix_l = s.prev_iy_l = s.prev_ix_r = s.prev_iy_r = -9999;
-            s.prev_led_g = -1;
-            s.bg_clear = false;
+            s.init   = true;
+            s.rng    = 0xE1E5C0DEu ^ now;   // valid hex seed
+            s.last_ms= now;
+            s.mode   = IDLE;
+            s.t      = 0.0f; s.dur = frand(s.rng,1.5f,3.0f);
+            s.open_l = s.open_r = 0.95f;
+            s.px = s.py = s.tx = s.ty = 0.0f;
+            s.repeat_blinks = 0;
+            s.sus_phase = SUS_RELAX; s.sus_timer = 0.0f; for(int i=0;i<5;i++) s.sus_dur[i]=0.0f;
+            s.tilt = 0.0f; s.tilt_target = 0.0f;
+            s.pupil = 0.50f; s.pupil_target = 0.50f;
           }
 
-          // page-level throttle
-          if (now_ms < s.next_ms) return;
-
-          // clear once (no full-screen clears every frame)
-          if (!s.bg_clear) {
-            it.fill(Color::BLACK);
-            s.bg_clear = true;
-          }
-
-          // fixed logical step so it looks smooth even at 300ms
-          float dt = (now_ms - s.last_ms) / 1000.0f;
-          if (dt < 0.0f || dt > 0.7f) dt = 0.2f;
-          s.last_ms = now_ms;
+          // fixed step (~0.2s) so it looks smooth even at low refresh
+          float rt = (now - s.last_ms) / 1000.0f;
+          if (rt < 0.0f || rt > 0.7f) rt = 0.2f;
+          s.last_ms = now;
           s.t += 0.2f;
 
-          // transitions
-          auto goto_mode = [&](Mode m, float duration){ s.mode = m; s.t = 0.0f; s.dur = duration; };
-          auto pick_idle_action = [&](){
+          auto goto_mode = [&](Mode m, float d){
+            s.mode = m; s.t = 0.0f; s.dur = d;
+            if (m == SQUINT_SUS) {
+              s.sus_phase = SUS_L_DART; s.sus_timer = 0.0f;
+              s.sus_dur[SUS_L_DART]  = frand(s.rng, 0.10f, 0.16f);
+              s.sus_dur[SUS_L_PAUSE] = frand(s.rng, 0.10f, 0.16f);
+              s.sus_dur[SUS_R_DART]  = frand(s.rng, 0.10f, 0.16f);
+              s.sus_dur[SUS_R_PAUSE] = frand(s.rng, 0.10f, 0.16f);
+              s.sus_dur[SUS_RELAX]   = frand(s.rng, 0.40f, 0.65f);
+              s.pupil_target = 0.25f;
+            }
+            if (m == SURPRISED) s.pupil_target = 1.0f;
+            if (m == HEAD_TILT) s.tilt_target  = (frand(s.rng,0.0f,1.0f)<0.5f)?-1.0f:+1.0f;
+          };
+
+          auto pick_idle = [&](){
+            s.pupil_target = 0.45f + 0.15f * tri01(now, 7000);
             float r = frand(s.rng, 0.0f, 1.0f);
-            if      (r < 0.25f) goto_mode(BLINK, frand(s.rng, 0.18f, 0.28f));
-            else if (r < 0.65f) { s.tx = frand(s.rng,-0.8f,0.8f); s.ty = frand(s.rng,-0.6f,0.6f); goto_mode(LOOK, frand(s.rng,0.5f,1.2f)); }
-            else if (r < 0.85f) goto_mode(SQUINT, frand(s.rng, 0.6f, 1.0f));
+            if      (r < 0.16f) { s.repeat_blinks = (frand(s.rng,0.0f,1.0f)<0.12f)?1:0; goto_mode(BLINK, frand(s.rng, 0.16f, 0.28f)); }
+            else if (r < 0.26f) goto_mode(WINK_L,     frand(s.rng, 0.46f, 0.72f)); // slow wink + hold
+            else if (r < 0.36f) goto_mode(WINK_R,     frand(s.rng, 0.46f, 0.72f));
+            else if (r < 0.68f) { s.tx = frand(s.rng,-0.85f,0.85f); s.ty = frand(s.rng,-0.55f,0.35f); goto_mode(LOOK, frand(s.rng,0.6f,1.2f)); }
+            else if (r < 0.78f) goto_mode(SIDE_EYE,   frand(s.rng, 0.7f, 1.2f));
+            else if (r < 0.88f) goto_mode(HEAD_TILT,  frand(s.rng, 0.8f, 1.4f));
+            else if (r < 0.96f) goto_mode(SQUINT_SUS, frand(s.rng, 1.1f, 1.7f));
             else                 goto_mode(SURPRISED, frand(s.rng, 0.5f, 0.9f));
           };
 
-          // per-mode logic (kept close to your original; SLEEPY uses cheap tri wave)
+          // behaviour
           switch (s.mode) {
-            case SLEEPY: {
-              float phase = 0.07f + 0.05f * tri01(now_ms, 4000); // cheaper than sinf
-              s.open = clampf(phase, 0.0f, 0.12f);
-              s.px = lerp(s.px, 0.0f, 0.02f);
-              s.py = lerp(s.py, 0.2f, 0.02f);
-              if (s.t > s.dur) goto_mode(WAKE, 0.8f);
-            } break;
-
-            case WAKE: {
-              float k = ease_inout(clampf(s.t / s.dur, 0.0f, 1.0f));
-              s.open = lerp(0.08f, 1.0f, k);
-              s.px = lerp(s.px, 0.0f, 0.08f);
-              s.py = lerp(s.py, 0.0f, 0.08f);
-              if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng, 1.5f, 3.0f));
-            } break;
-
             case IDLE: {
-              s.open = lerp(s.open, 0.95f, 0.02f);
-              s.tx += frand(s.rng, -0.02f, 0.02f);
-              s.ty += frand(s.rng, -0.02f, 0.02f);
-              s.tx = clampf(s.tx, -0.35f, 0.35f);
-              s.ty = clampf(s.ty, -0.25f, 0.25f);
-              s.px = lerp(s.px, s.tx, 0.05f);
-              s.py = lerp(s.py, s.ty, 0.05f);
-              if (s.t >= s.dur) pick_idle_action();
+              float breathe = 0.02f * tri01(now, 6000);
+              float o = clampf(0.93f + breathe, 0.86f, 0.98f);
+              s.open_l = lerp(s.open_l, o, 0.10f);
+              s.open_r = lerp(s.open_r, o, 0.10f);
+              s.tx = clampf(s.tx + frand(s.rng,-0.05f,0.05f), -0.35f, 0.35f);
+              s.ty = clampf(s.ty + frand(s.rng,-0.04f,0.04f), -0.25f, 0.25f);
+              s.px = lerp(s.px, s.tx, 0.25f);
+              s.py = lerp(s.py, s.ty, 0.25f);
+              s.tilt = lerp(s.tilt, 0.0f, 0.08f);
+              if (s.t >= s.dur) pick_idle();
             } break;
 
             case BLINK: {
               float k = s.t / s.dur;
-              s.open = (k < 0.5f) ? lerp(1.0f, 0.0f, k*2.0f) : lerp(0.0f, 1.0f, (k-0.5f)*2.0f);
-              if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng, 1.0f, 2.2f));
+              float o = (k < 0.5f) ? (1.0f - k*2.0f) : ((k-0.5f)*2.0f);
+              s.open_l = s.open_r = clamp01(o);
+              if (s.t >= s.dur) {
+                if (s.repeat_blinks > 0) { s.repeat_blinks--; goto_mode(BLINK, frand(s.rng,0.12f,0.20f)); }
+                else goto_mode(IDLE, frand(s.rng, 1.2f, 2.5f));
+              }
+            } break;
+
+            case WINK_L: {
+              float k = s.t / s.dur; float o;
+              if      (k < 0.40f) o = 1.0f - (k/0.40f);   // close
+              else if (k < 0.60f) o = 0.05f;             // hold
+              else                o = (k-0.60f)/0.40f;   // open
+              s.open_l = clamp01(o);
+              s.open_r = lerp(s.open_r, 0.98f, 0.18f);
+              s.tilt   = lerp(s.tilt, +0.25f, 0.10f);
+              if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
+            } break;
+
+            case WINK_R: {
+              float k = s.t / s.dur; float o;
+              if      (k < 0.40f) o = 1.0f - (k/0.40f);
+              else if (k < 0.60f) o = 0.05f;
+              else                o = (k-0.60f)/0.40f;
+              s.open_r = clamp01(o);
+              s.open_l = lerp(s.open_l, 0.98f, 0.18f);
+              s.tilt   = lerp(s.tilt, -0.25f, 0.10f);
+              if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
             } break;
 
             case LOOK: {
-              s.open = lerp(s.open, 0.95f, 0.05f);
-              s.px = lerp(s.px, s.tx, 0.10f);
-              s.py = lerp(s.py, s.ty, 0.10f);
-              if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng, 1.0f, 2.0f));
+              s.open_l = lerp(s.open_l, 0.95f, 0.25f);
+              s.open_r = lerp(s.open_r, 0.95f, 0.25f);
+              s.px = lerp(s.px, s.tx, 0.55f);
+              s.py = lerp(s.py, s.ty, 0.50f);
+              s.tilt = lerp(s.tilt, 0.0f, 0.15f);
+              if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
             } break;
 
-            case SQUINT: {
-              float k = 0.5f - 0.5f*cosf(clampf(s.t / s.dur, 0.0f, 1.0f) * 3.14159f);
-              float target = lerp(0.55f, 0.25f, (k<0.5f) ? (k*2.0f) : (1.0f - (k-0.5f)*2.0f));
-              s.open = lerp(s.open, target, 0.35f);
-              s.px = lerp(s.px, 0.0f, 0.08f);
-              s.py = lerp(s.py, 0.0f, 0.08f);
-              if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng, 1.0f, 2.0f));
+            case SIDE_EYE: {
+              float dir = (frand(s.rng,0.0f,1.0f)<0.5f) ? -1.0f : +1.0f;
+              if (s.t == 0.0f) { s.tx = 0.70f * dir; s.ty = frand(s.rng,-0.10f,0.08f); }
+              s.open_l = lerp(s.open_l, 0.98f, 0.15f);
+              s.open_r = lerp(s.open_r, 0.98f, 0.15f);
+              s.px = lerp(s.px, s.tx, 0.45f);
+              s.py = lerp(s.py, s.ty, 0.35f);
+              s.tilt = lerp(s.tilt, 0.0f, 0.12f);
+              if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.2f));
+            } break;
+
+            case SQUINT_SUS: {
+              // quick LEFT -> pause -> quick RIGHT -> pause -> relax
+              float k = clamp01(s.t / s.dur);
+              float sq = lerp(0.50f, 0.28f, (k<0.5f)?(k*2.0f):(1.0f-(k-0.5f)*2.0f));
+              s.open_l = lerp(s.open_l, sq, 0.60f);
+              s.open_r = lerp(s.open_r, sq, 0.60f);
+
+              s.sus_timer += 0.2f;
+              auto adv = [&](){ s.sus_timer = 0.0f; s.sus_phase++; if (s.sus_phase > SUS_RELAX) s.sus_phase = SUS_RELAX; };
+
+              switch (s.sus_phase) {
+                case SUS_L_DART:
+                  s.tx = -0.85f; s.ty = frand(s.rng,-0.08f,0.08f);
+                  s.px = lerp(s.px, s.tx, 0.75f);
+                  s.py = lerp(s.py, s.ty, 0.55f);
+                  if (s.sus_timer >= s.sus_dur[SUS_L_DART]) adv();
+                  break;
+                case SUS_L_PAUSE:
+                  s.tx = -0.85f; s.ty = lerp(s.ty, 0.0f, 0.10f);
+                  s.px = lerp(s.px, s.tx, 0.18f);
+                  s.py = lerp(s.py, s.ty, 0.18f);
+                  if (s.sus_timer >= s.sus_dur[SUS_L_PAUSE]) adv();
+                  break;
+                case SUS_R_DART:
+                  s.tx = +0.85f; s.ty = frand(s.rng,-0.08f,0.08f);
+                  s.px = lerp(s.px, s.tx, 0.75f);
+                  s.py = lerp(s.py, s.ty, 0.55f);
+                  if (s.sus_timer >= s.sus_dur[SUS_R_DART]) adv();
+                  break;
+                case SUS_R_PAUSE:
+                  s.tx = +0.85f; s.ty = lerp(s.ty, 0.0f, 0.10f);
+                  s.px = lerp(s.px, s.tx, 0.18f);
+                  s.py = lerp(s.py, s.ty, 0.18f);
+                  if (s.sus_timer >= s.sus_dur[SUS_R_PAUSE]) adv();
+                  break;
+                case SUS_RELAX:
+                default:
+                  s.tx = 0.0f; s.ty = 0.0f;
+                  s.px = lerp(s.px, 0.0f, 0.40f);
+                  s.py = lerp(s.py, 0.0f, 0.35f);
+                  s.open_l = lerp(s.open_l, 0.95f, 0.20f);
+                  s.open_r = lerp(s.open_r, 0.95f, 0.20f);
+                  if (s.sus_timer >= s.sus_dur[SUS_RELAX]) { s.pupil_target = 0.50f; goto_mode(IDLE, frand(s.rng,1.0f,2.0f)); }
+                  break;
+              }
+              s.tilt = lerp(s.tilt, 0.0f, 0.15f);
             } break;
 
             case SURPRISED: {
-              s.open = lerp(s.open, 1.0f, 0.25f);
-              s.px = lerp(s.px, frand(s.rng, -0.15f, 0.15f), 0.08f);
-              s.py = lerp(s.py, frand(s.rng, -0.05f, 0.0f),  0.08f);
-              if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng, 1.0f, 2.0f));
+              s.open_l = lerp(s.open_l, 1.0f, 0.5f);
+              s.open_r = lerp(s.open_r, 1.0f, 0.5f);
+              s.px = lerp(s.px, frand(s.rng,-0.12f,0.12f), 0.40f);
+              s.py = lerp(s.py, frand(s.rng,-0.04f,0.02f),  0.35f);
+              s.tilt = lerp(s.tilt, 0.0f, 0.20f);
+              if (s.t >= s.dur) { s.pupil_target = 0.50f; goto_mode(IDLE, frand(s.rng,1.0f,2.0f)); }
+            } break;
+
+            case HEAD_TILT: {
+              float tri = (s.t < s.dur*0.5f) ? (s.t/(s.dur*0.5f)) : (1.0f - (s.t - s.dur*0.5f)/(s.dur*0.5f));
+              tri = clamp01(tri);
+              float target = s.tilt_target * tri;
+              s.tilt = lerp(s.tilt, target, 0.35f);
+              s.tx = clampf(s.tx + frand(s.rng,-0.04f,0.04f), -0.35f, 0.35f);
+              s.ty = clampf(s.ty + frand(s.rng,-0.03f,0.03f), -0.25f, 0.25f);
+              s.px = lerp(s.px, s.tx, 0.22f);
+              s.py = lerp(s.py, s.ty, 0.22f);
+              if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
             } break;
           }
 
-          // positions
-          float eye_shift_x = R * 0.20f;
-          float eye_shift_y = R * 0.12f;
-          int lx = base_lx + (int)(s.px * eye_shift_x);
-          int rx = base_rx + (int)(s.px * eye_shift_x);
-          int ey = base_ey + (int)(s.py * eye_shift_y);
+          // pupil to target
+          s.pupil = lerp(s.pupil, s.pupil_target, 0.08f);
 
-          // openness and pupils
-          int open_px = (int)(R * clampf(s.open, 0.0f, 1.0f));
-          float max_off = R * 0.38f * (s.open); // constrain by eyelids
-          // tiny jitter to feel alive
+          // --- frame ---
+          it.fill(Color::BLACK);
+
+          // eye centers with tilt & drift
+          int tilt_px = (int)(s.tilt * R * 0.22f);
+          int drift_x = (int)(R * 0.20f * s.px);
+          int drift_y = (int)(R * 0.12f * s.py);
+
+          int lx = base_lx + drift_x;
+          int rx = base_rx + drift_x;
+          int ly = base_ey + drift_y - tilt_px;  // left up
+          int ry = base_ey + drift_y + tilt_px;  // right down
+
+          // dynamic midline to avoid cross-draw
+          int midx = (lx + rx) / 2;
+
+          auto open_to_px = [&](float o)->int {
+            int v = (int)(R * clamp01(o) + 0.5f);
+            if (v < 0) v = 0; if (v > R) v = R;
+            return v;
+          };
+          int open_px_l = open_to_px(s.open_l);
+          int open_px_r = open_to_px(s.open_r);
+
+          // micro-saccades
           float jx = 0.0f, jy = 0.0f;
           if (s.mode == IDLE || s.mode == LOOK || s.mode == SURPRISED) {
             jx = frand(s.rng, -0.03f, 0.03f);
             jy = frand(s.rng, -0.03f, 0.03f);
           }
+          float max_off = R * 0.38f * ((s.open_l + s.open_r)*0.5f);
           int ix_l = lx + (int)(clampf(s.px + jx, -1.0f, 1.0f) * max_off);
-          int iy_l = ey + (int)(clampf(s.py + jy, -1.0f, 1.0f) * max_off);
+          int iy_l = ly + (int)(clampf(s.py + jy, -1.0f, 1.0f) * max_off);
           int ix_r = rx + (int)(clampf(s.px + jx, -1.0f, 1.0f) * max_off);
-          int iy_r = ey + (int)(clampf(s.py + jy, -1.0f, 1.0f) * max_off);
+          int iy_r = ry + (int)(clampf(s.py + jy, -1.0f, 1.0f) * max_off);
 
-          // center LED (triangle wave, cheap)
-          float beat = 0.35f + 0.65f * tri01(now_ms, 1600);
-          int led_g = (int)(100 + 120 * beat);
-          int led_r = std::max(2, R / 6);
-          int led_x = cx, led_y = ey + R + 8;
+          // scanline eye renderer: each row is clipped to the circle and midline
+          auto draw_eye = [&](int ex, int eyc, int open_px, int ix, int iy, bool is_left){
+            const Color WHITE = Color::WHITE;
+            const Color IRIS  = Color(0x80,0xc8,0xff);
+            const Color IOUT  = Color(0x30,0x70,0xa0);
+            const Color BLACK = Color::BLACK;
 
-          // early-out if nothing changed (incl LED)
-          if (lx == s.prev_lx && rx == s.prev_rx && ey == s.prev_ey &&
-              open_px == s.prev_open_px &&
-              ix_l == s.prev_ix_l && iy_l == s.prev_iy_l &&
-              ix_r == s.prev_ix_r && iy_r == s.prev_iy_r &&
-              led_g == s.prev_led_g) {
-            s.next_ms = now_ms + FRAME_MS_IDLE;
-            return;
-          }
+            int iris_r  = std::max(2, (int)(R * 0.46f));
+            int pupil_r = std::max(1, (int)(R * (0.16f + 0.10f * clamp01(s.pupil))));
 
-          // erase previous eye boxes and LED box (dirty rectangles)
-          auto erase_eye_box = [&](int ex, int eyc){
-            int box = (R + 2);
-            it.filled_rectangle(ex - box, eyc - box, box*2, box*2, Color::BLACK);
-          };
-          if (s.prev_lx != -9999) {
-            erase_eye_box(s.prev_lx, s.prev_ey);
-            erase_eye_box(s.prev_rx, s.prev_ey);
-            int lbox = led_r + 2;
-            it.filled_rectangle(led_x - lbox, (s.prev_ey + R + 8) - lbox, lbox*2, lbox*2, Color::BLACK);
-          }
+            int y0 = std::max(eyc - R, 0);
+            int y1 = std::min(eyc + R, H - 1);
 
-          // draw eyes (reduced draw calls)
-          auto draw_eye = [&](int ex, int eyc, int radius, int open_px, int ix, int iy) {
-            // sclera
-            it.filled_circle(ex, eyc, radius, Color::WHITE);
+            for (int y = y0; y <= y1; ++y) {
+              int dy = y - eyc;
+              int sq = R*R - dy*dy;
+              if (sq < 0) continue;
+              int dx = (int)floorf(sqrtf((float)sq));
+              int xl = ex - dx;
+              int xr = ex + dx;
 
-            // eyelids mask
-            int cover = radius - open_px;
-            if (cover > 0) {
-              it.filled_rectangle(ex - radius - 1, eyc - radius - 1, radius*2 + 2, cover + 1, Color::BLACK);
-              it.filled_rectangle(ex - radius - 1, eyc + open_px,     radius*2 + 2, radius - open_px + 1, Color::BLACK);
+              // clip to midline to prevent eye overlap
+              if (is_left)  xr = std::min(xr, midx - 1);
+              else          xl = std::max(xl, midx);
+
+              if (xl > xr) continue;
+
+              // 1) base sclera band
+              it.filled_rectangle(xl, y, xr - xl + 1, 1, WHITE);
+
+              // 2) eyelids: black outside open band (curved chords)
+              if (y < eyc - open_px || y > eyc + open_px) {
+                it.filled_rectangle(xl, y, xr - xl + 1, 1, BLACK);
+                continue;
+              }
+
+              // 3) iris band (clipped)
+              int diy = y - iy;
+              int iris_sq = iris_r*iris_r - diy*diy;
+              if (iris_sq > 0) {
+                int dix = (int)floorf(sqrtf((float)iris_sq));
+                int il = std::max(ix - dix, xl);
+                int ir = std::min(ix + dix, xr);
+                if (il <= ir) it.filled_rectangle(il, y, ir - il + 1, 1, IRIS);
+              }
+
+              // 4) pupil band (clipped)
+              int dpy = y - iy;
+              int pupil_sq = pupil_r*pupil_r - dpy*dpy;
+              if (pupil_sq > 0) {
+                int dpx = (int)floorf(sqrtf((float)pupil_sq));
+                int pl = std::max(ix - dpx, xl);
+                int pr = std::min(ix + dpx, xr);
+                if (pl <= pr) it.filled_rectangle(pl, y, pr - pl + 1, 1, BLACK);
+              }
+
+              // 5) iris outline hint (1px) — optional
+              if (abs(diy) == iris_r) {
+                int ixl = std::max(ix - 1, xl);
+                int ixr = std::min(ix + 1, xr);
+                if (ixl <= ixr) it.filled_rectangle(ixl, y, ixr - ixl + 1, 1, IOUT);
+              }
+
+              // 6) specular highlight
+              if ((y == iy - pupil_r) || (y == iy - pupil_r + 1)) {
+                int hx0 = ix - pupil_r/2;
+                int hx1 = hx0 + 1;
+                if (hx0 < xl) hx0 = xl;
+                if (hx1 > xr) hx1 = xr;
+                if (hx0 <= hx1) it.filled_rectangle(hx0, y, hx1 - hx0 + 1, 1, WHITE);
+              }
             }
-
-            // iris + pupil
-            int iris_r  = std::max(2, (int)(radius * 0.46f));
-            int pupil_r = std::max(1, (int)(radius * 0.18f));
-            Color iris_in(0x80,0xc8,0xff), iris_outline(0x30,0x70,0xa0);
-            it.filled_circle(ix, iy, iris_r, iris_in);
-            it.circle(ix, iy, iris_r, iris_outline);
-
-            // simple 4 spokes (no trig)
-            it.line(ix, iy, ix + (iris_r-2), iy, iris_outline);
-            it.line(ix, iy, ix - (iris_r-2), iy, iris_outline);
-            it.line(ix, iy, ix, iy + (iris_r-2), iris_outline);
-            it.line(ix, iy, ix, iy - (iris_r-2), iris_outline);
-
-            it.filled_circle(ix, iy, pupil_r, Color::BLACK);
-            it.filled_circle(ix - pupil_r/2, iy - pupil_r, std::max(1, pupil_r/3), Color::WHITE);
-
-            // single rim (lighter than triple)
-            Color rim(0x90,0x90,0x90);
-            it.circle(ex, eyc, radius, rim);
           };
 
-          draw_eye(lx, ey, R, open_px, ix_l, iy_l);
-          draw_eye(rx, ey, R, open_px, ix_r, iy_r);
+          // draw eyes (no overlap due to midline clip)
+          draw_eye(lx, ly, open_px_l, ix_l, iy_l, true);
+          draw_eye(rx, ry, open_px_r, ix_r, iy_r, false);
 
-          // LED
-          it.filled_circle(led_x, led_y, led_r, Color((uint8_t)30, (uint8_t)led_g, (uint8_t)255));
-
-          // save + adaptive cadence
-          bool moving = (s.mode != IDLE);
-          s.prev_lx = lx; s.prev_rx = rx; s.prev_ey = ey;
-          s.prev_open_px = open_px;
-          s.prev_ix_l = ix_l; s.prev_iy_l = iy_l; s.prev_ix_r = ix_r; s.prev_iy_r = iy_r;
-          s.prev_led_g = led_g;
-          s.next_ms = now_ms + (moving ? FRAME_MS_FAST : FRAME_MS_IDLE);
+          // small center LED pulse
+          int led_r = std::max(2, R / 6);
+          float led_b = 0.35f + 0.65f * tri01(now, 1600);
+          it.filled_circle(cx, std::max(ly,ry) + R + 8, led_r, Color((uint8_t)30, (uint8_t)(100 + 120*led_b), (uint8_t)255));
