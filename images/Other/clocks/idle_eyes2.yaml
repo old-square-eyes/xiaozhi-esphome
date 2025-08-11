@@ -14,20 +14,24 @@ display:
           const int R = std::min(W, H) / 6;
           const int base_lx = cx - eye_gap, base_rx = cx + eye_gap, base_ey = cy;
 
-          // ---- Helpers (self-contained; no captures) ----
-          auto clamp01 = [](float t){ return (t < 0.0f) ? 0.0f : (t > 1.0f ? 1.0f : t); };
-          auto clampf  = [](float v, float a, float b){ return v < a ? a : (v > b ? b : v); };
-          auto lerp    = [](float a, float b, float t){ return a + (b - a) * t; };
-          auto smooth  = [&](float t){ t = clamp01(t); return t*t*(3.0f - 2.0f*t); }; // smoothstep
-          auto tri01   = [](uint32_t t, uint32_t period)->float {
+          // ---- Helpers (each self-contained; no cross-lambda refs) ----
+          auto clampf  = [](float v, float a, float b)->float { return v < a ? a : (v > b ? b : v); };
+          auto lerp    = [](float a, float b, float t)->float { return a + (b - a) * t; };
+          auto ease    = [](float t)->float {                // smoothstep 0..1
+            if (t < 0.0f) t = 0.0f; else if (t > 1.0f) t = 1.0f;
+            return t*t*(3.0f - 2.0f*t);
+          };
+          auto tri01   = [](uint32_t t, uint32_t period)->float {  // 0..1 triangle wave
             uint32_t x = t % period; float f = (float)x/(float)period;
             return (x < period/2) ? (2.0f*f) : (2.0f - 2.0f*f);
           };
-          auto xorshift = [](uint32_t &s)->uint32_t { s ^= s<<13; s ^= s>>17; s ^= s<<5; return s; };
-          auto frand = [&](uint32_t &s, float a, float b)->float {
-            return a + (xorshift(s) * (1.0f/4294967295.0f)) * (b-a);
+          auto frand   = [](uint32_t &s, float a, float b)->float { // simple LCG
+            s = s * 1664525u + 1013904223u;
+            uint32_t r = s;
+            return a + (r * (1.0f/4294967295.0f)) * (b - a);
           };
 
+          // ---- State ----
           enum Mode { SLEEPY, WAKE, IDLE, BLINK, WINK_L, WINK_R, LOOK, SQUINT, SURPRISED };
           struct S {
             bool init;
@@ -92,7 +96,7 @@ display:
               if (s.t >= s.dur) goto_mode(WAKE, 0.7f);
               break;
             case WAKE: {
-              float k = smooth(s.t / s.dur);
+              float k = ease(s.t / s.dur);
               s.open_l = s.open_r = lerp(0.10f, 1.0f, k);
               s.px = lerp(s.px, 0.0f, 0.15f);
               s.py = lerp(s.py, 0.0f, 0.15f);
@@ -109,19 +113,22 @@ display:
             case BLINK: {
               float k = s.t / s.dur;
               float o = (k < 0.5f) ? (1.0f - k*2.0f) : ((k-0.5f)*2.0f);
-              s.open_l = s.open_r = clamp01(o);
+              if (o < 0.0f) o = 0.0f; else if (o > 1.0f) o = 1.0f;
+              s.open_l = s.open_r = o;
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.2f));
             } break;
             case WINK_L: {
               float k = s.t / s.dur;
               float o = (k < 0.5f) ? (1.0f - k*2.0f) : ((k-0.5f)*2.0f);
-              s.open_l = clamp01(o); s.open_r = 1.0f;
+              if (o < 0.0f) o = 0.0f; else if (o > 1.0f) o = 1.0f;
+              s.open_l = o; s.open_r = 1.0f;
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
             } break;
             case WINK_R: {
               float k = s.t / s.dur;
               float o = (k < 0.5f) ? (1.0f - k*2.0f) : ((k-0.5f)*2.0f);
-              s.open_r = clamp01(o); s.open_l = 1.0f;
+              if (o < 0.0f) o = 0.0f; else if (o > 1.0f) o = 1.0f;
+              s.open_r = o; s.open_l = 1.0f;
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
             } break;
             case LOOK:
@@ -131,8 +138,9 @@ display:
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
               break;
             case SQUINT: {
-              float k = smooth(s.t / s.dur);
-              float target = lerp(0.55f, 0.25f, (k<0.5f) ? (k*2.0f) : (1.0f - (k-0.5f)*2.0f));
+              float k = ease(s.t / s.dur);
+              float mid = (k < 0.5f) ? (k*2.0f) : (1.0f - (k-0.5f)*2.0f);
+              float target = lerp(0.55f, 0.25f, mid);
               s.open_l = s.open_r = lerp(s.open_l, target, 0.6f);
               s.px = lerp(s.px, 0.0f, 0.2f);
               s.py = lerp(s.py, 0.0f, 0.2f);
@@ -153,9 +161,12 @@ display:
           int rx = base_rx + eye_shift_x;
           int ey = base_ey + eye_shift_y;
 
-          auto open_to_px = [&](float o){ o = clamp01(o); return (int)(R * o); };
-          int open_px_l = open_to_px(s.open_l);
-          int open_px_r = open_to_px(s.open_r);
+          auto open_to_px = [](float o, int R)->int {
+            if (o < 0.0f) o = 0.0f; else if (o > 1.0f) o = 1.0f;
+            return (int)(R * o);
+          };
+          int open_px_l = open_to_px(s.open_l, R);
+          int open_px_r = open_to_px(s.open_r, R);
 
           float max_off = R * 0.38f * ((s.open_l + s.open_r)*0.5f);
           int ix_l = lx + (int)(clampf(s.px,-1.0f,1.0f) * max_off);
