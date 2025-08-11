@@ -3,46 +3,39 @@ display:
     pages:
       - id: clock_page
         lambda: |-
-          // --- CONFIG (tweakable) ---
-          const uint32_t FRAME_MS_FAST = 120;    // when actively animating
-          const uint32_t FRAME_MS_IDLE = 300;    // baseline; works great at your 300ms driver tick
-          const int      SPOKES        = 4;      // iris spokes (reduce draw calls)
+          // ---- CONFIG ----
+          const uint32_t FRAME_MS_FAST = 120;   // quicker while moving
+          const uint32_t FRAME_MS_IDLE = 300;   // chill baseline
 
-          // --- Geometry ---
+          // ---- Geometry ----
           const int W = it.get_width(), H = it.get_height();
           const int cx = W/2, cy = H/2;
           const int eye_gap = std::max(22, W/8);
           const int R = std::min(W, H) / 6;
           const int base_lx = cx - eye_gap, base_rx = cx + eye_gap, base_ey = cy;
 
-          // --- Helpers (cheap) ---
-          auto clampf = [](float v, float a, float b){ return v < a ? a : (v > b ? b : v); };
-          auto lerp   = [](float a, float b, float t){ return a + (b - a) * t; };
-          auto tri01  = [](uint32_t t, uint32_t period)->float {   // 0..1 triangle wave
+          // ---- Helpers (self-contained; no captures) ----
+          auto clamp01 = [](float t){ return (t < 0.0f) ? 0.0f : (t > 1.0f ? 1.0f : t); };
+          auto clampf  = [](float v, float a, float b){ return v < a ? a : (v > b ? b : v); };
+          auto lerp    = [](float a, float b, float t){ return a + (b - a) * t; };
+          auto smooth  = [&](float t){ t = clamp01(t); return t*t*(3.0f - 2.0f*t); }; // smoothstep
+          auto tri01   = [](uint32_t t, uint32_t period)->float {
             uint32_t x = t % period; float f = (float)x/(float)period;
             return (x < period/2) ? (2.0f*f) : (2.0f - 2.0f*f);
           };
-          auto ease   = [](float t){ t = clampf(t,0,1); return t*t*(3-2*t); };  // smoothstep
-
-          // Very cheap RNG (xorshift32)
           auto xorshift = [](uint32_t &s)->uint32_t { s ^= s<<13; s ^= s>>17; s ^= s<<5; return s; };
           auto frand = [&](uint32_t &s, float a, float b)->float {
             return a + (xorshift(s) * (1.0f/4294967295.0f)) * (b-a);
           };
 
-          // --- State ---
           enum Mode { SLEEPY, WAKE, IDLE, BLINK, WINK_L, WINK_R, LOOK, SQUINT, SURPRISED };
           struct S {
             bool init;
-            uint32_t rng;
-            uint32_t last_ms;
-            uint32_t next_ms;       // page-level throttling (self-fps)
+            uint32_t rng, last_ms, next_ms;
             Mode mode;
-            float t, dur;           // time in mode (s), duration (s)
-            float open_l, open_r;   // per-eye openness 0..1
-            float px, py;           // look dir -1..1
-            float tx, ty;           // target look
-            // last rendered pixels (for dirty-rect erase + early-out)
+            float t, dur;
+            float open_l, open_r;
+            float px, py, tx, ty;
             int prev_lx, prev_rx, prev_ey, prev_open_px_l, prev_open_px_r;
             int prev_ix_l, prev_iy_l, prev_ix_r, prev_iy_r;
             bool background_cleared;
@@ -51,7 +44,6 @@ display:
           uint32_t now = millis();
 
           if (!s.init) {
-            s = S{};
             s.init = true;
             s.rng = 0xA17E1234u ^ now;
             s.last_ms = now;
@@ -66,192 +58,165 @@ display:
             s.background_cleared = false;
           }
 
-          // Page-level throttling: only do heavy work when due
-          if (now < s.next_ms) { return; }
+          // page-level throttle
+          if (now < s.next_ms) return;
 
-          // First draw on page: clear once
           if (!s.background_cleared) {
             it.fill(Color::BLACK);
             s.background_cleared = true;
           }
 
-          // Fixed step time (avoid pow/sin)
-          float dt = 0.2f;  // ~200ms logical step; looks good even if FRAME_MS is 300ms
+          // fixed logical step (stable at low FPS)
           float realtime = (now - s.last_ms) / 1000.0f;
-          if (realtime > 0.7f || realtime < 0.0f) realtime = dt;
+          if (realtime > 0.7f || realtime < 0.0f) realtime = 0.2f;
           s.last_ms = now;
-          s.t += dt;
+          s.t += 0.2f;
 
-          // --- Mode transitions ---
-          auto goto_mode = [&](Mode m, float d){
-            s.mode = m; s.t = 0.0f; s.dur = d;
-          };
+          auto goto_mode = [&](Mode m, float d){ s.mode = m; s.t = 0.0f; s.dur = d; };
           auto pick_idle = [&](){
             float r = frand(s.rng, 0.0f, 1.0f);
-            if      (r < 0.20f) goto_mode(BLINK,    frand(s.rng, 0.18f, 0.28f));
-            else if (r < 0.35f) goto_mode(WINK_L,   frand(s.rng, 0.18f, 0.28f));
-            else if (r < 0.50f) goto_mode(WINK_R,   frand(s.rng, 0.18f, 0.28f));
+            if      (r < 0.20f) goto_mode(BLINK,     frand(s.rng, 0.18f, 0.28f));
+            else if (r < 0.35f) goto_mode(WINK_L,    frand(s.rng, 0.18f, 0.28f));
+            else if (r < 0.50f) goto_mode(WINK_R,    frand(s.rng, 0.18f, 0.28f));
             else if (r < 0.80f) { s.tx = frand(s.rng,-0.8f,0.8f); s.ty = frand(s.rng,-0.6f,0.6f); goto_mode(LOOK, frand(s.rng,0.5f,1.1f)); }
-            else if (r < 0.92f) goto_mode(SQUINT,   frand(s.rng, 0.6f, 1.0f));
-            else                 goto_mode(SURPRISED,frand(s.rng, 0.4f, 0.8f));
+            else if (r < 0.92f) goto_mode(SQUINT,    frand(s.rng, 0.6f, 1.0f));
+            else                 goto_mode(SURPRISED, frand(s.rng, 0.4f, 0.8f));
           };
 
-          // --- Behavior ---
+          // behavior
           switch (s.mode) {
-            case SLEEPY: {
-              float k = ease(s.t / s.dur);
+            case SLEEPY:
               s.open_l = s.open_r = lerp(0.08f, 0.12f, 0.5f + 0.5f*tri01(now, 4000));
               s.px = lerp(s.px, 0.0f, 0.08f);
               s.py = lerp(s.py, 0.20f, 0.08f);
               if (s.t >= s.dur) goto_mode(WAKE, 0.7f);
-            } break;
+              break;
             case WAKE: {
-              float k = ease(s.t / s.dur);
+              float k = smooth(s.t / s.dur);
               s.open_l = s.open_r = lerp(0.10f, 1.0f, k);
               s.px = lerp(s.px, 0.0f, 0.15f);
               s.py = lerp(s.py, 0.0f, 0.15f);
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.5f,3.0f));
             } break;
-            case IDLE: {
+            case IDLE:
               s.open_l = s.open_r = lerp(s.open_l, 0.95f, 0.12f);
-              // gentle drift (sampled, not every frame)
               s.tx = clampf(s.tx + frand(s.rng,-0.06f,0.06f), -0.35f, 0.35f);
               s.ty = clampf(s.ty + frand(s.rng,-0.04f,0.04f), -0.25f, 0.25f);
               s.px = lerp(s.px, s.tx, 0.25f);
               s.py = lerp(s.py, s.ty, 0.25f);
               if (s.t >= s.dur) pick_idle();
-            } break;
+              break;
             case BLINK: {
               float k = s.t / s.dur;
               float o = (k < 0.5f) ? (1.0f - k*2.0f) : ((k-0.5f)*2.0f);
-              s.open_l = s.open_r = clampf(o, 0.0f, 1.0f);
+              s.open_l = s.open_r = clamp01(o);
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.2f));
             } break;
             case WINK_L: {
               float k = s.t / s.dur;
               float o = (k < 0.5f) ? (1.0f - k*2.0f) : ((k-0.5f)*2.0f);
-              s.open_l = clampf(o, 0.0f, 1.0f); s.open_r = 1.0f;
+              s.open_l = clamp01(o); s.open_r = 1.0f;
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
             } break;
             case WINK_R: {
               float k = s.t / s.dur;
               float o = (k < 0.5f) ? (1.0f - k*2.0f) : ((k-0.5f)*2.0f);
-              s.open_r = clampf(o, 0.0f, 1.0f); s.open_l = 1.0f;
+              s.open_r = clamp01(o); s.open_l = 1.0f;
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
             } break;
-            case LOOK: {
+            case LOOK:
               s.open_l = s.open_r = lerp(s.open_l, 0.95f, 0.25f);
               s.px = lerp(s.px, s.tx, 0.35f);
               s.py = lerp(s.py, s.ty, 0.35f);
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
-            } break;
+              break;
             case SQUINT: {
-              float k = ease(s.t / s.dur);
+              float k = smooth(s.t / s.dur);
               float target = lerp(0.55f, 0.25f, (k<0.5f) ? (k*2.0f) : (1.0f - (k-0.5f)*2.0f));
               s.open_l = s.open_r = lerp(s.open_l, target, 0.6f);
               s.px = lerp(s.px, 0.0f, 0.2f);
               s.py = lerp(s.py, 0.0f, 0.2f);
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
             } break;
-            case SURPRISED: {
+            case SURPRISED:
               s.open_l = s.open_r = lerp(s.open_l, 1.0f, 0.5f);
               s.px = lerp(s.px, frand(s.rng,-0.12f,0.12f), 0.25f);
               s.py = lerp(s.py, frand(s.rng,-0.04f,0.02f),  0.25f);
               if (s.t >= s.dur) goto_mode(IDLE, frand(s.rng,1.0f,2.0f));
-            } break;
+              break;
           }
 
-          // Whole-eye drift (cheap)
+          // whole-eye drift
           int eye_shift_x = (int)(R * 0.20f * s.px);
           int eye_shift_y = (int)(R * 0.12f * s.py);
           int lx = base_lx + eye_shift_x;
           int rx = base_rx + eye_shift_x;
           int ey = base_ey + eye_shift_y;
 
-          // Convert openness to pixels
-          auto open_to_px = [&](float o){ o = clampf(o,0,1); return (int)(R * o); };
+          auto open_to_px = [&](float o){ o = clamp01(o); return (int)(R * o); };
           int open_px_l = open_to_px(s.open_l);
           int open_px_r = open_to_px(s.open_r);
 
-          // Pupil centers (inside eyelids)
-          float max_off = R * 0.38f * ((s.open_l + s.open_r)*0.5f);  // scale by openness
-          int ix_l = lx + (int)(clampf(s.px,-1,1) * max_off);
-          int iy_l = ey + (int)(clampf(s.py,-1,1) * max_off);
-          int ix_r = rx + (int)(clampf(s.px,-1,1) * max_off);
-          int iy_r = ey + (int)(clampf(s.py,-1,1) * max_off);
+          float max_off = R * 0.38f * ((s.open_l + s.open_r)*0.5f);
+          int ix_l = lx + (int)(clampf(s.px,-1.0f,1.0f) * max_off);
+          int iy_l = ey + (int)(clampf(s.py,-1.0f,1.0f) * max_off);
+          int ix_r = rx + (int)(clampf(s.px,-1.0f,1.0f) * max_off);
+          int iy_r = ey + (int)(clampf(s.py,-1.0f,1.0f) * max_off);
 
-          // Early-out if nothing changed in pixels
+          // early-out if nothing changed
           if (lx == s.prev_lx && rx == s.prev_rx && ey == s.prev_ey &&
               open_px_l == s.prev_open_px_l && open_px_r == s.prev_open_px_r &&
               ix_l == s.prev_ix_l && iy_l == s.prev_iy_l &&
               ix_r == s.prev_ix_r && iy_r == s.prev_iy_r) {
-            // schedule relaxed rate while idle
             s.next_ms = now + FRAME_MS_IDLE;
             return;
           }
 
-          // --- Erase previous eye regions only (dirty rectangles) ---
-          auto erase_eye_box = [&](int ex, int eyc, int open_px){
-            int box_w = (R+2)*2, box_h = (R+2)*2;
-            it.filled_rectangle(ex - (R+2), eyc - (R+2), box_w, box_h, Color::BLACK);
+          // erase only old eye boxes
+          auto erase_eye_box = [&](int ex, int eyc){
+            int box = (R+2);
+            it.filled_rectangle(ex - box, eyc - box, box*2, box*2, Color::BLACK);
           };
           if (s.prev_lx != -9999) {
-            erase_eye_box(s.prev_lx, s.prev_ey, s.prev_open_px_l);
-            erase_eye_box(s.prev_rx, s.prev_ey, s.prev_open_px_r);
+            erase_eye_box(s.prev_lx, s.prev_ey);
+            erase_eye_box(s.prev_rx, s.prev_ey);
           }
 
-          // --- Draw one eye (reduced draw calls) ---
+          // draw one eye (reduced calls)
           auto draw_eye = [&](int ex, int eyc, int open_px, int ix, int iy){
-            // Sclera
-            it.filled_circle(ex, eyc, R, Color::WHITE);
-
-            // Eyelids (top/bot masks)
+            it.filled_circle(ex, eyc, R, Color::WHITE); // sclera
             int cover = R - open_px;
             if (cover > 0) {
               it.filled_rectangle(ex - R - 1, eyc - R - 1, (R*2)+2, cover + 1, Color::BLACK);
               it.filled_rectangle(ex - R - 1, eyc + open_px, (R*2)+2, R - open_px + 1, Color::BLACK);
             }
-
             int iris_r  = std::max(2, (int)(R * 0.46f));
             int pupil_r = std::max(1, (int)(R * 0.18f));
-
-            // Iris ring + a few spokes
-            Color iris_in = Color(0x80,0xc8,0xff);
-            Color iris_outline = Color(0x30,0x70,0xa0);
+            Color iris_in = Color(0x80,0xc8,0xff), iris_outline = Color(0x30,0x70,0xa0);
             it.filled_circle(ix, iy, iris_r, iris_in);
             it.circle(ix, iy, iris_r, iris_outline);
-            for (int k = 0; k < SPOKES; k++) {
-              // evenly spaced spokes (no trig table: use simple 90/180/270/360 deg when SPOKES=4)
-              switch (k) {
-                case 0: it.line(ix, iy, ix + (iris_r-2), iy, iris_outline); break;
-                case 1: it.line(ix, iy, ix - (iris_r-2), iy, iris_outline); break;
-                case 2: it.line(ix, iy, ix, iy + (iris_r-2), iris_outline); break;
-                default: it.line(ix, iy, ix, iy - (iris_r-2), iris_outline); break;
-              }
-            }
-            // Pupil + highlight
+            // 4 spokes (no trig)
+            it.line(ix, iy, ix + (iris_r-2), iy, iris_outline);
+            it.line(ix, iy, ix - (iris_r-2), iy, iris_outline);
+            it.line(ix, iy, ix, iy + (iris_r-2), iris_outline);
+            it.line(ix, iy, ix, iy - (iris_r-2), iris_outline);
             it.filled_circle(ix, iy, pupil_r, Color::BLACK);
             it.filled_circle(ix - pupil_r/2, iy - pupil_r, std::max(1, pupil_r/3), Color::WHITE);
-
-            // Single outer rim (thinner than triple)
-            Color rim = Color(0x90,0x90,0x90);
-            it.circle(ex, eyc, R, rim);
+            it.circle(ex, eyc, R, Color(0x90,0x90,0x90)); // single rim
           };
 
           draw_eye(lx, ey, open_px_l, ix_l, iy_l);
           draw_eye(rx, ey, open_px_r, ix_r, iy_r);
 
-          // Tiny center LED (triangle wave brightness; no trig)
+          // center LED (triangle brightness)
           int led_r = std::max(2, R/6);
           float beat = 0.35f + 0.65f * tri01(now, 1600);
           Color led = Color((uint8_t)(30 + 50*beat), (uint8_t)(100 + 120*beat), 255);
           it.filled_circle(cx, ey + R + 8, led_r, led);
 
-          // Store for next-frame dirty erase
+          // save for next frame + adaptive rate
+          bool moving = (s.mode != IDLE);
           s.prev_lx = lx; s.prev_rx = rx; s.prev_ey = ey;
           s.prev_open_px_l = open_px_l; s.prev_open_px_r = open_px_r;
           s.prev_ix_l = ix_l; s.prev_iy_l = iy_l; s.prev_ix_r = ix_r; s.prev_iy_r = iy_r;
-
-          // Adaptive next frame time: faster while something moves, slower when steady
-          bool moving = (s.mode != IDLE) || (abs(ix_l - s.prev_ix_l) > 0) || (abs(iy_l - s.prev_iy_l) > 0);
           s.next_ms = now + (moving ? FRAME_MS_FAST : FRAME_MS_IDLE);
