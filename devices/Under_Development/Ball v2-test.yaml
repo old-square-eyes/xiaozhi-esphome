@@ -4,15 +4,14 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "Gwen" # options are:
+  imagemodel: "HA-character" # options are:
 
 ##################################################################################################################################################
-# Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, Harley, Jarvis, Luffy,
-# Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
+# Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, Hacker, Harley, Jarvis,
+# Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
 ##################################################################################################################################################
 
-  startup_sound: "Home_Connected" # (options are: available,Home_Connected,Computer_Ready)
-
+  startup_sound: "Home_Connected_Male" # (options are: available, Home_ Connected, Home_ Connected_Male, Computer_Ready)
   clock_timezone: "Europe/Copenhagen"
   clock_background_image: "hacker" # (options are: clock, hacker)
 
@@ -20,14 +19,6 @@ substitutions:
   imageheight: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
   displaymodel: "GC9A01A" # GC9A01A (Ball v2 & Puck) or ST7789V (Muma)
   invertcolors: "true" # GC9A01A/ST7789V (Ball v2 & Muma & Puck) "true"
-
-## CUSTOM SETTINGS ###############################################################################################################################
-
-  clock_background_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/${imagewidth}x${imageheight}/${clock_background_image}.png
-
-## To use your own clock background, place it in /homeassistant/esphome/images/
-## Then change this path to "images/clock.png"
-## example: clock_background_file: images/image.png
 
 ##################################################################################################################################################
 
@@ -40,6 +31,7 @@ substitutions:
   timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
   mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/mute.png
   playing_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/playing.png
+  clock_background_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/${imagewidth}x${imageheight}/${clock_background_image}.png
 
   startup_sound_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
@@ -63,6 +55,19 @@ substitutions:
 
   font_glyphsets: "GF_Latin_Core"
   font_family: Figtree
+
+## CUSTOM CLOCK PAGE ### (rem. out the one you want to use) ######################################################################################
+## CAUTION!: running intensive clock "screensavers" can cause trouble flashing OTA, if that happens, make sure the clock is not running ##########
+##################################################################################################################################################
+packages:
+  clock:
+    url: https://github.com/RealDeco/xiaozhi-esphome
+    files:
+#     - path: images/Other/clocks/clock.yaml
+     - path: images/Other/clocks/flip_clock.yaml
+    ref: main
+    refresh: 1d
+##################################################################################################################################################
 
 esphome:
   name: ${name}
@@ -225,7 +230,6 @@ binary_sensor:
           - ON for 40ms to 400ms
           - OFF for at least 330ms
         then:
-          - script.execute: reset_screensaver
           - if:
               condition:
                 switch.is_on: timer_ringing
@@ -243,9 +247,13 @@ binary_sensor:
                           then:
                             - voice_assistant.start:
                           else:
-                            - voice_assistant.stop:
-          - display.page.show: idle_page
-          - component.update: main_display
+                            - voice_assistant.stop:  
+
+      - timing:
+          - ON for at least 1s
+        then:
+          - switch.toggle: show_battery_status
+          - script.execute: draw_display
 
   - platform: gpio
     pin:
@@ -1007,6 +1015,18 @@ switch:
     restore_mode: RESTORE_DEFAULT_ON
 
   - platform: template
+    id: show_battery_status
+    name: Show Battery Status
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - script.execute: draw_display
+    on_turn_off:
+      - script.execute: draw_display
+
+  - platform: template
     id: clock_enabled
     name: "Clock Screensaver"
     icon: "mdi:clock-outline"
@@ -1048,6 +1068,14 @@ switch:
   - platform: template
     id: clock_show_dots
     name: "Clock Show Dots"
+    icon: "mdi:dots-circle"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: clock_show_wallpaper
+    name: "Clock Show Wallpaper"
     icon: "mdi:dots-circle"
     entity_category: config
     optimistic: true
@@ -1223,6 +1251,14 @@ font:
       type: gfonts
       family: ${font_family}
       weight: 300
+    id: font_battery
+    size: 14
+    glyphsets:
+      - ${font_glyphsets}
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 300
     id: font_timer
     size: 28
     glyphsets:
@@ -1353,8 +1389,61 @@ display:
         lambda: |-
           it.fill(id(idle_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_idle), ImageAlign::CENTER);
-          id(draw_timer_timeline).execute();
-          id(draw_active_timer_widget).execute();
+
+          if (id(show_battery_status).state) {
+            // ---- layout ----
+            const int top = 2;
+            const int w   = 56;     // body width (no cap) - made wider
+            const int h   = 24;     // body height - made taller for 14px font
+            const int capw = 5;     // cap width
+            const int caph = h - 8; // cap height
+            const int pad  = 3;     // inner padding
+
+            // center horizontally
+            const int cx = it.get_width() / 2;
+            const int x  = cx - (w + capw) / 2;
+            const int y  = top;
+
+            // percentage + color
+            float pct = id(battery_percentage).state;
+            if (pct < 0) pct = 0; else if (pct > 100) pct = 100;
+
+            Color lvl = Color(0x00, 0xA8, 0x00);      // green
+            if (pct <= 20)       lvl = Color(0xD0, 0x00, 0x00); // red
+            else if (pct <= 50)  lvl = Color(0xD0, 0x9A, 0x00); // yellow
+
+            // ---- body outline ----
+            it.filled_rectangle(x, y, w, h, id(idle_color));
+            it.rectangle(x, y, w, h, Color::WHITE); // white outline
+
+            // cap
+            const int capx = x + w;
+            const int capy = y + (h - caph) / 2;
+            it.filled_rectangle(capx, capy, capw, caph, Color::BLACK);
+            it.rectangle(capx, capy, capw, caph, Color::WHITE);
+
+            // inner black background
+            const int inx = x + pad;
+            const int iny = y + pad;
+            const int inw = w - 2*pad;
+            const int inh = h - 2*pad;
+            it.filled_rectangle(inx, iny, inw, inh, Color::BLACK);
+
+            // level fill
+            int fw = (int)(inw * (pct / 100.0f));
+            if (fw > 0) it.filled_rectangle(inx, iny, fw, inh, lvl);
+            it.rectangle(inx, iny, inw, inh, Color::WHITE);
+
+            // ---- percentage text INSIDE ----
+            char txt[8];
+            snprintf(txt, sizeof(txt), "%.0f%%", pct);
+
+            // center text in body
+            const int tx = x + w / 2;
+            const int ty = y + h / 2;
+            it.printf(tx+1, ty+1, id(font_battery), Color::BLACK, TextAlign::CENTER, "%s", txt);
+            it.printf(tx,   ty,   id(font_battery), Color::WHITE, TextAlign::CENTER, "%s", txt);
+          }
       - id: listening_page
         lambda: |-
           it.fill(id(listening_color));
@@ -1363,28 +1452,43 @@ display:
       - id: thinking_page
         lambda: |-
           it.fill(id(thinking_color));
-          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_thinking), ImageAlign::CENTER);
+          const int W = it.get_width();
+          const int H = it.get_height();
+          it.image(W / 2, H / 2, id(casita_thinking), ImageAlign::CENTER);
+
           if (id(show_text).state) {
-            it.filled_rectangle(75 , 20 , 210 , 30 , Color::WHITE );
-            it.rectangle(75 , 20 , 210 , 30 , Color::BLACK );
-            it.printf(75, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
+            const int box_h = 30;
+            const int margin_top = 20;
+            const int box_w = std::min(210, W - 10);   // keep 5px side padding minimum
+            const int x0 = (W - box_w) / 2;            // center horizontally
+            const int y0 = margin_top;
+
+            it.filled_rectangle(x0, y0, box_w, box_h, Color::WHITE);
+            it.rectangle(x0, y0, box_w, box_h, Color::BLACK);
+            // center text horizontally
+            it.printf(W / 2, y0 + 5, id(font_request), Color::BLACK, TextAlign::TOP_CENTER, "%s",
+                      id(text_request).state.c_str());
           }
           id(draw_timer_timeline).execute();
       - id: replying_page
         lambda: |-
           it.fill(id(replying_color));
-          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_replying), ImageAlign::CENTER);
-          int y_offset = 190; // default for 240px display
-          if (it.get_height() == 320) {
-            y_offset = 270; // Move box lower for 320px tall screens
-          }
-          if (it.get_height() == 360) {
-            y_offset = 310; // Move box lower for 360px tall screens
-          }
+          const int W = it.get_width();
+          const int H = it.get_height();
+          it.image(W / 2, H / 2, id(casita_replying), ImageAlign::CENTER);
+
           if (id(show_text).state) {
-            it.filled_rectangle(75, y_offset, 210, 30, Color::WHITE);
-            it.rectangle(75, y_offset, 210, 30, Color::BLACK);
-            it.printf(75, y_offset + 5, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
+            const int box_h = 30;
+            const int margin_bottom = 20;              // distance from bottom edge
+            const int box_w = std::min(210, W - 10);   // keep 5px side padding minimum
+            const int x0 = (W - box_w) / 2;            // center horizontally
+            const int y0 = H - margin_bottom - box_h;  // stick to bottom with margin
+
+            it.filled_rectangle(x0, y0, box_w, box_h, Color::WHITE);
+            it.rectangle(x0, y0, box_w, box_h, Color::BLACK);
+            // center text horizontally
+            it.printf(W / 2, y0 + 5, id(font_response), Color::BLACK, TextAlign::TOP_CENTER, "%s",
+                      id(text_response).state.c_str());
           }
           id(draw_timer_timeline).execute();
       - id: timer_finished_page
@@ -1417,122 +1521,3 @@ display:
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_playing), ImageAlign::CENTER);
           // Optional: show timer progress while playing
           id(draw_timer_timeline).execute();
-      - id: clock_page
-        lambda: |-
-          it.fill(Color::BLACK);
-          it.image((it.get_width() / 2), (it.get_height() / 2), id(clock_background), ImageAlign::CENTER);
-
-          const int W = it.get_width();
-          const int H = it.get_height();
-          const int cx = W / 2;
-          const int cy = H / 2;
-          const int margin = 8;
-          const int r_outer = (std::min(W, H) / 2) - margin;
-
-          // Scale dot sizes with screen size
-          const int dot_r_sec_small = std::max(2, std::min(3, W / 180));
-          const int dot_r_sec_big   = dot_r_sec_small + 1;
-          const int dot_r_min       = dot_r_sec_big + 2;
-          const int dot_r_hr        = dot_r_min + 2;
-
-          // Rings radii
-          const int r_sec = r_outer;
-          const int r_min = r_outer - 14;
-          const int r_hr  = r_outer - 28;
-
-          auto now = id(sntp_time).now();
-          const int sec    = now.second;
-          const int minute = now.minute;
-          const int hour12 = now.hour % 12;
-
-          // Minute colors
-          const Color minute_palette[10] = {
-            Color(0x3b,0x89,0xe3),
-            Color(0x26,0xed,0x3a),
-            Color(0xff,0xc1,0x07),
-            Color(0xff,0x5a,0x36),
-            Color(0xff,0x3b,0x8d),
-            Color(0x9c,0x27,0xb0),
-            Color(0x00,0xbc,0xd4),
-            Color(0x8b,0xc3,0x4a),
-            Color(0xfe,0x6d,0x73),
-            Color(0x60,0x7d,0x8b)
-          };
-          Color sec_active_col = minute_palette[minute % 10];
-          Color clock_yellow = Color(0xff,0xc1,0x07);
-
-          // Clock color from HA color wheel (0..1 floats)
-          float rr = id(clock_color_picker).current_values.get_red();
-          float gg = id(clock_color_picker).current_values.get_green();
-          float bb = id(clock_color_picker).current_values.get_blue();
-          if (rr == 0.0f && gg == 0.0f && bb == 0.0f) { rr = gg = bb = 1.0f; } // default white
-          Color clock_col((uint8_t)(rr * 255.0f), (uint8_t)(gg * 255.0f), (uint8_t)(bb * 255.0f));
-
-          const float PI = 3.1415926f;
-
-          // ---- Seconds ring (toggled by Clock Show Dots) ----
-          if (id(clock_show_dots).state) {
-            // Base white markers every 5 seconds (always visible when enabled)
-            for (int i = 0; i < 60; i += 5) {
-              float angle = (i / 60.0f) * 2.0f * PI - PI/2.0f;
-              int x = cx + (int)(r_sec * cosf(angle));
-              int y = cy + (int)(r_sec * sinf(angle));
-              it.filled_circle(x, y, dot_r_sec_big, Color::WHITE);
-            }
-            // Active progress dots for elapsed seconds (skip 5s positions)
-            for (int i = 0; i <= sec; i++) {
-              if (i % 5 == 0) continue;
-              float angle = (i / 60.0f) * 2.0f * PI - PI/2.0f;
-              int x = cx + (int)(r_sec * cosf(angle));
-              int y = cy + (int)(r_sec * sinf(angle));
-              it.filled_circle(x, y, dot_r_sec_small, sec_active_col);
-            }
-          }
-
-          // Minute dot (yellow)
-          {
-            float m_angle = (minute / 60.0f) * 2.0f * PI - PI/2.0f;
-            int mx = cx + (int)(r_min * cosf(m_angle));
-            int my = cy + (int)(r_min * sinf(m_angle));
-            it.filled_circle(mx, my, dot_r_min, clock_yellow);
-          }
-
-          // Hour dot (yellow), smoothly moving with minutes
-          {
-            float h_pos = (hour12 + (minute / 60.0f)) / 12.0f;
-            float h_angle = h_pos * 2.0f * PI - PI/2.0f;
-            int hx = cx + (int)(r_hr * cosf(h_angle));
-            int hy = cy + (int)(r_hr * sinf(h_angle));
-            it.filled_circle(hx, hy, dot_r_hr, clock_yellow);
-          }
-
-          // ---- Time string ----
-          char time_str[32];
-          if (id(clock_24h).state) {
-            if (id(clock_show_seconds).state) {
-              snprintf(time_str, sizeof(time_str), "%02d:%02d:%02d", now.hour, minute, sec);
-            } else {
-              snprintf(time_str, sizeof(time_str), "%02d:%02d", now.hour, minute);
-            }
-          } else {
-            int h = now.hour % 12; if (h == 0) h = 12;
-            const char* ampm = (now.hour < 12) ? "AM" : "PM";
-            if (id(clock_show_seconds).state) {
-              snprintf(time_str, sizeof(time_str), "%d:%02d:%02d%s", h, minute, sec, ampm);
-            } else {
-              snprintf(time_str, sizeof(time_str), "%d:%02d%s", h, minute, ampm);
-            }
-          }
-
-          // If date is ON, shift clock up; if OFF, center clock vertically
-          int clock_y = id(clock_show_date).state ? (cy - 24) : cy;
-          it.printf(cx, clock_y, id(font_big_clock_mono), clock_col, TextAlign::CENTER, "%s", time_str);
-
-          // ---- Date ----
-          if (id(clock_show_date).state) {
-            if (id(clock_24h).state) {
-              it.strftime(cx, cy + 14, id(font_big_date), clock_col, TextAlign::CENTER, "%a, %d %b", now);
-            } else {
-              it.strftime(cx, cy + 14, id(font_big_date), clock_col, TextAlign::CENTER, "%a, %b %d", now);
-            }
-          }
