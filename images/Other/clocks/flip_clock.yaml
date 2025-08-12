@@ -1,37 +1,30 @@
 display:
   - id: !extend main_display
     pages:
-      - id: flip_clock_page
+      - id: clock_page
         lambda: |-
-          // Base
+          // --- base / optional background ---
           it.fill(Color::BLACK);
-
-          // Optional background image (toggleable).
-          // If you already have a switch for this (e.g. id(clock_show_background)),
-          // keep this. If not, remove the if() and the "else" will keep black.
-          #ifdef USE_BINARY_SENSOR
           if (id(clock_show_background).state) {
             it.image((it.get_width() / 2), (it.get_height() / 2), id(clock_background), ImageAlign::CENTER);
           }
-          #endif
 
           const int W = it.get_width();
           const int H = it.get_height();
           const int cx = W / 2;
           const int cy = H / 2;
 
-          // Colors
+          // Colors from HA color wheel
           float rr = id(clock_color_picker).current_values.get_red();
           float gg = id(clock_color_picker).current_values.get_green();
           float bb = id(clock_color_picker).current_values.get_blue();
-          if (rr == 0.0f && gg == 0.0f && bb == 0.0f) { rr = gg = bb = 1.0f; } // default white
-          const Color FG((uint8_t)(rr * 255.0f), (uint8_t)(gg * 255.0f), (uint8_t)(bb * 255.0f)); // digits & accents
+          if (rr == 0.0f && gg == 0.0f && bb == 0.0f) { rr = gg = bb = 1.0f; }
+          const Color FG((uint8_t)(rr * 255.0f), (uint8_t)(gg * 255.0f), (uint8_t)(bb * 255.0f));
           const Color PANEL_BG(20, 20, 20);
           const Color PANEL_EDGE(70, 70, 70);
           const Color HINGE(40, 40, 40);
           const Color COLON_DOT(180, 180, 180);
 
-          // Time
           auto now = id(sntp_time).now();
           int hour = now.hour;
           if (!id(clock_24h).state) {
@@ -41,17 +34,42 @@ display:
           int minute = now.minute;
           int sec = now.second;
 
-          // Layout: four flip panels [H1][H2] : [M1][M2]
-          const int margin = 10;
-          const int gap = std::max(6, W / 80);           // gap between panels
-          const int colon_gap = std::max(8, W / 60);     // colon spacing from panels
-          const int panel_w = (W - 2*margin - 3*gap - 2*colon_gap) / 4;
-          const int panel_h = std::min(H - 2*margin, panel_w * 1.6f); // tall-ish
-          const int top = cy - panel_h/2;
+          // --- geometry (scales for 240x240, 360x360, etc.) ---
+          const int gap       = std::max(6, W / 80);
+          const int colon_gap = std::max(8, W / 60);
 
-          // Left edge of first panel so the whole cluster is centered
-          const int total_w = 4*panel_w + 3*gap + 2*colon_gap;
-          const int left = cx - total_w/2;
+          // Dot ring geometry
+          const int r_ring = (std::min(W, H) / 2) - std::max(6, W/50);   // dot center radius
+          const int dot_r  = std::max(2, std::min(3, W / 180));
+
+          // Keep panels inside the dots (safe spacing)
+          const int ring_clearance = dot_r * 3 + 8;
+          const int allowed_half   = r_ring - ring_clearance;
+          const int max_content_w  = std::max(20, 2 * allowed_half);
+          const int max_content_h  = std::max(20, 2 * allowed_half);
+
+          // Unconstrained guess, then uniform scale to fit
+          int panel_w_guess = (W - 3*gap - 2*colon_gap) / 4;
+          int panel_h_guess = (int)(panel_w_guess * 1.6f);
+
+          auto total_size_for = [&](int pw, int ph, int &tw, int &th) {
+            tw = 4*pw + 3*gap + 2*colon_gap;
+            th = ph;
+          };
+
+          int tw, th;
+          total_size_for(panel_w_guess, panel_h_guess, tw, th);
+          float sx = (float)max_content_w / (float)tw;
+          float sy = (float)max_content_h / (float)th;
+          float s  = std::min(1.0f, std::min(sx, sy) * 0.95f);  // small safety buffer
+
+          const int panel_w = std::max(10, (int)(panel_w_guess * s));
+          const int panel_h = std::max(16, (int)(panel_h_guess * s));
+          total_size_for(panel_w, panel_h, tw, th);
+
+          // Center the cluster
+          const int left = cx - tw/2;
+          const int top  = cy - panel_h/2;
 
           // Digits
           int h1 = (hour / 10) % 10;
@@ -59,44 +77,38 @@ display:
           int m1 = (minute / 10) % 10;
           int m2 = minute % 10;
 
-          // Helper to draw one flip panel
-          auto draw_panel = [&](int x, int y, int w, int h, int digit) {
-            // outer panel
+          // --- helpers ---
+          auto draw_panel = [&](int x, int y, int w, int h) {
             it.filled_rectangle(x, y, w, h, PANEL_BG);
-            // border
             it.rectangle(x, y, w, h, PANEL_EDGE);
-
-            // hinge (middle split line, plus tiny “pins”)
             int midy = y + h/2;
-            it.hline(x+1, midy, w-2, HINGE);
+            it.line(x + 1, midy, x + 1 + (w - 2), midy, HINGE);   // hinge line
             int pin_r = std::max(1, w / 40);
             it.filled_circle(x + w/6, midy, pin_r, HINGE);
             it.filled_circle(x + w - w/6, midy, pin_r, HINGE);
-
-            // light/shadow bands to mimic flip halves
             int band = std::max(2, h / 20);
             it.filled_rectangle(x+1, y+1, w-2, band, Color(32,32,32));
             it.filled_rectangle(x+1, midy+1, w-2, band, Color(16,16,16));
-
-            // digit text (centered)
-            // Use your existing big mono clock font for best alignment.
+          };
+          auto print_digit = [&](int x, int y, int w, int h, int digit) {
             char buf[2]; buf[0] = '0' + digit; buf[1] = '\0';
             it.printf(x + w/2, y + h/2 - 1, id(font_big_clock_mono), FG, TextAlign::CENTER, "%s", buf);
           };
 
-          // Draw the four panels
+          // Panel positions
           int x1 = left;
           int x2 = x1 + panel_w + gap;
-          int colon_x = x2 + panel_w + colon_gap;              // center line of colon
+          int colon_x = x2 + panel_w + colon_gap;
           int x3 = colon_x + colon_gap;
           int x4 = x3 + panel_w + gap;
 
-          draw_panel(x1, top, panel_w, panel_h, h1);
-          draw_panel(x2, top, panel_w, panel_h, h2);
-          draw_panel(x3, top, panel_w, panel_h, m1);
-          draw_panel(x4, top, panel_w, panel_h, m2);
+          // Draw panels + digits
+          draw_panel(x1, top, panel_w, panel_h); print_digit(x1, top, panel_w, panel_h, h1);
+          draw_panel(x2, top, panel_w, panel_h); print_digit(x2, top, panel_w, panel_h, h2);
+          draw_panel(x3, top, panel_w, panel_h); print_digit(x3, top, panel_w, panel_h, m1);
+          draw_panel(x4, top, panel_w, panel_h); print_digit(x4, top, panel_w, panel_h, m2);
 
-          // Colon (blinks when seconds are shown, else steady)
+          // Colon (blink when seconds ON; steady otherwise)
           bool blink = id(clock_show_seconds).state && ((sec % 2) == 0);
           int colon_r = std::max(2, panel_w / 14);
           int colon_y_offset = panel_h / 6;
@@ -105,14 +117,32 @@ display:
             it.filled_circle(colon_x, cy + colon_y_offset, colon_r, COLON_DOT);
           }
 
-          // ---- Seconds progress dots (only when seconds switch is ON) ----
-          if (id(clock_show_seconds).state) {
-            const float PI = 3.1415926f;
-            const int r_outer = (std::min(W, H) / 2) - std::max(6, W/50);
-            // scale dot sizes
-            const int dot_r = std::max(2, std::min(3, W / 180));
+          // --- precomputed unit circle (once) to avoid per-frame trig ---
+          static bool LUT_INIT = false;
+          static int16_t ux[60];   // cos * 10000
+          static int16_t uy[60];   // sin * 10000
+          if (!LUT_INIT) {
+            const float TWO_PI = 6.2831853f;
+            for (int i = 0; i < 60; i++) {
+              float a = (i / 60.0f) * TWO_PI - (3.1415926f / 2.0f);
+              // scale to fixed-point to avoid floats later
+              ux[i] = (int16_t) lroundf(cosf(a) * 10000.0f);
+              uy[i] = (int16_t) lroundf(sinf(a) * 10000.0f);
+            }
+            LUT_INIT = true;
+          }
 
-            // use a simple palette keyed off minute (same feel as your other clock)
+          // --- thin black ring + progress dots (no white 5s markers) ---
+          if (id(clock_show_seconds).state) {
+            // 1) clear just the rim with a thin BLACK annulus
+            const int erase_thickness = dot_r * 2 + 2;   // must cover previous dots fully
+            const int r_in  = r_ring - erase_thickness/2;
+            const int r_out = r_ring + erase_thickness/2;
+            for (int rr = r_in; rr <= r_out; rr++) {
+              it.circle(cx, cy, rr, Color::BLACK);
+            }
+
+            // 2) minute-based color
             const Color minute_palette[10] = {
               Color(0x3b,0x89,0xe3), Color(0x26,0xed,0x3a), Color(0xff,0xc1,0x07),
               Color(0xff,0x5a,0x36), Color(0xff,0x3b,0x8d), Color(0x9c,0x27,0xb0),
@@ -121,11 +151,10 @@ display:
             };
             Color sec_col = minute_palette[minute % 10];
 
-            // progress-style dots: 0..sec (NO special white markers every 5s)
+            // 3) draw progress dots using LUT (no per-frame sin/cos)
             for (int i = 0; i <= sec && i < 60; i++) {
-              float angle = (i / 60.0f) * 2.0f * PI - PI/2.0f;
-              int x = cx + (int)(r_outer * cosf(angle));
-              int y = cy + (int)(r_outer * sinf(angle));
+              int x = cx + (int)(( (long)r_ring * ux[i]) / 10000L);
+              int y = cy + (int)(( (long)r_ring * uy[i]) / 10000L);
               it.filled_circle(x, y, dot_r, sec_col);
             }
           }
