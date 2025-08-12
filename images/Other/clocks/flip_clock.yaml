@@ -6,7 +6,7 @@ display:
           // --- base / optional wallpaper ---
           it.fill(Color::BLACK);
           if (id(clock_show_wallpaper).state) {
-            it.image((it.get_width() / 2), (it.get_height() / 2), id(clock_wallpaper), ImageAlign::CENTER);
+            it.image((it.get_width() / 2), (it.get_height() / 2), id(clock_background), ImageAlign::CENTER);
           }
 
           const int W = it.get_width();
