@@ -133,7 +133,7 @@ display:
           }
 
           // --- thin black ring + progress dots (no white 5s markers) ---
-          if (id(clock_show_seconds).state) {
+          if (id(clock_show_dots).state) {
             // 1) clear just the rim with a thin BLACK annulus
             const int erase_thickness = dot_r * 2 + 2;   // must cover previous dots fully
             const int r_in  = r_ring - erase_thickness/2;
