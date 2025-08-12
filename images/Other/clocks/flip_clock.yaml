@@ -34,21 +34,21 @@ display:
           int minute = now.minute;
           int sec = now.second;
 
-          // --- geometry (scales for 240x240, 360x360, etc.) ---
+          // --- geometry ---
           const int gap       = std::max(6, W / 80);
           const int colon_gap = std::max(8, W / 60);
 
-          // Dot ring geometry
+          // Seconds ring geometry
           const int r_ring = (std::min(W, H) / 2) - std::max(6, W/50);   // dot center radius
           const int dot_r  = std::max(2, std::min(3, W / 180));
 
-          // Keep panels inside the dots (safe spacing)
+          // Keep content inside the dots
           const int ring_clearance = dot_r * 3 + 8;
           const int allowed_half   = r_ring - ring_clearance;
           const int max_content_w  = std::max(20, 2 * allowed_half);
           const int max_content_h  = std::max(20, 2 * allowed_half);
 
-          // Unconstrained guess, then uniform scale to fit
+          // Guess panel size, then scale to fit allowed box
           int panel_w_guess = (W - 3*gap - 2*colon_gap) / 4;
           int panel_h_guess = (int)(panel_w_guess * 1.6f);
 
@@ -67,7 +67,7 @@ display:
           const int panel_h = std::max(16, (int)(panel_h_guess * s));
           total_size_for(panel_w, panel_h, tw, th);
 
-          // Center the cluster
+          // Center the flip cluster
           const int left = cx - tw/2;
           const int top  = cy - panel_h/2;
 
@@ -82,7 +82,7 @@ display:
             it.filled_rectangle(x, y, w, h, PANEL_BG);
             it.rectangle(x, y, w, h, PANEL_EDGE);
             int midy = y + h/2;
-            it.line(x + 1, midy, x + 1 + (w - 2), midy, HINGE);   // hinge line
+            it.line(x + 1, midy, x + 1 + (w - 2), midy, HINGE);
             int pin_r = std::max(1, w / 40);
             it.filled_circle(x + w/6, midy, pin_r, HINGE);
             it.filled_circle(x + w - w/6, midy, pin_r, HINGE);
@@ -117,24 +117,40 @@ display:
             it.filled_circle(colon_x, cy + colon_y_offset, colon_r, COLON_DOT);
           }
 
-          // --- precomputed unit circle (once) to avoid per-frame trig ---
+          // --- Optional date below the clock (slightly lower than before) ---
+          if (id(clock_show_date).state) {
+            const int date_pad     = std::max(6, H / 36);  // spacing under panels
+            const int extra_offset = std::max(5, H / 48);  // extra push down
+            const int date_margin  = std::max(3, H / 120); // keep inside rim
+            int safe_bottom = cy + allowed_half - date_margin;
+
+            int date_y = top + panel_h + date_pad + extra_offset;
+            if (date_y > safe_bottom) date_y = safe_bottom;
+
+            if (id(clock_24h).state) {
+              it.strftime(cx, date_y, id(font_big_date), FG, TextAlign::CENTER, "%a, %d %b", now);
+            } else {
+              it.strftime(cx, date_y, id(font_big_date), FG, TextAlign::CENTER, "%a, %b %d", now);
+            }
+          }
+
+
+          // --- precomputed unit circle (once) for the seconds dots ---
           static bool LUT_INIT = false;
-          static int16_t ux[60];   // cos * 10000
-          static int16_t uy[60];   // sin * 10000
+          static int16_t ux[60];
+          static int16_t uy[60];
           if (!LUT_INIT) {
             const float TWO_PI = 6.2831853f;
             for (int i = 0; i < 60; i++) {
               float a = (i / 60.0f) * TWO_PI - (3.1415926f / 2.0f);
-              // scale to fixed-point to avoid floats later
               ux[i] = (int16_t) lroundf(cosf(a) * 10000.0f);
               uy[i] = (int16_t) lroundf(sinf(a) * 10000.0f);
             }
             LUT_INIT = true;
           }
 
-          // --- thin black ring + progress dots (no white 5s markers) ---
+          // --- thin black ring + progress dots ---
           if (id(clock_show_dots).state) {
-            // 1) clear just the rim with a thin BLACK annulus
             const int erase_thickness = dot_r * 2 + 2;   // must cover previous dots fully
             const int r_in  = r_ring - erase_thickness/2;
             const int r_out = r_ring + erase_thickness/2;
@@ -142,7 +158,6 @@ display:
               it.circle(cx, cy, rr, Color::BLACK);
             }
 
-            // 2) minute-based color
             const Color minute_palette[10] = {
               Color(0x3b,0x89,0xe3), Color(0x26,0xed,0x3a), Color(0xff,0xc1,0x07),
               Color(0xff,0x5a,0x36), Color(0xff,0x3b,0x8d), Color(0x9c,0x27,0xb0),
@@ -151,7 +166,6 @@ display:
             };
             Color sec_col = minute_palette[minute % 10];
 
-            // 3) draw progress dots using LUT (no per-frame sin/cos)
             for (int i = 0; i <= sec && i < 60; i++) {
               int x = cx + (int)(( (long)r_ring * ux[i]) / 10000L);
               int y = cy + (int)(( (long)r_ring * uy[i]) / 10000L);
