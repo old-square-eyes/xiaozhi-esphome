@@ -1276,8 +1276,8 @@ display:
     color_order: rgb
     invert_colors: true
     dimensions:
-      width: 360
-      height: 360
+      height: ${imageheight}
+      width: ${imagewidth}
     cs_pin: 10
     reset_pin: GPIO47
     update_interval: never
