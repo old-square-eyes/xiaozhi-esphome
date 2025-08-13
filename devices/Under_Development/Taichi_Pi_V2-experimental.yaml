@@ -25,7 +25,7 @@ substitutions:
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
 
   clock_timezone: "Europe/Copenhagen"
-  clock_background_image: "starrysky" # (options are: clock, hacker, starrysky)
+  clock_background_image: "hacker" # (options are: clock, hacker, starrysky)
   clock_type: "flip_clock" # (options are: default_clock, flip_clock, clock_7segment)
 
   display_platform: "mipi_spi"
