@@ -51,6 +51,7 @@ Video going through the esphome install of device was removed by youtube and my 
 * Spotpear Puck
 * DIY (breadboard)
 * Guition 1.8" Taichi pi (JC3636W518C) v1
+* Guition 1.8" Taichi pi (JC3636W518C) v2
 * Xingzhi Cube 1.54
 * "Breadboard Mini", the $7 custom ESP32-S3 with everything onboard
 * Waveshare 2.06" OLED Wrist Watch
