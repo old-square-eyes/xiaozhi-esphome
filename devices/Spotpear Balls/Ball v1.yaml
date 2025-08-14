@@ -1,22 +1,59 @@
 substitutions:
   name: esphome-web-619cd4
-  friendly_name: Xiaozhi Ball
+  friendly_name: "Xiaozhi Ball v1"
 
-  imagemodel: "Jarvis" # (options are: Alfred,Astrobot,Casita,Dory,EVE,Eyes,Girl1,GLaDOS,Guy1,Guy2,Harley,Jarvis,Mario,Prime,Robot,Robotgirl)
+## v1.05 25-jul-2025 #############################################################################################################################
+## Added: Support for Xingzhi Cube 1.45 and added startup sound (optional switch in HA)
+## v1.04 15-jul-2025 #############################################################################################################################
+## Added: optional wake sound, delays the time before listening, so optional switch in HA.
+## Moved: show_text and show_battery_status to switches in HA.
+## v1.03 11-jul-2025 #############################################################################################################################
+## Added: optional show text boxes
 
-  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/loading.png
-  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/idle.png
-  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/listening.png
-  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/thinking.png
-  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/replying.png
-  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/error.png
-  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/240x240/timer_finished.png
+#####SETTINGS:####################################################################################################################################
+
+  imagemodel: "Eyes2" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,Eyes2,GLaDOS,Girl1,Guy1,Guy2,Gwen,Harley,Jarvis,Luffy,Mario,Max,Prime,Robochibi,Robocop,Robot,Robotgirl,Shaun)
+  startup_sound: "Home_Connected" # (options are: available,Home_Connected)
+
+  imagewidth: "240" # ILI9341 (breadboard 2.4") "240" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
+  imageheight: "240" # ILI9341 (breadboard 2.4") "320" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
+  displaymodel: "GC9A01A" # ILI9341 (breadboard 2.4"), GC9A01A (Ball v1) or ST7789V (Xingzhi Cube)
+  invertcolors: "true" # ILI9341 (breadboard 2.4") "false" or GC9A01A (Ball v1) "true" or ST7789V (Xingzhi Cube) "true"
+
+###### Uncomment for breadboard 2.4" & Ball v1
+  backlight_output_pin: "3" # Display Backlight
+  lcd_cs_pin: "13"          # Display CS (Chip Select)
+  lcd_dc_pin: "10"          # Display DC (Data/Command)
+  lcd_reset_pin: "18"       # Display Reset
+  spi_clk_pin: "14"         # SPI Clock
+  spi_mosi_pin: "17"        # SPI MOSI (Data Out)
+
+###### Uncomment for Xingzhi Cube 1,54
+#  backlight_output_pin: "13" # Display Backlight
+#  lcd_cs_pin: "14"           # Display CS (Chip Select)
+#  lcd_dc_pin: "8"            # Display DC (Data/Command)
+#  lcd_reset_pin: "18"        # Display Reset
+#  spi_clk_pin: "9"           # SPI Clock
+#  spi_mosi_pin: "10"         # SPI MOSI (Data Out)
+
+#####END OF SETTINGS##############################################################################################################################
+
+  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
+  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/idle.png
+  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/listening.png
+  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/thinking.png
+  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/replying.png
+  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/error.png
+  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
+  mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Mute/${imagewidth}x${imageheight}/mute.png
+
+  startup_sound_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
   loading_illustration_background_color: "000000"
   idle_illustration_background_color: "000000"
-  listening_illustration_background_color: "FFFFFF"
-  thinking_illustration_background_color: "FFFFFF"
-  replying_illustration_background_color: "FFFFFF"
+  listening_illustration_background_color: "000000"
+  thinking_illustration_background_color: "000000"
+  replying_illustration_background_color: "000000"
   error_illustration_background_color: "000000"
 
   voice_assist_idle_phase_id: "1"
@@ -45,6 +82,7 @@ esphome:
   on_boot:
     priority: 600
     then:
+      - light.turn_on: Sled
       - script.execute: draw_display
       - delay: 30s
       - if:
@@ -72,6 +110,13 @@ psram:
 api:
   on_client_connected:
     - script.execute: draw_display
+    - lambda: |-
+        if (!id(boot_sound_played)) {
+          id(boot_sound_played) = true;
+          if (id(startup_sound_switch).state) {
+            id(play_sound)->execute(true, id(ready_sound));
+          }
+        }
   on_client_disconnected:
     - script.execute: draw_display
 
@@ -105,6 +150,7 @@ binary_sensor:
     pin:
       number: 0
       mode: INPUT_PULLUP
+      ignore_strapping_warning: true
       inverted: true
     id: left_top_button
     internal: true
@@ -132,10 +178,41 @@ binary_sensor:
         then:
           - button.press: factory_reset_btn
 
+  - platform: gpio
+    pin: 
+      number: GPIO39
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Left Button"
+    id: left_button
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - logger.log: "Button was pressed"
+    on_release:
+      - logger.log: "Button was released"
+
+  - platform: gpio
+    pin: 
+      number: GPIO40
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Right Button"
+    id: right_button
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - logger.log: "Button was pressed"
+    on_release:
+      - logger.log: "Button was released"
+
 output:
   - platform: ledc
-    pin: GPIO3
     id: backlight_output
+    pin:
+      number: ${backlight_output_pin}
 
 light:
   - platform: monochromatic
@@ -170,7 +247,6 @@ light:
           min_brightness: 50%
           max_brightness: 100%
 
-
 i2s_audio:
   - id: i2s_mic # For microphone
     i2s_lrclk_pin: GPIO4 #WS 
@@ -184,14 +260,14 @@ microphone:
     i2s_audio_id: i2s_mic
     adc_type: external
     i2s_din_pin: GPIO6 #SD
-    id: box_mic
+    id: i2s_mics
     channel: left
     pdm: false
     bits_per_sample: 16bit
 
 speaker:
   - platform: i2s_audio
-    id: box_speaker
+    id: i2s_audio_speaker
     i2s_audio_id: i2s_audio_bus
     dac_type: external
     i2s_dout_pin:   
@@ -202,19 +278,32 @@ speaker:
 media_player:
   - platform: speaker
     name: None
-    id: speaker_media_player
-    volume_min: 0.5
-    volume_max: 0.8
+    id: external_media_player
     announcement_pipeline:
-      speaker: box_speaker
+      speaker: i2s_audio_speaker
       format: FLAC
       sample_rate: 48000
       num_channels: 1  # S3 Box only has one output channel
     files:
       - id: timer_finished_sound
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
+      - id: wake_word_triggered_sound
+        file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/wake_word_triggered.flac
+      - id: ready_sound
+        file: ${startup_sound_file}
     on_announcement:
       # Stop the wake word (mWW or VA) if the mic is capturing
+      - if:
+          condition:
+            - switch.is_on: use_listen_light
+          then:
+            - light.turn_on:
+                id: led
+                blue: 100%
+                red: 0%
+                green: 0%
+                brightness: 100%
+                effect: none
       - if:
           condition:
             - microphone.is_capturing:
@@ -234,10 +323,11 @@ media_player:
             not:
               voice_assistant.is_running:
           then:
-            - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
-            - script.execute: draw_display
+ #           - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+ #           - script.execute: draw_display
     on_idle:
       # Since VA isn't running, this is the end of user-intiated media playback. Restart the wake word.
+      - script.execute: reset_led
       - if:
           condition:
             not:
@@ -251,22 +341,40 @@ micro_wake_word:
   id: mww
   models:
     - okay_nabu
-    - hey_mycroft
     - hey_jarvis
     - alexa
   on_wake_word_detected:
+    - if:
+        condition:
+          switch.is_on: wake_sound
+        then:
+          - script.execute:
+              id: play_sound
+              priority: true
+              sound_file: !lambda return id(wake_word_triggered_sound);
+          - delay: 300ms
     - voice_assistant.start:
         wake_word: !lambda return wake_word;
 
 voice_assistant:
   id: va
-  microphone: box_mic
-  media_player: speaker_media_player
+  microphone: i2s_mics
+  media_player: external_media_player
   micro_wake_word: mww
   noise_suppression_level: 2
   auto_gain: 31dBFS
   volume_multiplier: 2.0
   on_listening:
+    - if:
+        condition:
+          - switch.is_on: use_listen_light
+        then:
+          - light.turn_on:
+              id: led
+              blue: 100%
+              red: 0%
+              green: 0%
+              effect: "Slow Pulse"
     - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
     - text_sensor.template.publish:
         id: text_request
@@ -276,6 +384,16 @@ voice_assistant:
         state: "..."
     - script.execute: draw_display
   on_stt_vad_end:
+    - if:
+        condition:
+          - switch.is_on: use_listen_light
+        then:
+          - light.turn_on:
+              id: led
+              blue: 100%
+              red: 0%
+              green: 0%
+              effect: "Fast Pulse"
     - lambda: id(voice_assistant_phase) = ${voice_assist_thinking_phase_id};
     - script.execute: draw_display
   on_stt_end:
@@ -284,6 +402,17 @@ voice_assistant:
         state: !lambda return x;
     - script.execute: draw_display
   on_tts_start:
+    - if:
+        condition:
+          - switch.is_on: use_listen_light
+        then:
+          - light.turn_on:
+              id: led
+              blue: 100%
+              red: 0%
+              green: 0%
+              brightness: 100%
+              effect: none
     - text_sensor.template.publish:
         id: text_response
         state: !lambda return x;
@@ -318,6 +447,8 @@ voice_assistant:
     - text_sensor.template.publish:
         id: text_response
         state: ""
+    - script.execute: reset_led
+
   on_error:
     - if:
         condition:
@@ -334,6 +465,20 @@ voice_assistant:
               else:
                 - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
           - script.execute: draw_display
+    - if:
+        condition:
+          - switch.is_on: use_listen_light
+        then:
+          - light.turn_on:
+              id: led
+              red: 100%
+              green: 0%
+              blue: 0%
+              brightness: 100%
+              effect: none
+    - delay: 2s
+    - script.execute: reset_led
+
   on_client_connected:
     - lambda: id(init_in_progress) = false;
     - script.execute: start_wake_word
@@ -353,12 +498,53 @@ voice_assistant:
     - script.execute: draw_display
   on_timer_finished:
     - switch.turn_on: timer_ringing
+    - if:
+        condition:
+          - switch.is_on: use_listen_light
+        then:
+          - light.turn_on:
+              id: led
+              red: 0%
+              green: 100%
+              blue: 0%
+              brightness: 100%
+              effect: "Fast Pulse"
     - wait_until:
         media_player.is_announcing:
     - lambda: id(voice_assistant_phase) = ${voice_assist_timer_finished_phase_id};
     - script.execute: draw_display
+    - light.turn_off: led
 
 script:
+  - id: reset_led
+    then:
+      - if:
+          condition:
+            - lambda: return id(wake_word_engine_location).state == "On device";
+            - switch.is_on: use_listen_light
+          then:
+            - light.turn_on:
+                id: led
+                red: 100%
+                green: 89%
+                blue: 71%
+                brightness: 30%
+                effect: none
+          else:
+            - if:
+                condition:
+                  - lambda: return id(wake_word_engine_location).state != "On device";
+                  - switch.is_on: use_listen_light
+                then:
+                  - light.turn_on:
+                      id: led
+                      red: 0%
+                      green: 100%
+                      blue: 100%
+                      brightness: 30%
+                      effect: none
+                else:
+                  - light.turn_off: led
   - id: draw_display
     then:
       - if:
@@ -552,7 +738,36 @@ script:
           else:
             - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
 
+
+  - id: play_sound
+    parameters:
+      priority: bool
+      sound_file: "audio::AudioFile*"
+    then:
+      - lambda: |-
+          if (priority) {
+            id(external_media_player)
+              ->make_call()
+              .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_STOP)
+              .set_announcement(true)
+              .perform();
+          }
+          if ( (id(external_media_player).state != media_player::MediaPlayerState::MEDIA_PLAYER_STATE_ANNOUNCING ) || priority) {
+            id(external_media_player)
+              ->play_file(sound_file, true, false);
+          }
+
 switch:
+  - platform: template
+    name: Use listen light
+    id: use_listen_light
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+    on_turn_on:
+      - script.execute: reset_led
+    on_turn_off:
+      - script.execute: reset_led
   - platform: template
     name: Mute
     id: mute
@@ -576,29 +791,53 @@ switch:
     on_turn_off:
       # Turn off the repeat mode and disable the pause between playlist items
       - lambda: |-
-              id(speaker_media_player)
+              id(external_media_player)
                 ->make_call()
                 .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_OFF)
                 .set_announcement(true)
                 .perform();
-              id(speaker_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 0);
+              id(external_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 0);
       # Stop playing the alarm
       - media_player.stop:
           announcement: true
     on_turn_on:
       # Turn on the repeat mode and pause for 1000 ms between playlist items/repeats
       - lambda: |-
-            id(speaker_media_player)
+            id(external_media_player)
               ->make_call()
               .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_ONE)
               .set_announcement(true)
               .perform();
-            id(speaker_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 1000);
+            id(external_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 1000);
       - media_player.speaker.play_on_device_media_file:
           media_file: timer_finished_sound
           announcement: true
       - delay: 15min
       - switch.turn_off: timer_ringing
+
+  - platform: template
+    id: wake_sound
+    name: Wake sound
+    icon: "mdi:bullhorn"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: startup_sound_switch
+    name: Startup sound
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: show_text
+    name: Show Text
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
 
 select:
   - platform: template
@@ -665,51 +904,60 @@ globals:
   - id: global_is_timer
     type: bool
     restore_value: false
+  - id: boot_sound_played
+    type: bool
+    restore_value: no
+    initial_value: "false"
 
 image:
   - file: ${error_illustration_file}
     id: casita_error
-    resize: 240x240
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${idle_illustration_file}
     id: casita_idle
-    resize: 240x240
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${listening_illustration_file}
     id: casita_listening
-    resize: 240x240
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${thinking_illustration_file}
     id: casita_thinking
-    resize: 240x240
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${replying_illustration_file}
     id: casita_replying
-    resize: 240x240
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${timer_finished_illustration_file}
     id: casita_timer_finished
-    resize: 240x240
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: ${loading_illustration_file}
     id: casita_initializing
-    resize: 240x240
+    resize: ${imagewidth}x${imageheight}
+    type: RGB
+    transparency: alpha_channel
+  - file: ${mute_illustration_file}
+    id: casita_muted
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-wifi.png
     id: error_no_wifi
-    resize: 240x240
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
   - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-ha.png
     id: error_no_ha
-    resize: 240x240
+    resize: ${imagewidth}x${imageheight}
     type: RGB
     transparency: alpha_channel
 
@@ -781,24 +1029,22 @@ color:
 
 spi:
   - id: spi_bus
-    clk_pin: 14
-    mosi_pin: 17
+    clk_pin: ${spi_clk_pin}
+    mosi_pin: ${spi_mosi_pin}
 
 display:
   - platform: ili9xxx
     id: s3_box_lcd
-    model: GC9A01A
-    invert_colors: true
+    model: ${displaymodel}
+    invert_colors: ${invertcolors}
     data_rate: 40MHz
-    cs_pin: 13
-    dc_pin: 10
-    reset_pin:
-      number: 18
-#      inverted: true
+    cs_pin: ${lcd_cs_pin}
+    dc_pin: ${lcd_dc_pin}
+    reset_pin: ${lcd_reset_pin}
     update_interval: never
     dimensions:
-        height: 240
-        width: 240
+        height: ${imageheight}
+        width: ${imagewidth}
     pages:
       - id: idle_page
         lambda: |-
@@ -815,17 +1061,25 @@ display:
         lambda: |-
           it.fill(id(thinking_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_thinking), ImageAlign::CENTER);
-          it.filled_rectangle(20 , 20 , 200 , 30 , Color::WHITE );
-          it.rectangle(20 , 20 , 200 , 30 , Color::BLACK );
-          it.printf(30, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
+          if (id(show_text).state) {
+            it.filled_rectangle(20 , 20 , 200 , 30 , Color::WHITE );
+            it.rectangle(20 , 20 , 200 , 30 , Color::BLACK );
+            it.printf(30, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
+          }
           id(draw_timer_timeline).execute();
       - id: replying_page
         lambda: |-
           it.fill(id(replying_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_replying), ImageAlign::CENTER);
-          it.filled_rectangle(20 , 190 , 200 , 30 , Color::WHITE );
-          it.rectangle(20 , 190 , 200 , 30 , Color::BLACK );
-          it.printf(30, 195, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
+          int y_offset = 190; // default for 240px display
+          if (it.get_height() == 320) {
+            y_offset = 270; // Move box lower for 320px tall screens
+          }
+          if (id(show_text).state) {
+            it.filled_rectangle(20, y_offset, 200, 30, Color::WHITE);
+            it.rectangle(20, y_offset, 200, 30, Color::BLACK);
+            it.printf(30, y_offset + 5, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
+          }
           id(draw_timer_timeline).execute();
       - id: timer_finished_page
         lambda: |-
@@ -848,5 +1102,6 @@ display:
       - id: muted_page
         lambda: |-
           it.fill(Color::BLACK);
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_muted), ImageAlign::CENTER);
           id(draw_timer_timeline).execute();
           id(draw_active_timer_widget).execute();
