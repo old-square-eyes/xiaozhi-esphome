@@ -7,9 +7,9 @@ Currently, only one Guition Device is available:
 
 **a.k.a. GUITION 1.8” 360x360 ESP32-S3 (JC3636W518)**
 
-It seems this display is also available in two "versions" V1 and V2 and many things have changed with hardware and pins used.
+It seems this display is also available in two "versions" V1 and V2 and some things have changed with hardware.
 
-I Only have V1 myself to test with, so thats the code you will find here for now. experimental V2 is in "Under Development".
+Just got a v2 and Experimental yaml for it is in "Under Development".
 
 (image below for indentification)
 
