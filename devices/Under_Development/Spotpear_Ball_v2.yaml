@@ -13,7 +13,6 @@ substitutions:
 
   startup_sound: "Home_Connected_Male" # (options are: available, Home_ Connected, Home_ Connected_Male, Computer_Ready)
 
-  clock_timezone: "Europe/Copenhagen"
   clock_background_image: "starrysky" # (options are: clock, hacker, starrysky)
   clock_type: "clock_7segment" # (options are: default_clock, flip_clock, clock_7segment)
 
@@ -123,9 +122,8 @@ wifi:
 captive_portal:
 
 time:
-  - platform: sntp
-    id: sntp_time
-    timezone: ${clock_timezone}
+  - platform: homeassistant
+    id: homeassistant_time
 
 button:
   - platform: factory_reset
@@ -215,7 +213,6 @@ binary_sensor:
     name: "Touch Button"
     id: touch_input
     on_multi_click:
-      # Single tap
       - timing:
           - ON for 40ms to 400ms
           - OFF for at least 330ms
@@ -230,6 +227,8 @@ binary_sensor:
                     condition:
                       lambda: return id(wake_word_engine_location).state == "On device";
                     then:
+                      - media_player.stop:
+                          id: external_media_player
                       - if:
                           condition:
                             not:
@@ -265,6 +264,8 @@ binary_sensor:
               then:
                 - switch.turn_off: timer_ringing
               else:
+                - media_player.stop:
+                    id: external_media_player
                 - if:
                     condition:
                       not:
@@ -396,8 +397,9 @@ speaker:
     i2s_audio_id: i2s_audio_bus
     i2s_dout_pin: GPIO8
     dac_type: external
+    sample_rate: 16000
     audio_dac: es8311_dac
-    channel: stereo
+    channel: left
 
 media_player:
   - platform: speaker
@@ -870,7 +872,7 @@ script:
             - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
           else:
             - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
-      - script.execute: reset_screensaver
+
 
   - id: play_sound
     parameters:
@@ -1344,13 +1346,11 @@ touchscreen:
     i2c_id: bus_b
     on_touch:
       then:
-        - script.execute: handle_screen_tap
         - binary_sensor.template.publish:
             id: touch_input
             state: ON
     on_release:
       then:
-        - script.execute: reset_screensaver
         - binary_sensor.template.publish:
             id: touch_input
             state: OFF
@@ -1568,7 +1568,7 @@ display:
           };
 
           // ---------- Time ----------
-          auto now = id(sntp_time).now();
+          auto now = id(homeassistant_time).now();
           const int sec    = now.second;
           const int minute = now.minute;
           const int hour12 = now.hour % 12;
@@ -1648,6 +1648,61 @@ display:
               it.strftime(cx, cy + 14, id(font_big_date), clock_col, TextAlign::CENTER, "%a, %b %d", now);
           }
 
+          if (id(show_battery_status).state) {
+            // ---- layout ----
+            const int top = 2;
+            const int w   = 56;     // body width (no cap) - made wider
+            const int h   = 24;     // body height - made taller for 14px font
+            const int capw = 5;     // cap width
+            const int caph = h - 8; // cap height
+            const int pad  = 3;     // inner padding
+
+            // center horizontally
+            const int cx = it.get_width() / 2;
+            const int x  = cx - (w + capw) / 2;
+            const int y  = top;
+
+            // percentage + color
+            float pct = id(battery_percentage).state;
+            if (pct < 0) pct = 0; else if (pct > 100) pct = 100;
+
+            Color lvl = Color(0x00, 0xA8, 0x00);      // green
+            if (pct <= 20)       lvl = Color(0xD0, 0x00, 0x00); // red
+            else if (pct <= 50)  lvl = Color(0xD0, 0x9A, 0x00); // yellow
+
+            // ---- body outline ----
+            it.filled_rectangle(x, y, w, h, id(idle_color));
+            it.rectangle(x, y, w, h, Color::WHITE); // white outline
+
+            // cap
+            const int capx = x + w;
+            const int capy = y + (h - caph) / 2;
+            it.filled_rectangle(capx, capy, capw, caph, Color::BLACK);
+            it.rectangle(capx, capy, capw, caph, Color::WHITE);
+
+            // inner black background
+            const int inx = x + pad;
+            const int iny = y + pad;
+            const int inw = w - 2*pad;
+            const int inh = h - 2*pad;
+            it.filled_rectangle(inx, iny, inw, inh, Color::BLACK);
+
+            // level fill
+            int fw = (int)(inw * (pct / 100.0f));
+            if (fw > 0) it.filled_rectangle(inx, iny, fw, inh, lvl);
+            it.rectangle(inx, iny, inw, inh, Color::WHITE);
+
+            // ---- percentage text INSIDE ----
+            char txt[8];
+            snprintf(txt, sizeof(txt), "%.0f%%", pct);
+
+            // center text in body
+            const int tx = x + w / 2;
+            const int ty = y + h / 2;
+            it.printf(tx+1, ty+1, id(font_battery), Color::BLACK, TextAlign::CENTER, "%s", txt);
+            it.printf(tx,   ty,   id(font_battery), Color::WHITE, TextAlign::CENTER, "%s", txt);
+          }
+
       - id: flip_clock
         lambda: |-
           // --- base / optional wallpaper ---
@@ -1672,7 +1727,7 @@ display:
           const Color HINGE(40, 40, 40);
           const Color COLON_DOT(180, 180, 180);
 
-          auto now = id(sntp_time).now();
+          auto now = id(homeassistant_time).now();
           int hour = now.hour;
           if (!id(clock_24h).state) {
             hour %= 12;
@@ -1820,6 +1875,61 @@ display:
             }
           }
 
+          if (id(show_battery_status).state) {
+            // ---- layout ----
+            const int top = 2;
+            const int w   = 56;     // body width (no cap) - made wider
+            const int h   = 24;     // body height - made taller for 14px font
+            const int capw = 5;     // cap width
+            const int caph = h - 8; // cap height
+            const int pad  = 3;     // inner padding
+
+            // center horizontally
+            const int cx = it.get_width() / 2;
+            const int x  = cx - (w + capw) / 2;
+            const int y  = top;
+
+            // percentage + color
+            float pct = id(battery_percentage).state;
+            if (pct < 0) pct = 0; else if (pct > 100) pct = 100;
+
+            Color lvl = Color(0x00, 0xA8, 0x00);      // green
+            if (pct <= 20)       lvl = Color(0xD0, 0x00, 0x00); // red
+            else if (pct <= 50)  lvl = Color(0xD0, 0x9A, 0x00); // yellow
+
+            // ---- body outline ----
+            it.filled_rectangle(x, y, w, h, id(idle_color));
+            it.rectangle(x, y, w, h, Color::WHITE); // white outline
+
+            // cap
+            const int capx = x + w;
+            const int capy = y + (h - caph) / 2;
+            it.filled_rectangle(capx, capy, capw, caph, Color::BLACK);
+            it.rectangle(capx, capy, capw, caph, Color::WHITE);
+
+            // inner black background
+            const int inx = x + pad;
+            const int iny = y + pad;
+            const int inw = w - 2*pad;
+            const int inh = h - 2*pad;
+            it.filled_rectangle(inx, iny, inw, inh, Color::BLACK);
+
+            // level fill
+            int fw = (int)(inw * (pct / 100.0f));
+            if (fw > 0) it.filled_rectangle(inx, iny, fw, inh, lvl);
+            it.rectangle(inx, iny, inw, inh, Color::WHITE);
+
+            // ---- percentage text INSIDE ----
+            char txt[8];
+            snprintf(txt, sizeof(txt), "%.0f%%", pct);
+
+            // center text in body
+            const int tx = x + w / 2;
+            const int ty = y + h / 2;
+            it.printf(tx+1, ty+1, id(font_battery), Color::BLACK, TextAlign::CENTER, "%s", txt);
+            it.printf(tx,   ty,   id(font_battery), Color::WHITE, TextAlign::CENTER, "%s", txt);
+          }
+
       - id: clock_7segment
         lambda: |-
           // -------- background / optional wallpaper ----------
@@ -1841,7 +1951,7 @@ display:
           const Color MOON_DARK(60, 60, 60);
 
           // -------- time ----------
-          auto now = id(sntp_time).now();
+          auto now = id(homeassistant_time).now();
           int hour = now.hour;
           if (!id(clock_24h).state) {
             hour %= 12;
@@ -2075,4 +2185,59 @@ display:
             } else {
               it.strftime(cx, date_y, id(font_big_date), FG, TextAlign::CENTER, "%a, %b %d", now);
             }
+          }
+
+          if (id(show_battery_status).state) {
+            // ---- layout ----
+            const int top = 2;
+            const int w   = 56;     // body width (no cap) - made wider
+            const int h   = 24;     // body height - made taller for 14px font
+            const int capw = 5;     // cap width
+            const int caph = h - 8; // cap height
+            const int pad  = 3;     // inner padding
+
+            // center horizontally
+            const int cx = it.get_width() / 2;
+            const int x  = cx - (w + capw) / 2;
+            const int y  = top;
+
+            // percentage + color
+            float pct = id(battery_percentage).state;
+            if (pct < 0) pct = 0; else if (pct > 100) pct = 100;
+
+            Color lvl = Color(0x00, 0xA8, 0x00);      // green
+            if (pct <= 20)       lvl = Color(0xD0, 0x00, 0x00); // red
+            else if (pct <= 50)  lvl = Color(0xD0, 0x9A, 0x00); // yellow
+
+            // ---- body outline ----
+            it.filled_rectangle(x, y, w, h, id(idle_color));
+            it.rectangle(x, y, w, h, Color::WHITE); // white outline
+
+            // cap
+            const int capx = x + w;
+            const int capy = y + (h - caph) / 2;
+            it.filled_rectangle(capx, capy, capw, caph, Color::BLACK);
+            it.rectangle(capx, capy, capw, caph, Color::WHITE);
+
+            // inner black background
+            const int inx = x + pad;
+            const int iny = y + pad;
+            const int inw = w - 2*pad;
+            const int inh = h - 2*pad;
+            it.filled_rectangle(inx, iny, inw, inh, Color::BLACK);
+
+            // level fill
+            int fw = (int)(inw * (pct / 100.0f));
+            if (fw > 0) it.filled_rectangle(inx, iny, fw, inh, lvl);
+            it.rectangle(inx, iny, inw, inh, Color::WHITE);
+
+            // ---- percentage text INSIDE ----
+            char txt[8];
+            snprintf(txt, sizeof(txt), "%.0f%%", pct);
+
+            // center text in body
+            const int tx = x + w / 2;
+            const int ty = y + h / 2;
+            it.printf(tx+1, ty+1, id(font_battery), Color::BLACK, TextAlign::CENTER, "%s", txt);
+            it.printf(tx,   ty,   id(font_battery), Color::WHITE, TextAlign::CENTER, "%s", txt);
           }
