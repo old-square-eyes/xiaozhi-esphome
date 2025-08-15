@@ -3,17 +3,17 @@
 
 Welcome! Here you'll find my **work-in-progress code** for all devices i currently work on:
 
-* **`Spotpear_Ball_v1.yaml`**
-  For **Ball v1**, **DIY models** and **xingzhi-cube-1.54** (comming soon)
-
-* **`Spotpear_Ball_v2.yaml`**
-  For **Ball v2**, **Puck v1 & v2**, and all **Muma**.
-
 * **`Guition_Taichi_Pi_V1.yaml`**
   For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V1.
 
 * **`Guition_Taichi_Pi_V2.yaml`**
   For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V2.
+
+* **`Spotpear_Ball_v1.yaml`**
+  For **Ball v1**, **DIY models** and **xingzhi-cube-1.54** (comming soon)
+
+* **`Spotpear_Ball_v2.yaml`**
+  For **Ball v2**, **Puck v1 & v2**, and all **Muma**.
 
 * **`Waveshare-3.5-basic.yaml`**
   For Waveshare esp32-s3-touch-lcd-3.5 (partly working)
