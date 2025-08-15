@@ -1,0 +1,82 @@
+alias: Talk to <assistant> (dynamic, Xiaozhi Taichi Pi)
+mode: single
+
+triggers:
+  - trigger: conversation
+    command:
+      - talk to {name}
+      - let me talk to {name}
+      - switch to {name}
+      - i want to talk to {name}
+
+variables:
+  # Your pipeline/assistant select (you already found it)
+  select_entity: select.xiaozhi_taichi_pi_assistant
+
+  # What was spoken (slot if captured, else the full sentence)
+  spoken_raw: "{{ trigger.slots.name | default(trigger.sentence, true) }}"
+  spoken: "{{ (spoken_raw | lower | trim) }}"
+
+  # Options available right now (dynamic)
+  opts: "{{ state_attr(select_entity, 'options') or [] }}"
+
+  # Pick the best option dynamically:
+  chosen: >
+    {% set s = spoken %}
+    {% set found = namespace(v='') %}
+
+    {# 1) exact (case-insensitive) #}
+    {% for o in opts %}
+      {% if o | lower == s %}
+        {% set found.v = o %}
+      {% endif %}
+    {% endfor %}
+
+    {# 2) contains / contained-by (handles "harley", "harley quinn") #}
+    {% if not found.v %}
+      {% for o in opts %}
+        {% set ol = o | lower %}
+        {% if s in ol or ol in s %}
+          {% set found.v = o %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {# 3) common nicknames: drop words like "assistant" #}
+    {% if not found.v %}
+      {% set s2 = s
+        | replace(' assistant','')
+        | replace(' the ',' ')
+        | trim %}
+      {% for o in opts %}
+        {% set ol = o | lower %}
+        {% if s2 in ol or ol in s2 %}
+          {% set found.v = o %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {# 4) fallbacks: "preferred" if present, else first option #}
+    {% if not found.v %}
+      {% if 'preferred' in opts %}
+        {% set found.v = 'preferred' %}
+      {% else %}
+        {% set found.v = (opts | first) if (opts | count) > 0 else '' %}
+      {% endif %}
+    {% endif %}
+    {{ found.v }}
+
+conditions:
+  - condition: template
+    value_template: "{{ chosen | length > 0 }}"
+
+actions:
+  - action: select.select_option
+    target:
+      entity_id: "{{ select_entity }}"
+    data:
+      option: "{{ chosen }}"
+
+  - set_conversation_response: "Okay, switching to {{ chosen }}."
