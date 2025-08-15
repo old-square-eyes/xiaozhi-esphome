@@ -2,6 +2,18 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
+## VERSION 1.02 dev. ##
+## cleandup and fixes.
+## VERSION 1.01 dev. ##
+## ADDED; clock when idle more than 30 seconds.
+## ADDED; virtual touch, so same functionality as touch is available from home assistant (start, stop, stop timer alarm)
+## ADDED: use og playing.png emo when playing music on mediaplayer, still changes to clock after 30 seconds.
+## ADDED: timer ringing entity so the alert can trigger other things through automations.
+## ADDED: longer request and response entities so they can be shown on dashboards, limited to 255 letters though.
+## FIX: timer pages to be dynamic for different screen sizes
+##
+## VERSION 1.00 ##
+## First working code
 ## SETTINGS ######################################################################################################################################
 
   imagemodel: "HA-character" # options are:
@@ -13,8 +25,8 @@ substitutions:
 
   startup_sound: "Home_Connected_Male" # (options are: available, Home_ Connected, Home_ Connected_Male, Computer_Ready)
 
-  clock_background_image: "starrysky" # (options are: clock, hacker, starrysky)
   clock_type: "clock_7segment" # (options are: default_clock, flip_clock, clock_7segment)
+  clock_background_image: "starrysky" # (options are: clock, hacker, starrysky)
 
   imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
   imageheight: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
