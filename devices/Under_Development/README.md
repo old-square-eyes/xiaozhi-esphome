@@ -3,22 +3,25 @@
 
 Welcome! Here you'll find my **work-in-progress code** for all devices i currently work on:
 
-* **`v1.yaml`**
-  For **Ball v1**, **DIY models** and **xingzhi-cube-1.54** (identical hardware).
+* **`Spotpear_Ball_v1.yaml`**
+  For **Ball v1**, **DIY models** and **xingzhi-cube-1.54** (comming soon)
 
-* **`v2.yaml`**
+* **`Spotpear_Ball_v2.yaml`**
   For **Ball v2**, **Puck v1 & v2**, and all **Muma**.
 
-* **`v2-test.yaml`**
-  Up for testing. For **Ball v2**, **Puck v1 & v2**, and all **Muma**.
-
-* **`Taichi_Pi_V1.yaml`**
+* **`Guition_Taichi_Pi_V1.yaml`**
   For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V1.
 
-* **`Taichi_Pi_V2.yaml`**
-  For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V2. **EXPERIMENTAL **
+* **`Guition_Taichi_Pi_V2.yaml`**
+  For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V2.
 
-* **`Wrist_Watch.yaml`**
+* **`Waveshare-3.5-basic.yaml`**
+  For Waveshare esp32-s3-touch-lcd-3.5
+
+* **`Waveshare_1.85_LCD-test.yaml`**
+  For Waveshare ESP32-S3-Touch-LCD-1.85C
+
+* **`Waveshare_Wrist_Watch.yaml`**
   For Waveshare ESP32-S3-Touch-AMOLED-2.06 Watch.
 
 and more..
