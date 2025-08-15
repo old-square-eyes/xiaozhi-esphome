@@ -877,13 +877,6 @@ switch:
       - delay: 15min
       - switch.turn_off: timer_ringing
 
-#  - platform: gpio
-#    name: Speaker Enable
-#    icon: "mdi:speaker"
-#    entity_category: config
-#    pin: GPIO48
-#    restore_mode: RESTORE_DEFAULT_ON
-
   - platform: template
     id: wake_sound
     name: Wake sound
@@ -1239,7 +1232,6 @@ touchscreen:
   - platform: cst816
     id: my_touchscreen
     interrupt_pin: GPIO4
-#    reset_pin: GPIO40
     display: main_display
     i2c_id: touchscreen_bus
     on_touch:
@@ -1263,8 +1255,7 @@ display:
     invert_colors: true
     data_rate: 40MHz
     cs_pin: 21
-#    reset_pin: 47
-#      inverted: true
+
     update_interval: never
     dimensions:
         height: ${imageheight}
