@@ -16,7 +16,7 @@ Welcome! Here you'll find my **work-in-progress code** for all devices i current
   For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V2.
 
 * **`Waveshare-3.5-basic.yaml`**
-  For Waveshare esp32-s3-touch-lcd-3.5
+  For Waveshare esp32-s3-touch-lcd-3.5 (partly working)
 
 * **`Waveshare_1.85_LCD-test.yaml`**
   For Waveshare ESP32-S3-Touch-LCD-1.85C
