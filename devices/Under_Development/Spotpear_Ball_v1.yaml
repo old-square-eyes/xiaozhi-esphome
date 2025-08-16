@@ -1,6 +1,6 @@
 substitutions:
-  name: esphome-web-619cd4
-  friendly_name: "Xiaozhi Ball v1"
+  name: esphome-web-d11acc
+  friendly_name: Xiaozhi DIY 2.4
 
 ## v2 yaml stripped from touchscreen and modified for v1, only testet on ball v1.
 
@@ -30,10 +30,10 @@ substitutions:
   clock_type: "flip_clock" # (options are: default_clock, flip_clock, clock_7segment)
   clock_background_image: "hacker" # (options are: clock, hacker, starrysky)
 
-  imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
-  imageheight: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
-  displaymodel: "GC9A01A" # GC9A01A (Ball v2 & Puck) or ST7789V (Muma)
-  invertcolors: "true" # GC9A01A/ST7789V (Ball v2 & Muma & Puck) "true"
+  imagewidth: "240" # ILI9341 (breadboard 2.4") "240" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
+  imageheight: "240" # ILI9341 (breadboard 2.4") "320" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
+  displaymodel: "GC9A01A" # ILI9341 (breadboard 2.4"), GC9A01A (Ball v1) or ST7789V (Xingzhi Cube)
+  invertcolors: "true" # ILI9341 (breadboard 2.4") "false" or GC9A01A (Ball v1) "true" or ST7789V (Xingzhi Cube) "true"
 
 ###### Uncomment for breadboard 2.4" & Ball v1
   backlight_output_pin: "3" # Display Backlight
@@ -293,9 +293,9 @@ binary_sensor:
 
 output:
   - platform: ledc
-    pin: 42
     id: backlight_output
-    inverted: true 
+    pin:
+      number: ${backlight_output_pin}
 
   - platform: template
     id: clock_color_r
@@ -326,7 +326,7 @@ light:
     icon: "mdi:television"
     entity_category: config
     output: backlight_output
-    restore_mode: ALWAYS_ON
+    restore_mode: RESTORE_DEFAULT_ON
     default_transition_length: 250ms
   - platform: esp32_rmt_led_strip
     id: led
