@@ -17,7 +17,7 @@ substitutions:
 
   imagewidth: "240" # ILI9341 (breadboard 2.4") "240" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
   imageheight: "240" # ILI9341 (breadboard 2.4") "320" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
-  displaymodel: "ST7789V" # ILI9341 (breadboard 2.4"), GC9A01A (Ball v1) or ST7789V (Xingzhi Cube)
+  displaymodel: "GC9A01A" # ILI9341 (breadboard 2.4"), GC9A01A (Ball v1) or ST7789V (Xingzhi Cube)
   invertcolors: "true" # ILI9341 (breadboard 2.4") "false" or GC9A01A (Ball v1) "true" or ST7789V (Xingzhi Cube) "true"
 
 ###### Uncomment for breadboard 2.4" & Ball v1
