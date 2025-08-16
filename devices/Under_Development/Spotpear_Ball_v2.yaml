@@ -111,6 +111,7 @@ api:
             id(play_sound)->execute(true, id(ready_sound));
           }
         }
+    - script.execute: reset_screensaver
   on_client_disconnected:
     - script.execute: draw_display
 
