@@ -1,6 +1,6 @@
 substitutions:
-  name: esphome-web-d11acc
-  friendly_name: Xiaozhi DIY 2.4
+  name: esphome-web-619cd4
+  friendly_name: "Xiaozhi Ball v1"
 
 ## v2 yaml stripped from touchscreen and modified for v1, only testet on ball v1.
 
