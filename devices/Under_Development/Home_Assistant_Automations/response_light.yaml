@@ -1,0 +1,25 @@
+alias: jarvis voice light when thinking
+description: ""
+triggers:
+  - trigger: state
+    entity_id:
+      - assist_satellite.jarvis_voice_assist_satellite
+    to: processing
+conditions: []
+actions:
+  - action: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.esphome_web_0bac48
+  - wait_for_trigger:
+      - trigger: state
+        entity_id:
+          - assist_satellite.jarvis_voice_assist_satellite
+        to: responding
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.esphome_web_0bac48
+mode: single
