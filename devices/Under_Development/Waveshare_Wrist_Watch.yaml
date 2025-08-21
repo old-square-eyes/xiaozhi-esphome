@@ -1157,7 +1157,7 @@ touchscreen:
 display:
   - platform: mipi_spi
     id: main_display
-    model: AXS15231
+    model: CO5300
     cs_pin: 12
     reset_pin: 8
     update_interval: never
@@ -1168,16 +1168,6 @@ display:
 
     data_rate: 80MHz
     color_order: rgb
-
-    init_sequence:
-      - [0x11]              # Sleep Out
-      - [0xFE, 0x00]
-      - [0xC4, 0x80]        # SPI Mode Control
-      - [0x53, 0x20]        # CTRL Display1
-      - [0x63, 0xFF]        # Brightness HBM
-      - [0x29]              # Display On
-      - [0x51, 0xD0]        # Brightness Normal
-      - [0x58, 0x00]        # WCE: Contrast Enhancement Off
 
     pages:
       - id: idle_page
