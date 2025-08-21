@@ -1173,7 +1173,6 @@ display:
       - [0x11]              # Sleep Out
       - [0xFE, 0x00]
       - [0xC4, 0x80]        # SPI Mode Control
-      - [0x3A, 0x55]        # Pixel Format: 16bpp
       - [0x53, 0x20]        # CTRL Display1
       - [0x63, 0xFF]        # Brightness HBM
       - [0x29]              # Display On
