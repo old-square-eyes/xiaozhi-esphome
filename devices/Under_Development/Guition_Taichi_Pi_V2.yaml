@@ -17,7 +17,7 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "Gwen" # options are:
+  imagemodel: "ha-girl" # options are:
 
 ##################################################################################################################################################
 # Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley, Jarvis,
@@ -35,6 +35,8 @@ substitutions:
   imageheight: "360"
   rotate_display: "180"
 
+  pdm_mic_type: "true" # False for v1, true for v2.
+ 
 ##################################################################################################################################################
 
   loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
@@ -113,7 +115,6 @@ api:
             id(play_sound)->execute(true, id(ready_sound));
           }
         }
-    - script.execute: reset_screensaver
   on_client_disconnected:
     - script.execute: draw_display
 
@@ -306,7 +307,7 @@ microphone:
     i2s_din_pin: GPIO46
     adc_type: external
     channel: left
-    pdm: true
+    pdm: ${pdm_mic_type} 
     sample_rate: 16000
     bits_per_sample: 16bit
     use_apll: true 
@@ -1472,13 +1473,7 @@ display:
       - [ 0xD9, 0xAA ]
       - [ 0xF3, 0x01 ]
       - [ 0xF0, 0x00 ]
-      - [ 0x21, 0x00 ]
-      - [ 0x2A, 0x00, 0x00, 0x01, 0x67 ]   # COLADDR: 0..359
-      - [ 0x2B, 0x00, 0x00, 0x01, 0x67 ]   # ROWADDR: 0..359
-      - [ 0x3A, 0x55 ]  # 16-bit      
-      - [ 0x11, 0x00 ]   # sleep out
-      - delay 120ms
-      - [ 0x29, 0x00 ]   # **display on**
+
 
 
     pages:
