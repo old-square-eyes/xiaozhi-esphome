@@ -2,8 +2,8 @@ substitutions:
   name: esphome-web-619cd4
   friendly_name: "Xiaozhi Ball v1"
 
-## v2 yaml stripped from touchscreen and modified for v1, only testet on ball v1.
-
+## VERSION 1.03 dev. ##
+## minor memory fixes, clock select from HA, remove 1 font (req/res font same), remove alpha_channel
 ## VERSION 1.02 dev. ##
 ## cleandup and fixes.
 ## VERSION 1.01 dev. ##
@@ -18,17 +18,13 @@ substitutions:
 ## First working code
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "HA-character" # options are:
-
-##################################################################################################################################################
-# Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley, Jarvis,
-# Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
-##################################################################################################################################################
-
   startup_sound: "Home_Connected_Male" # (options are: available, Home_ Connected, Home_ Connected_Male, Computer_Ready)
+  clock_background_image: "ha-girl" # (options are: clock, hacker, ha-girl, starrysky)
+  imagemodel: "ha-girl" # options are:
 
-  clock_type: "flip_clock" # (options are: default_clock, flip_clock, clock_7segment)
-  clock_background_image: "hacker" # (options are: clock, hacker, starrysky)
+# Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
+# Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
+##################################################################################################################################################
 
   imagewidth: "240" # ILI9341 (breadboard 2.4") "240" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
   imageheight: "240" # ILI9341 (breadboard 2.4") "320" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
@@ -590,17 +586,15 @@ interval:
             and:
               - lambda: return id(voice_assistant_phase) == ${voice_assist_idle_phase_id};
               - switch.is_off: mute
-              - lambda: return id(clock_enabled).state;   # screensaver enabled?
+              - lambda: return id(clock_enabled).state;
           then:
             - lambda: |-
                 id(idle_seconds)++;
-                // Use HA-configured delay (cast to int)
                 int delay_s = (int) id(clock_delay_seconds).state;
-                delay_s = delay_s <= 0 ? 30 : delay_s; // safety fallback
+                delay_s = delay_s <= 0 ? 30 : delay_s;
                 if (id(idle_seconds) >= delay_s && !id(show_clock)) {
                   id(show_clock) = true;
-                  id(main_display).show_page(${clock_type});
-                  id(main_display).update();
+                  id(show_clock_page).execute();
                 }
           else:
             - lambda: |-
@@ -609,7 +603,6 @@ interval:
                 }
                 id(idle_seconds) = 0;
 
-      # Keep the clock ticking every second when active
       - if:
           condition:
             lambda: return id(show_clock);
@@ -636,8 +629,7 @@ script:
                             if (id(voice_assistant_phase) == ${voice_assist_idle_phase_id}
                                 && id(show_clock)
                                 && id(clock_enabled).state) {
-                              id(main_display).show_page(${clock_type});
-                              id(main_display).update();
+                              id(show_clock_page).execute();
                               return;
                             }
                             switch(id(voice_assistant_phase)) {
@@ -911,6 +903,19 @@ script:
       - display.page.show: idle_page
       - component.update: main_display
 
+  - id: show_clock_page
+    then:
+      - lambda: |-
+          const std::string sel = id(clock_style).state;
+          if (sel == "Default") {
+            id(main_display).show_page(default_clock);
+          } else if (sel == "Flip") {
+            id(main_display).show_page(flip_clock);
+          } else { // "7-segment" or any unrecognized value
+            id(main_display).show_page(clock_7segment);
+          }
+          id(main_display).update();
+
 switch:
   - platform: template
     name: Mute
@@ -1092,6 +1097,25 @@ select:
                         switch.is_off: mute
                       then:
                         - micro_wake_word.start
+
+  - platform: template
+    entity_category: config
+    name: "Clock Style"
+    id: clock_style
+    icon: "mdi:clock-digital"
+    optimistic: true
+    restore_value: true
+    options:
+      - 7-segment
+      - Flip
+      - Default
+    initial_option: 7-segment
+    on_value:
+      - if:
+          condition:
+            lambda: return id(show_clock);
+          then:
+            - script.execute: show_clock_page
 
 globals:
   - id: init_in_progress
