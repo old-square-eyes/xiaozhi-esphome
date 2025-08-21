@@ -3,7 +3,7 @@ substitutions:
   friendly_name: "Xiaozhi Ball V2"
 
 ## VERSION 1.03 dev. ##
-## minor memory fixes
+## minor memory fixes, clock select from HA.
 ## VERSION 1.02 dev. ##
 ## cleandup and fixes.
 ## VERSION 1.01 dev. ##
