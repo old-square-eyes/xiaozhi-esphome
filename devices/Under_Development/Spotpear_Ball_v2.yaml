@@ -2,10 +2,12 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
+## VERSION 1.03 dev. ##
+## minor memory fixes
 ## VERSION 1.02 dev. ##
 ## cleandup and fixes.
 ## VERSION 1.01 dev. ##
-## ADDED; clock when idle more than 30 seconds.
+## ADDED; clock when idle more than 10 seconds.
 ## ADDED; virtual touch, so same functionality as touch is available from home assistant (start, stop, stop timer alarm)
 ## ADDED: use og playing.png emo when playing music on mediaplayer, still changes to clock after 30 seconds.
 ## ADDED: timer ringing entity so the alert can trigger other things through automations.
@@ -14,16 +16,17 @@ substitutions:
 ##
 ## VERSION 1.00 ##
 ## First working code
+
 ## SETTINGS ######################################################################################################################################
 
-  imagemodel: "HA-character" # options are:
+  imagemodel: "ha-girl" # options are:
 
-##################################################################################################################################################
 # Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley, Jarvis,
 # Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
 ##################################################################################################################################################
 
   startup_sound: "Home_Connected_Male" # (options are: available, Home_ Connected, Home_ Connected_Male, Computer_Ready)
+  wakeword_model: "okay_nabu" # (options are: okay_nabu, hey_jarvis, alexa, hey_mycroft)
 
   clock_type: "clock_7segment" # (options are: default_clock, flip_clock, clock_7segment)
   clock_background_image: "starrysky" # (options are: clock, hacker, starrysky)
@@ -120,6 +123,7 @@ ota:
     id: ota_esphome
 
 logger:
+#  level: WARN
   hardware_uart: USB_SERIAL_JTAG
 
 wifi:
@@ -171,7 +175,7 @@ sensor:
     id: battery_voltage
     attenuation: 12db
     accuracy_decimals: 2
-    update_interval: 1s
+    update_interval: 10s
     unit_of_measurement: "V"
     icon: mdi:battery-medium
     filters:
@@ -179,35 +183,36 @@ sensor:
       - median:
           window_size: 7
           send_every: 7
-          send_first_at: 7
+          send_first_at: 1
       - throttle: 1min
     on_value:
       then:
-        - component.update: battery_percentage
+        - sensor.template.publish:
+            id: battery_percentage
+            state: !lambda 'return x;'
       
   - platform: template
     id: battery_percentage
     name: "Battery Percentage"
-    lambda: return id(battery_voltage).state;
-    accuracy_decimals: 0
-    update_interval: 1min
+    update_interval: never
     unit_of_measurement: "%"
+    accuracy_decimals: 0
     icon: mdi:battery-medium
     filters:
       - calibrate_linear:
-         method: exact
-         datapoints:
-          - 2.80 -> 0.0
-          - 3.10 -> 10.0
-          - 3.30 -> 20.0
-          - 3.45 -> 30.0
-          - 3.60 -> 40.0
-          - 3.70 -> 50.0
-          - 3.75 -> 60.0
-          - 3.80 -> 70.0
-          - 3.90 -> 80.0
-          - 4.00 -> 90.0
-          - 4.20 -> 100.0
+          method: exact
+          datapoints:
+            - 2.80 -> 0.0
+            - 3.10 -> 10.0
+            - 3.30 -> 20.0
+            - 3.45 -> 30.0
+            - 3.60 -> 40.0
+            - 3.70 -> 50.0
+            - 3.75 -> 60.0
+            - 3.80 -> 70.0
+            - 3.90 -> 80.0
+            - 4.00 -> 90.0
+            - 4.20 -> 100.0
       - lambda: |-
           if (x > 100) return 100;
           if (x < 0) return 0;
@@ -473,6 +478,7 @@ media_player:
 micro_wake_word:
   id: mww
   models:
+#    - ${wakeword_model}
     - okay_nabu
     - hey_jarvis
     - alexa
@@ -1172,78 +1178,57 @@ image:
     id: casita_error
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${idle_illustration_file}
     id: casita_idle
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${listening_illustration_file}
     id: casita_listening
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${thinking_illustration_file}
     id: casita_thinking
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${replying_illustration_file}
     id: casita_replying
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${timer_finished_illustration_file}
     id: casita_timer_finished
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${loading_illustration_file}
     id: casita_initializing
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${mute_illustration_file}
     id: casita_muted
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${playing_illustration_file}
     id: casita_playing
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${clock_background_file}
     id: clock_background
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: https://raw.githubusercontent.com/RealDeco/xiaozhi-esphome/main/images/Other/error-no-wifi.png
     id: error_no_wifi
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/error-no-ha.png
     id: error_no_ha
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
 
 font:
   - file:
       type: gfonts
       family: ${font_family}
       weight: 300
-      italic: true
-    id: font_request
-    size: 15
-    glyphsets:
-      - ${font_glyphsets}
-  - file:
-      type: gfonts
-      family: ${font_family}
-      weight: 300
-    id: font_response
+    id: font_request_response
     size: 15
     glyphsets:
       - ${font_glyphsets}
@@ -1373,7 +1358,7 @@ display:
     id: main_display
     model: ${displaymodel}
     invert_colors: ${invertcolors}
-    data_rate: 40MHz
+    data_rate: 20MHz
     cs_pin: GPIO5
     dc_pin: GPIO47
     reset_pin:
@@ -1464,7 +1449,7 @@ display:
             it.filled_rectangle(x0, y0, box_w, box_h, Color::WHITE);
             it.rectangle(x0, y0, box_w, box_h, Color::BLACK);
             // center text horizontally
-            it.printf(W / 2, y0 + 5, id(font_request), Color::BLACK, TextAlign::TOP_CENTER, "%s",
+            it.printf(W / 2, y0 + 5, id(font_request_response), Color::BLACK, TextAlign::TOP_CENTER, "%s",
                       id(text_request).state.c_str());
           }
           id(draw_timer_timeline).execute();
@@ -1485,7 +1470,7 @@ display:
             it.filled_rectangle(x0, y0, box_w, box_h, Color::WHITE);
             it.rectangle(x0, y0, box_w, box_h, Color::BLACK);
             // center text horizontally
-            it.printf(W / 2, y0 + 5, id(font_response), Color::BLACK, TextAlign::TOP_CENTER, "%s",
+            it.printf(W / 2, y0 + 5, id(font_request_response), Color::BLACK, TextAlign::TOP_CENTER, "%s",
                       id(text_response).state.c_str());
           }
           id(draw_timer_timeline).execute();
