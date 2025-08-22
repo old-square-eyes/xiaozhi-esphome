@@ -119,14 +119,36 @@ api:
       variables:
         url: string
       then:
+        # 1) Set URL and fetch once
         - online_image.set_url:
             id: temp_fullscreen
             url: !lambda 'return url;'
             update: true
+
+        # 2) Brief prefetch (tweak 500–1500ms as needed)
         - delay: 1200ms
+
+        # 3) Show full-screen now
         - display.page.show: empty_clock
         - component.update: main_display
+
+        # 4) Start normal return timer (only matters if screensaver is ON)
         - script.execute: reset_screensaver
+
+        # 5) If screensaver is OFF, do our own return after the same delay
+        - if:
+            condition:
+              switch.is_off: clock_enabled
+            then:
+              - delay: !lambda |-
+                  int s = (int) id(clock_delay_seconds).state;
+                  if (s <= 0) s = 10;
+                  return (uint32_t)(s * 1000);
+              - display.page.show: idle_page
+              - component.update: main_display
+              # optional: free RAM for the temp image
+              - online_image.release: temp_fullscreen
+
 
 ota:
   - platform: esphome
@@ -247,12 +269,18 @@ sensor:
           return x;
     on_value:
       then:
+        # Only act on real % changes
         - lambda: |-
-            int current = (int)x;
-            if (current != id(last_battery_percent)) {
-              id(last_battery_percent) = current;
-              id(draw_display).execute();
-            }
+            int current = (int) x;
+            if (current == id(last_battery_percent)) return;
+            id(last_battery_percent) = current;
+
+        # If the battery overlay is visible, just repaint the current page
+        - if:
+            condition:
+              switch.is_on: show_battery_status
+            then:
+              - component.update: main_display
 
 binary_sensor:
   - platform: template
