@@ -2331,4 +2331,3 @@ display:
           const int H = it.get_height();
           // MUST be temp_fullscreen here:
           it.image(W / 2, H / 2, id(temp_fullscreen), ImageAlign::CENTER);
-
