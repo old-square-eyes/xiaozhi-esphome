@@ -2,6 +2,13 @@ substitutions:
   name: esphome-web-619cd4
   friendly_name: "Xiaozhi Ball v1"
 
+## VERSION 1.04 dev. ##
+## ADDED: online clock wallpaper with select in HA. API service to send image from HA:
+##
+## service: esphome.esphome_web_0bac48_show_fullscreen_image
+## data:
+##   url: "http://homeassistant.local:8123/local/funny.png"
+##
 ## VERSION 1.03 dev. ##
 ## minor memory fixes, clock select from HA, remove 1 font (req/res font same), remove alpha_channel
 ## VERSION 1.02 dev. ##
@@ -16,6 +23,7 @@ substitutions:
 ##
 ## VERSION 1.00 ##
 ## First working code
+
 ## SETTINGS ######################################################################################################################################
 
   startup_sound: "Home_Connected" # (options are: available, Home_ Connected, Home_ Connected_Male, Computer_Ready)
@@ -129,6 +137,31 @@ api:
   on_client_disconnected:
     - script.execute: draw_display
 
+  actions:
+    - action: show_fullscreen_image
+      variables:
+        url: string
+      then:
+        - online_image.set_url:
+            id: temp_fullscreen
+            url: !lambda 'return url;'
+            update: true
+        - delay: 1200ms
+        - display.page.show: empty_clock
+        - component.update: main_display
+        - script.execute: reset_screensaver
+        - if:
+            condition:
+              switch.is_off: clock_enabled
+            then:
+              - delay: !lambda |-
+                  int s = (int) id(clock_delay_seconds).state;
+                  if (s <= 0) s = 10;
+                  return (uint32_t)(s * 1000);
+              - display.page.show: idle_page
+              - component.update: main_display
+              - online_image.release: temp_fullscreen
+
 ota:
   - platform: esphome
     id: ota_esphome
@@ -153,6 +186,12 @@ http_request:
 
 online_image:
   - id: clock_background
+    url: ${clock_background_file}
+    format: PNG
+    type: RGB565
+    resize: ${imagewidth}x${imageheight}
+    update_interval: never
+  - id: temp_fullscreen
     url: ${clock_background_file}
     format: PNG
     type: RGB565
@@ -241,11 +280,14 @@ sensor:
     on_value:
       then:
         - lambda: |-
-            int current = (int)x;
-            if (current != id(last_battery_percent)) {
-              id(last_battery_percent) = current;
-              id(draw_display).execute();
-            }
+            int current = (int) x;
+            if (current == id(last_battery_percent)) return;
+            id(last_battery_percent) = current;
+        - if:
+            condition:
+              switch.is_on: show_battery_status
+            then:
+              - component.update: main_display
 
 binary_sensor:
   - platform: gpio
@@ -414,13 +456,11 @@ media_player:
         file: ${startup_sound_file}
 
     on_announcement:
-      # Stop the wake word (mWW or VA) if the mic is capturing
       - if:
           condition:
             - microphone.is_capturing:
           then:
             - script.execute: stop_wake_word
-            # Ensure VA stops before moving on
             - if:
                 condition:
                   - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
@@ -429,15 +469,12 @@ media_player:
                       - not:
                           voice_assistant.is_running:
 
-      # Distinguish internal vs external regardless of VA running
       - if:
           condition:
             lambda: 'return id(playing_internal_sound);'
           then:
-            # Internal sound (wake, etc)
             - lambda: 'id(playing_internal_sound) = false;'
           else:
-            # External (from Home Assistant): show Now Playing
             - script.execute: reset_screensaver
             - display.page.show: now_playing_page
             - component.update: main_display
@@ -519,19 +556,16 @@ voice_assistant:
     - lambda: 'id(playing_internal_sound) = true;'
     - script.execute: draw_display
   on_end:
-    # Wait a short amount of time to see if an announcement starts
     - wait_until:
         condition:
           - media_player.is_announcing:
         timeout: 0.5s
-    # Announcement is finished and the I2S bus is free
     - wait_until:
         - and:
             - not:
                 media_player.is_announcing:
             - not:
                 speaker.is_playing:
-    # Restart only mWW if enabled; streaming wake words automatically restart
     - if:
         condition:
           - lambda: return id(wake_word_engine_location).state == "On device";
@@ -540,7 +574,6 @@ voice_assistant:
           - micro_wake_word.start:
     - script.execute: set_idle_or_mute_phase
     - script.execute: draw_display
-    # Clear text sensors
     - text_sensor.template.publish:
         id: text_request
         state: ""
@@ -2239,3 +2272,11 @@ display:
             it.printf(tx+1, ty+1, id(font_battery), Color::BLACK, TextAlign::CENTER, "%s", txt);
             it.printf(tx,   ty,   id(font_battery), Color::WHITE, TextAlign::CENTER, "%s", txt);
           }
+
+      - id: empty_clock
+        lambda: |-
+          it.fill(Color::BLACK);
+          const int W = it.get_width();
+          const int H = it.get_height();
+          // MUST be temp_fullscreen here:
+          it.image(W / 2, H / 2, id(temp_fullscreen), ImageAlign::CENTER);
