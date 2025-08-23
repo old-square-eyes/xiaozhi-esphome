@@ -2,6 +2,13 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
+## VERSION 1.04 dev. ##
+## ADDED: online clock wallpaper with select in HA. API service to send image from HA:
+##
+## service: esphome.esphome_web_0bac48_show_fullscreen_image
+## data:
+##   url: "http://homeassistant.local:8123/local/funny.png"
+##
 ## VERSION 1.03 dev. ##
 ## minor memory fixes, clock select from HA, remove 1 font (req/res font same), remove alpha_channel
 ## VERSION 1.02 dev. ##
@@ -119,23 +126,14 @@ api:
       variables:
         url: string
       then:
-        # 1) Set URL and fetch once
         - online_image.set_url:
             id: temp_fullscreen
             url: !lambda 'return url;'
             update: true
-
-        # 2) Brief prefetch (tweak 500–1500ms as needed)
         - delay: 1200ms
-
-        # 3) Show full-screen now
         - display.page.show: empty_clock
         - component.update: main_display
-
-        # 4) Start normal return timer (only matters if screensaver is ON)
         - script.execute: reset_screensaver
-
-        # 5) If screensaver is OFF, do our own return after the same delay
         - if:
             condition:
               switch.is_off: clock_enabled
@@ -146,7 +144,6 @@ api:
                   return (uint32_t)(s * 1000);
               - display.page.show: idle_page
               - component.update: main_display
-              # optional: free RAM for the temp image
               - online_image.release: temp_fullscreen
 
 
@@ -269,13 +266,10 @@ sensor:
           return x;
     on_value:
       then:
-        # Only act on real % changes
         - lambda: |-
             int current = (int) x;
             if (current == id(last_battery_percent)) return;
             id(last_battery_percent) = current;
-
-        # If the battery overlay is visible, just repaint the current page
         - if:
             condition:
               switch.is_on: show_battery_status
@@ -493,13 +487,11 @@ media_player:
         file: ${startup_sound_file}
 
     on_announcement:
-      # Stop the wake word (mWW or VA) if the mic is capturing
       - if:
           condition:
             - microphone.is_capturing:
           then:
             - script.execute: stop_wake_word
-            # Ensure VA stops before moving on
             - if:
                 condition:
                   - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
@@ -507,16 +499,12 @@ media_player:
                   - wait_until:
                       - not:
                           voice_assistant.is_running:
-
-      # Distinguish internal vs external regardless of VA running
       - if:
           condition:
             lambda: 'return id(playing_internal_sound);'
           then:
-            # Internal sound (wake, etc)
             - lambda: 'id(playing_internal_sound) = false;'
           else:
-            # External (from Home Assistant): show Now Playing
             - script.execute: reset_screensaver
             - display.page.show: now_playing_page
             - component.update: main_display
@@ -598,19 +586,16 @@ voice_assistant:
     - lambda: 'id(playing_internal_sound) = true;'
     - script.execute: draw_display
   on_end:
-    # Wait a short amount of time to see if an announcement starts
     - wait_until:
         condition:
           - media_player.is_announcing:
         timeout: 0.5s
-    # Announcement is finished and the I2S bus is free
     - wait_until:
         - and:
             - not:
                 media_player.is_announcing:
             - not:
                 speaker.is_playing:
-    # Restart only mWW if enabled; streaming wake words automatically restart
     - if:
         condition:
           - lambda: return id(wake_word_engine_location).state == "On device";
@@ -619,7 +604,6 @@ voice_assistant:
           - micro_wake_word.start:
     - script.execute: set_idle_or_mute_phase
     - script.execute: draw_display
-    # Clear text sensors
     - text_sensor.template.publish:
         id: text_request
         state: ""
@@ -1104,7 +1088,6 @@ switch:
     restore_mode: RESTORE_DEFAULT_ON
     entity_category: config
     on_turn_off:
-      # If it was showing, hide it immediately
       - lambda: |-
           if (id(show_clock)) id(show_clock) = false;
           id(idle_seconds) = 0;
@@ -1125,7 +1108,7 @@ switch:
     icon: "mdi:timer-outline"
     entity_category: config
     optimistic: true
-    restore_mode: RESTORE_DEFAULT_ON  # starts with seconds visible
+    restore_mode: RESTORE_DEFAULT_ON
 
   - platform: template
     id: clock_show_date
@@ -1208,7 +1191,6 @@ select:
       - Default
     initial_option: 7-segment
     on_value:
-      # If the screensaver is currently shown, immediately redraw it in the new style
       - if:
           condition:
             lambda: return id(show_clock);
