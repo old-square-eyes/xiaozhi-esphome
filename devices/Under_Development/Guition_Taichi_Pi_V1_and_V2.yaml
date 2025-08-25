@@ -21,8 +21,8 @@ substitutions:
   imagemodel: "Gwen" # options are:
 
 ##################################################################################################################################################
-# Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley, Jarvis,
-# Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
+# Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
+# Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
 ##################################################################################################################################################
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
@@ -1282,15 +1282,6 @@ display:
     id: main_display
     model: ${display_model}
     rotation: ${rotate_display}
-    invert_colors: true
-    data_rate: 40MHz
-    cs_pin: 10
-    reset_pin: 47
-#      inverted: true
-    update_interval: never
-    dimensions:
-        height: ${imageheight}
-        width: ${imagewidth}
     pages:
       - id: idle_page
         lambda: |-
