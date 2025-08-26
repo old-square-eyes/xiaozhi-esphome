@@ -3,11 +3,8 @@
 
 Welcome! Here you'll find my **work-in-progress code** for all devices i currently work on:
 
-* **`Guition_Taichi_Pi_V1.yaml`**
-  For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V1.
-
-* **`Guition_Taichi_Pi_V2.yaml`**
-  For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V2.
+* **`Guition_Taichi_Pi_V1_and_V2.yaml`**
+  For GUITION 1.8” 360x360 ESP32-S3-JC3636W518 V1 & V2
 
 * **`Spotpear_Ball_v1.yaml`**
   For **Ball v1**, **DIY models** and **xingzhi-cube-1.54** (comming soon)
