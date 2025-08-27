@@ -1,5 +1,5 @@
 substitutions:
-  name: esphome-web-e9f624
+  name: esphome-web-d81da0
   friendly_name: Waveshare_1.85 LCD
 
 ### THIS IS A BLIND TEST SO NO IDEA IF IT'S WORKING - ONLY FOR WAVESHARE 1.85 LCD ###
@@ -289,7 +289,7 @@ microphone:
     i2s_audio_id: i2s_mic
     i2s_din_pin: GPIO39
     adc_type: external
-    channel: left
+    channel: right
     pdm: false
     sample_rate: 16000
     bits_per_sample: 16bit
@@ -1231,7 +1231,7 @@ i2c:
 touchscreen:
   - platform: cst816
     id: my_touchscreen
-    interrupt_pin: GPIO4
+    interrupt_pin: 4
     display: main_display
     i2c_id: touchscreen_bus
     on_touch:
@@ -1248,14 +1248,14 @@ touchscreen:
             state: OFF
 
 display:
-  - platform: ${display_platform}
+  - platform: mipi_spi
     id: main_display
-    model: ${display_model}
-    rotation: ${rotate_display}
+    model: JC3636W518
+    rotation: 180
     invert_colors: true
     data_rate: 40MHz
     cs_pin: 21
-
+    reset_pin: 12
     update_interval: never
     dimensions:
         height: ${imageheight}
