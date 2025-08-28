@@ -18,8 +18,8 @@
 ---
 
 <div align="center">
+  <img src="https://github.com/user-attachments/assets/1b2064e1-f782-4055-ba86-027fdd94931f" width="250" alt="Waveshare Device Screenshot" />
   <img src="https://github.com/user-attachments/assets/968501c5-c2a0-4763-b82e-b4a91fdfa802" width="250" alt="Waveshare Device Screenshot" />
   <img src="https://github.com/user-attachments/assets/5dacb9c1-3017-4d1b-8ef6-7eb89e45ff76" width="250" alt="Waveshare Device Screenshot" />
-  <img src="https://github.com/user-attachments/assets/1b2064e1-f782-4055-ba86-027fdd94931f" width="250" alt="Waveshare Device Screenshot" />
 </div>
 ---
