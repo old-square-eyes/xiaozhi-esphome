@@ -2,22 +2,18 @@ substitutions:
   name: esphome-web-d81da0
   friendly_name: Waveshare_1.85 LCD
 
-### THIS IS A BLIND TEST SO NO IDEA IF IT'S WORKING - ONLY FOR WAVESHARE 1.85 LCD ###
+### THIS IS FOR ESP32-S3-Touch-LCD-1.85C and ESP32-S3-Touch-LCD-1.85C-BOX ###
 
 ## SETTINGS ######################################################################################################################################
 
+  startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
+  clock_background_image: "hacker" # (options are: clock, hacker, ha-girl, mission, starrysky)
+  clock_type: "flip_clock" # (options are: default_clock, flip_clock, clock_7segment)
   imagemodel: "Gwen" # options are:
 
+# Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
+# Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
 ##################################################################################################################################################
-# Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, Hacker, Harley, Jarvis,
-# Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
-##################################################################################################################################################
-
-  startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
-
-  clock_timezone: "Europe/Copenhagen"
-  clock_background_image: "hacker" # (options are: clock, hacker, starrysky)
-  clock_type: "flip_clock" # (options are: default_clock, flip_clock, clock_7segment)
 
   display_platform: "mipi_spi"
   display_model: "JC3636W518"
@@ -126,9 +122,8 @@ wifi:
 captive_portal:
 
 time:
-  - platform: sntp
-    id: sntp_time
-    timezone: ${clock_timezone}
+  - platform: homeassistant
+    id: homeassistant_time
 
 button:
   - platform: factory_reset
@@ -1247,19 +1242,20 @@ touchscreen:
             id: touch_input
             state: OFF
 
+pca9554:
+  - id: pca9554a_device
+    address: 0x20
+
 display:
-  - platform: mipi_spi
+  - platform: ${display_platform}
     id: main_display
-    model: JC3636W518
-    rotation: 180
-    invert_colors: true
-    data_rate: 40MHz
+    model: ${display_model}
+    rotation: ${rotate_display}
     cs_pin: 21
-    reset_pin: 12
+    reset_pin:
+      pca9554: pca9554a_device
+      number: 1
     update_interval: never
-    dimensions:
-        height: ${imageheight}
-        width: ${imagewidth}
     pages:
       - id: idle_page
         lambda: |-
@@ -1407,7 +1403,7 @@ display:
           };
 
           // ---------- Time ----------
-          auto now = id(sntp_time).now();
+          auto now = id(homeassistant_time).now();
           const int sec    = now.second;
           const int minute = now.minute;
           const int hour12 = now.hour % 12;
@@ -1511,7 +1507,7 @@ display:
           const Color HINGE(40, 40, 40);
           const Color COLON_DOT(180, 180, 180);
 
-          auto now = id(sntp_time).now();
+          auto now = id(homeassistant_time).now();
           int hour = now.hour;
           if (!id(clock_24h).state) {
             hour %= 12;
@@ -1680,7 +1676,7 @@ display:
           const Color MOON_DARK(60, 60, 60);
 
           // -------- time ----------
-          auto now = id(sntp_time).now();
+          auto now = id(homeassistant_time).now();
           int hour = now.hour;
           if (!id(clock_24h).state) {
             hour %= 12;
