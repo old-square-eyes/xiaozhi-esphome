@@ -276,7 +276,6 @@ i2s_audio:
   - id: i2s_audio_bus # For speaker
     i2s_lrclk_pin: GPIO38
     i2s_bclk_pin: GPIO48
-#    i2s_mclk_pin: GPIO21
 
 microphone:
   - platform: i2s_audio
@@ -288,7 +287,6 @@ microphone:
     pdm: false
     sample_rate: 16000
     bits_per_sample: 16bit
-    use_apll: true 
 
 speaker:
   - platform: i2s_audio
@@ -296,7 +294,7 @@ speaker:
     i2s_audio_id: i2s_audio_bus
     i2s_dout_pin: GPIO47
     dac_type: external
-    channel: stereo
+    channel: mono
 
 media_player:
   - platform: speaker
@@ -304,9 +302,10 @@ media_player:
     id: external_media_player
     announcement_pipeline:
       speaker: box_speaker
-      format: FLAC
+      format: WAV
       sample_rate: 16000
       num_channels: 1
+    buffer_size: 250000
     files:
       - id: timer_finished_sound
         file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/timer_finished.flac
