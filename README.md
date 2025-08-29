@@ -55,7 +55,7 @@ Video going through the esphome install of device was removed by youtube and my 
 * Xingzhi Cube 1.54
 * "Breadboard Mini", the $7 custom ESP32-S3 with everything onboard
 * Waveshare 2.06" OLED Wrist Watch
-* 
+* Waveshare ESP32-S3-Touch-LCD-1.85C
 ## 🛒 Where to Buy
 
 Ball v1 & v2: https://vi.aliexpress.com/item/1005008627679270.html
@@ -75,6 +75,8 @@ Breadboard: Look in devices/Breadboard: https://github.com/RealDeco/xiaozhi-esph
 Breadboard Mini: https://www.aliexpress.com/item/1005009448496585.html
 
 Waveshare 2.06" OLED Wrist Watch: https://vi.aliexpress.com/item/1005009516438849.html
+
+Waveshare ESP32-S3-Touch-LCD-1.85C: https://www.aliexpress.com/item/1005008634826817.html
 
 ## Accesories:
 
