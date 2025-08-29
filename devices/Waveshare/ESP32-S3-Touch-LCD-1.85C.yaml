@@ -1230,13 +1230,11 @@ touchscreen:
     i2c_id: touchscreen_bus
     on_touch:
       then:
-        - script.execute: handle_screen_tap
         - binary_sensor.template.publish:
             id: touch_input
             state: ON
     on_release:
       then:
-        - script.execute: reset_screensaver
         - binary_sensor.template.publish:
             id: touch_input
             state: OFF
