@@ -26,10 +26,6 @@ i2s_audio:
     i2s_lrclk_pin: GPIO45
     i2s_bclk_pin: GPIO9
     i2s_mclk_pin: GPIO16
-  - id: i2s_mic
-    # (uses same pins as above mic in your original — split buses if you want)
-    i2s_lrclk_pin: GPIO45
-    i2s_bclk_pin: GPIO9
 
 audio_dac:
   - platform: es8311
