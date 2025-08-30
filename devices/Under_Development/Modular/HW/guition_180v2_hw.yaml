@@ -43,7 +43,7 @@ touchscreen:
 display:
   - platform: mipi_spi
     id: main_display
-    model: JC3636W518v2
+    model: JC3636W518V2
     rotation: 180
     update_interval: never
     pages: !include ../display_pages.yaml
