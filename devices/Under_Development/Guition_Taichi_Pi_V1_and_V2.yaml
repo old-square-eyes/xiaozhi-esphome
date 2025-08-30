@@ -2,11 +2,19 @@ substitutions:
   name: esphome-web-e9f624
   friendly_name: Xiaozhi Taichi Pi v1
 
-## VERSION 1.02c combined for v1 and v2
+## VERSION 1.04c dev. combined for v1 and v2 ##
+## ADDED: online clock wallpaper with select in HA. API service to send image from HA:
+##
+## service: esphome.esphome_web_0bac48_show_fullscreen_image
+## data:
+##   url: "http://homeassistant.local:8123/local/funny.png"
+##
+## VERSION 1.03 dev. ##
+## minor memory fixes, clock select from HA, remove 1 font (req/res font same), remove alpha_channel
 ## VERSION 1.02 dev. ##
 ## cleandup and fixes.
 ## VERSION 1.01 dev. ##
-## ADDED; clock when idle more than 30 seconds.
+## ADDED; clock when idle more than 10 seconds.
 ## ADDED; virtual touch, so same functionality as touch is available from home assistant (start, stop, stop timer alarm)
 ## ADDED: use og playing.png emo when playing music on mediaplayer, still changes to clock after 30 seconds.
 ## ADDED: timer ringing entity so the alert can trigger other things through automations.
@@ -27,7 +35,7 @@ substitutions:
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
 
-  clock_type: "flip_clock" # (options are: default_clock, flip_clock, clock_7segment)
+  clock_type: "default_clock" # (options are: default_clock, flip_clock, clock_7segment)
   clock_background_image: "hacker" # (options are: clock, hacker, starrysky)
 
   display_model: "JC3636W518" # (JC3636W518 for v1, JC3636W518V2 for v2)
@@ -124,11 +132,38 @@ api:
   on_client_disconnected:
     - script.execute: draw_display
 
+  actions:
+    - action: show_fullscreen_image
+      variables:
+        url: string
+      then:
+        - online_image.set_url:
+            id: temp_fullscreen
+            url: !lambda 'return url;'
+            update: true
+        - delay: 1200ms
+        - display.page.show: empty_clock
+        - component.update: main_display
+        - script.execute: reset_screensaver
+#        - if:
+#            condition:
+#              switch.is_off: clock_enabled
+#            then:
+#              - delay: !lambda |-
+#                  int s = (int) id(clock_delay_seconds).state;
+#                  if (s <= 0) s = 10;
+#                  return (uint32_t)(s * 1000);
+#              - display.page.show: idle_page
+#              - component.update: main_display
+#              - online_image.release: temp_fullscreen
+
+
 ota:
   - platform: esphome
     id: ota_esphome
 
 logger:
+#  level: WARN
   hardware_uart: USB_SERIAL_JTAG
 
 wifi:
@@ -137,11 +172,29 @@ wifi:
   ap:
     password: "RZ7D3EzJdPM6"
   on_connect:
+    - component.update: clock_background
     - script.execute: draw_display
   on_disconnect:
     - script.execute: draw_display
 
 captive_portal:
+
+http_request:
+
+online_image:
+  - id: clock_background
+    url: ${clock_background_file}
+    format: PNG
+    type: RGB565
+    resize: ${imagewidth}x${imageheight}
+    update_interval: never
+  - id: temp_fullscreen
+    url: ${clock_background_file}
+    format: PNG
+    type: RGB565
+    resize: ${imagewidth}x${imageheight}
+    update_interval: never
+
 
 time:
   - platform: homeassistant
@@ -171,7 +224,7 @@ number:
     min_value: 5
     max_value: 600
     step: 5
-    initial_value: 30
+    initial_value: 10
 
 binary_sensor:
   - platform: template
@@ -203,11 +256,10 @@ binary_sensor:
                           else:
                             - voice_assistant.stop:  
 
-#      - timing:
-#          - ON for at least 1s
-#        then:
-#          - switch.toggle: show_battery_status
-#          - script.execute: draw_display
+      - timing:
+          - ON for at least 1s
+        then:
+          - script.execute: draw_display
 
   - platform: gpio
     pin:
@@ -255,7 +307,7 @@ binary_sensor:
 
 output:
   - platform: ledc
-    pin: 15
+    pin: GPIO15
     id: backlight_output
 
   - platform: template
@@ -263,21 +315,22 @@ output:
     type: float
     write_action:
       - lambda: |-
-          // value stored in state; nothing else to do
+          // Nothing to do — value is just stored
+          return;
 
   - platform: template
     id: clock_color_g
     type: float
     write_action:
       - lambda: |-
-          // value stored in state; nothing else to do
+          return;
 
   - platform: template
     id: clock_color_b
     type: float
     write_action:
       - lambda: |-
-          // value stored in state; nothing else to do
+          return;
 
 light:
   - platform: monochromatic
@@ -298,10 +351,10 @@ light:
     blue: clock_color_b
 
 i2s_audio:
-  - id: i2s_mic # For microphone
-    i2s_lrclk_pin: GPIO45 #WS 
-    i2s_bclk_pin: GPIO42  #SCK
-  - id: i2s_audio_bus # For speaker
+  - id: i2s_mic
+    i2s_lrclk_pin: GPIO45
+    i2s_bclk_pin: GPIO42
+  - id: i2s_audio_bus
     i2s_lrclk_pin: GPIO16
     i2s_bclk_pin: GPIO18
     i2s_mclk_pin: GPIO21
@@ -316,7 +369,6 @@ microphone:
     pdm: ${pdm_mic_type} 
     sample_rate: 16000
     bits_per_sample: 16bit
-    use_apll: true 
 
 speaker:
   - platform: i2s_audio
@@ -345,13 +397,11 @@ media_player:
         file: ${startup_sound_file}
 
     on_announcement:
-      # Stop the wake word (mWW or VA) if the mic is capturing
       - if:
           condition:
             - microphone.is_capturing:
           then:
             - script.execute: stop_wake_word
-            # Ensure VA stops before moving on
             - if:
                 condition:
                   - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
@@ -359,16 +409,12 @@ media_player:
                   - wait_until:
                       - not:
                           voice_assistant.is_running:
-
-      # Distinguish internal vs external regardless of VA running
       - if:
           condition:
             lambda: 'return id(playing_internal_sound);'
           then:
-            # Internal sound (wake, etc)
             - lambda: 'id(playing_internal_sound) = false;'
           else:
-            # External (from Home Assistant): show Now Playing
             - script.execute: reset_screensaver
             - display.page.show: now_playing_page
             - component.update: main_display
@@ -450,19 +496,16 @@ voice_assistant:
     - lambda: 'id(playing_internal_sound) = true;'
     - script.execute: draw_display
   on_end:
-    # Wait a short amount of time to see if an announcement starts
     - wait_until:
         condition:
           - media_player.is_announcing:
         timeout: 0.5s
-    # Announcement is finished and the I2S bus is free
     - wait_until:
         - and:
             - not:
                 media_player.is_announcing:
             - not:
                 speaker.is_playing:
-    # Restart only mWW if enabled; streaming wake words automatically restart
     - if:
         condition:
           - lambda: return id(wake_word_engine_location).state == "On device";
@@ -471,19 +514,13 @@ voice_assistant:
           - micro_wake_word.start:
     - script.execute: set_idle_or_mute_phase
     - script.execute: draw_display
-    # Clear text sensors
     - text_sensor.template.publish:
         id: text_request
         state: ""
     - text_sensor.template.publish:
         id: text_response
         state: ""
-#    - text_sensor.template.publish:
-#        id: text_request_full
-#        state: ""
-#    - text_sensor.template.publish:
-#        id: text_response_full
-#        state: ""
+
   on_error:
     - if:
         condition:
@@ -537,13 +574,11 @@ interval:
           then:
             - lambda: |-
                 id(idle_seconds)++;
-                // Use HA-configured delay (cast to int)
                 int delay_s = (int) id(clock_delay_seconds).state;
-                delay_s = delay_s <= 0 ? 30 : delay_s; // safety fallback
+                delay_s = delay_s <= 0 ? 30 : delay_s;
                 if (id(idle_seconds) >= delay_s && !id(show_clock)) {
                   id(show_clock) = true;
-                  id(main_display).show_page(${clock_type});
-                  id(main_display).update();
+                  id(show_clock_page).execute();
                 }
           else:
             - lambda: |-
@@ -552,7 +587,6 @@ interval:
                 }
                 id(idle_seconds) = 0;
 
-      # Keep the clock ticking every second when active
       - if:
           condition:
             lambda: return id(show_clock);
@@ -579,8 +613,7 @@ script:
                             if (id(voice_assistant_phase) == ${voice_assist_idle_phase_id}
                                 && id(show_clock)
                                 && id(clock_enabled).state) {
-                              id(main_display).show_page(${clock_type});
-                              id(main_display).update();
+                              id(show_clock_page).execute();
                               return;
                             }
                             switch(id(voice_assistant_phase)) {
@@ -803,7 +836,7 @@ script:
             - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
           else:
             - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
-      - script.execute: reset_screensaver
+
 
   - id: play_sound
     parameters:
@@ -854,6 +887,19 @@ script:
       - display.page.show: idle_page
       - component.update: main_display
 
+  - id: show_clock_page
+    then:
+      - lambda: |-
+          const std::string sel = id(clock_style).state;
+          if (sel == "Default") {
+            id(main_display).show_page(default_clock);
+          } else if (sel == "Flip") {
+            id(main_display).show_page(flip_clock);
+          } else { // "7-segment" or any unrecognized value
+            id(main_display).show_page(clock_7segment);
+          }
+          id(main_display).update();
+
 switch:
   - platform: template
     name: Mute
@@ -901,13 +947,6 @@ switch:
       - delay: 15min
       - switch.turn_off: timer_ringing
 
-  - platform: gpio
-    name: Speaker Enable
-    icon: "mdi:speaker"
-    entity_category: config
-    pin: GPIO48
-    restore_mode: RESTORE_DEFAULT_ON
-
   - platform: template
     id: wake_sound
     name: Wake sound
@@ -940,7 +979,6 @@ switch:
     restore_mode: RESTORE_DEFAULT_ON
     entity_category: config
     on_turn_off:
-      # If it was showing, hide it immediately
       - lambda: |-
           if (id(show_clock)) id(show_clock) = false;
           id(idle_seconds) = 0;
@@ -961,7 +999,7 @@ switch:
     icon: "mdi:timer-outline"
     entity_category: config
     optimistic: true
-    restore_mode: RESTORE_DEFAULT_ON  # starts with seconds visible
+    restore_mode: RESTORE_DEFAULT_ON
 
   - platform: template
     id: clock_show_date
@@ -1031,6 +1069,48 @@ select:
                       then:
                         - micro_wake_word.start
 
+  - platform: template
+    entity_category: config
+    name: "Clock Style"
+    id: clock_style
+    icon: "mdi:clock-digital"
+    optimistic: true
+    restore_value: true
+    options:
+      - 7-segment
+      - Flip
+      - Default
+    initial_option: 7-segment
+    on_value:
+      - if:
+          condition:
+            lambda: return id(show_clock);
+          then:
+            - script.execute: show_clock_page
+
+  - platform: template
+    entity_category: config
+    name: "Clock Wallpaper (Online)"
+    id: clock_wallpaper_image
+    icon: "mdi:image"
+    optimistic: true
+    restore_value: true
+    options:
+      - clock
+      - hacker
+      - ha-girl
+      - starrysky
+    initial_option: ${clock_background_image}
+    on_value:
+      - online_image.set_url:
+          id: clock_background
+          url: !lambda |-
+            std::string base = "https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/"
+                               "${imagewidth}x${imageheight}/";
+            return base + std::string(x) + ".png";
+          update: true
+      - script.execute: draw_display
+
 globals:
   - id: init_in_progress
     type: bool
@@ -1074,78 +1154,53 @@ image:
     id: casita_error
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${idle_illustration_file}
     id: casita_idle
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${listening_illustration_file}
     id: casita_listening
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${thinking_illustration_file}
     id: casita_thinking
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${replying_illustration_file}
     id: casita_replying
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${timer_finished_illustration_file}
     id: casita_timer_finished
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${loading_illustration_file}
     id: casita_initializing
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${mute_illustration_file}
     id: casita_muted
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: ${playing_illustration_file}
     id: casita_playing
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
-  - file: ${clock_background_file}
-    id: clock_background
-    resize: ${imagewidth}x${imageheight}
-    type: RGB565
-    transparency: alpha_channel
   - file: https://raw.githubusercontent.com/RealDeco/xiaozhi-esphome/main/images/Other/error-no-wifi.png
     id: error_no_wifi
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
   - file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/error-no-ha.png
     id: error_no_ha
     resize: ${imagewidth}x${imageheight}
     type: RGB565
-    transparency: alpha_channel
 
 font:
   - file:
       type: gfonts
       family: ${font_family}
       weight: 300
-      italic: true
-    id: font_request
-    size: 15
-    glyphsets:
-      - ${font_glyphsets}
-  - file:
-      type: gfonts
-      family: ${font_family}
-      weight: 300
-    id: font_response
+    id: font_request_response
     size: 15
     glyphsets:
       - ${font_glyphsets}
@@ -1162,16 +1217,15 @@ font:
       family: ${font_family}
       weight: 300
     id: font_timer
-    size: 30
+    size: 28
     glyphsets:
       - ${font_glyphsets}
-# 30/18 for 240x240, 42/24 for 360x360
   - file:
       type: gfonts
       family: Syne Mono
       weight: 400
     id: font_big_clock_mono
-    size: 40
+    size: 30
     glyphsets:
       - ${font_glyphsets}
   - file:
@@ -1179,7 +1233,7 @@ font:
       family: ${font_family}
       weight: 400
     id: font_big_date
-    size: 26
+    size: 18
     glyphsets:
       - ${font_glyphsets}
 
@@ -1287,8 +1341,6 @@ display:
         lambda: |-
           it.fill(id(idle_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_idle), ImageAlign::CENTER);
-          id(draw_timer_timeline).execute();
-          id(draw_active_timer_widget).execute();
       - id: listening_page
         lambda: |-
           it.fill(id(listening_color));
@@ -1311,11 +1363,10 @@ display:
             it.filled_rectangle(x0, y0, box_w, box_h, Color::WHITE);
             it.rectangle(x0, y0, box_w, box_h, Color::BLACK);
             // center text horizontally
-            it.printf(W / 2, y0 + 5, id(font_request), Color::BLACK, TextAlign::TOP_CENTER, "%s",
+            it.printf(W / 2, y0 + 5, id(font_request_response), Color::BLACK, TextAlign::TOP_CENTER, "%s",
                       id(text_request).state.c_str());
           }
           id(draw_timer_timeline).execute();
-
       - id: replying_page
         lambda: |-
           it.fill(id(replying_color));
@@ -1333,7 +1384,7 @@ display:
             it.filled_rectangle(x0, y0, box_w, box_h, Color::WHITE);
             it.rectangle(x0, y0, box_w, box_h, Color::BLACK);
             // center text horizontally
-            it.printf(W / 2, y0 + 5, id(font_response), Color::BLACK, TextAlign::TOP_CENTER, "%s",
+            it.printf(W / 2, y0 + 5, id(font_request_response), Color::BLACK, TextAlign::TOP_CENTER, "%s",
                       id(text_response).state.c_str());
           }
           id(draw_timer_timeline).execute();
@@ -1508,7 +1559,6 @@ display:
             else
               it.strftime(cx, cy + 14, id(font_big_date), clock_col, TextAlign::CENTER, "%a, %b %d", now);
           }
-
       - id: flip_clock
         lambda: |-
           // --- base / optional wallpaper ---
@@ -1680,7 +1730,6 @@ display:
               it.filled_circle(x, y, dot_r, sec_col);
             }
           }
-
       - id: clock_7segment
         lambda: |-
           // -------- background / optional wallpaper ----------
@@ -1937,3 +1986,10 @@ display:
               it.strftime(cx, date_y, id(font_big_date), FG, TextAlign::CENTER, "%a, %b %d", now);
             }
           }
+      - id: empty_clock
+        lambda: |-
+          it.fill(Color::BLACK);
+          const int W = it.get_width();
+          const int H = it.get_height();
+          // MUST be temp_fullscreen here:
+          it.image(W / 2, H / 2, id(temp_fullscreen), ImageAlign::CENTER);
