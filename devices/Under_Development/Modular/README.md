@@ -9,6 +9,23 @@ And if you believe the issue isn’t just user error, please report back. 😉
 
 ---
 
+```markdown
+## 🚀 Installation
+
+1. Copy the YAML for your device (e.g. `Muma.yaml`) into your **ESPHome** configuration.  
+   - Keep your own `name:` and `friendly_name:` values.  
+
+2. Install the firmware to your device.  
+
+3. (Optional) Update the **settings** section of the YAML if you want to:  
+   - Change the `imagemodel`  
+   - Change the `startup_sound`  
+
+4. The **background** can be set directly from **Home Assistant (HA)**.
+```
+
+---
+
 ## Previous Changes (before resetting to Modular 1.00)
 
 ### Version 1.06 (dev)
