@@ -6,8 +6,8 @@ substitutions:
 ## Split up the original yaml for easier maintance of many devices with different hardware.
 
 ## SETTINGS ######################################################################################################################################
-  imagewidth:  "240" # (options are: 240 for ball_v2, 360 for waveshare_185)
-  imageheight: "240" # (options are: 240 for ball_v2, 360 for waveshare_185)
+  imagewidth:  "240"
+  imageheight: "240"
 
   startup_sound: "Home_Connected" # (options are: available, Home_ Connected, Home_ Connected_Male, Computer_Ready)
   clock_background_image: "clock" # (options are: clock, hacker, ha-girl, mission, starrysky)
