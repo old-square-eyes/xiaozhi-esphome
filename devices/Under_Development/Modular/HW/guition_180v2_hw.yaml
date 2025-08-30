@@ -1,5 +1,10 @@
 # Taichi Pi v1 hardware pack (JC3636W518, CST816, I2S mic+speaker)
 
+external_components:
+  - source: github://pr#10392
+    components: [mipi_spi]
+    refresh: 1h
+
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
   id: display_qspi
