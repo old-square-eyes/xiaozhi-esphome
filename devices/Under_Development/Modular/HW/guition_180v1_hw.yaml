@@ -90,7 +90,7 @@ speaker:
 sensor:
   - platform: adc
     id: battery_voltage
-    pin: GPIO8
+    pin: GPIO1
     attenuation: 12db
     update_interval: 24h
     internal: true
