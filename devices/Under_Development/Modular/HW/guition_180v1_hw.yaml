@@ -1,0 +1,118 @@
+# Xiaozhi Taichi Pi v1 (ball_v1) hardware pack
+
+# --- EXTERNAL DISPLAY DRIVER --------------------------------------------------
+external_components:
+  - source: github://pr#10392
+    components: [mipi_spi]
+    refresh: 1h
+
+# --- BUSES / PERIPHERALS ------------------------------------------------------
+spi:
+  id: display_qspi
+  type: quad
+  clk_pin: 9
+  data_pins: [11, 12, 13, 14]
+
+i2c:
+  id: touchscreen_bus
+  sda: 7
+  scl: 8
+
+i2s_audio:
+  - id: i2s_mic
+    i2s_lrclk_pin: GPIO45
+    i2s_bclk_pin: GPIO42
+  - id: i2s_audio_bus
+    i2s_lrclk_pin: GPIO16
+    i2s_bclk_pin: GPIO18
+    i2s_mclk_pin: GPIO21
+
+# --- AUDIO DEVICES ------------------------------------------------------------
+microphone:
+  - platform: i2s_audio
+    id: box_mic
+    i2s_audio_id: i2s_mic
+    i2s_din_pin: GPIO46
+    adc_type: external
+    channel: left
+    pdm: false
+    sample_rate: 16000
+    bits_per_sample: 16bit
+
+speaker:
+  - platform: i2s_audio
+    id: box_speaker
+    i2s_audio_id: i2s_audio_bus
+    i2s_dout_pin: GPIO17
+    dac_type: external
+    sample_rate: 16000
+    channel: stereo
+
+# --- BACKLIGHT ----------------------------------------------------------------
+output:
+  - platform: ledc
+    id: backlight_output
+    pin: GPIO15
+    inverted: false
+
+light:
+  - platform: monochromatic
+    id: Sled
+    name: Screen
+    icon: "mdi:television"
+    entity_category: config
+    output: backlight_output
+    restore_mode: ALWAYS_ON
+    default_transition_length: 250ms
+
+# --- TOUCHSCREEN --------------------------------------------------------------
+touchscreen:
+  - platform: cst816
+    id: my_touchscreen
+    interrupt_pin: GPIO41
+    reset_pin: GPIO40
+    display: main_display
+    i2c_id: touchscreen_bus
+    on_touch:
+      then:
+        - binary_sensor.template.publish:
+            id: touch_input
+            state: ON
+    on_release:
+      then:
+        - binary_sensor.template.publish:
+            id: touch_input
+            state: OFF
+
+# --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
+display:
+  - platform: mipi_spi
+    id: main_display
+    model: JC3636W518
+    rotation: 180
+    update_interval: never
+    pages: !include ../display_pages.yaml
+
+# --- BATTERY ADC (OPTIONAL) ---------------------------------------------------
+sensor:
+  - platform: adc
+    pin: GPIO1
+    name: "Battery Voltage"
+    id: battery_voltage
+    attenuation: 12db
+    accuracy_decimals: 2
+    update_interval: 10s
+    unit_of_measurement: "V"
+    icon: mdi:battery-medium
+    filters:
+      - multiply: 3.0
+      - median:
+          window_size: 7
+          send_every: 7
+          send_first_at: 1
+      - throttle: 1min
+    on_value:
+      then:
+        - sensor.template.publish:
+            id: battery_percentage
+            state: !lambda 'return x;'
