@@ -84,7 +84,7 @@ speaker:
     i2s_dout_pin: GPIO17
     dac_type: external
     sample_rate: 16000
-    channel: mono
+    channel: stereo
 
 # --- BATTERY (FAKE SOURCE TO KEEP WIDGET HAPPY) -------------------------------
 sensor:
