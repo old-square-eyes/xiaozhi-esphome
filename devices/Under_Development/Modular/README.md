@@ -21,7 +21,9 @@ And if you believe the issue isn’t just user error, please report back. 😉
    - Change the `imagemodel`  
    - Change the `startup_sound`  
 
-4. The **background** can be set directly from **Home Assistant (HA)**.
+4. The **clockbackground** can be set directly from **Home Assistant (HA)**.
+
+After this, if there is a update, all you need to do is compile again.
 ```
 
 ---
