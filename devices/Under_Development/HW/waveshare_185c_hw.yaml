@@ -93,7 +93,7 @@ display:
       pca9554: pca9554a_device
       number: 1
     update_interval: never
-    pages: !include ../display_pages.yaml
+    pages: !include ./display_pages.yaml
 
 # --- BATTERY ADC --------------------------------------------------------------
 sensor:
