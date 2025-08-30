@@ -1,10 +1,4 @@
-# Xiaozhi Taichi Pi v1 (ball_v1) hardware pack
-
-# --- EXTERNAL DISPLAY DRIVER --------------------------------------------------
-external_components:
-  - source: github://pr#10392
-    components: [mipi_spi]
-    refresh: 1h
+# Taichi Pi v1 hardware pack (JC3636W518, CST816, I2S mic+speaker)
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
@@ -19,13 +13,57 @@ i2c:
   scl: 8
 
 i2s_audio:
+  # Microphone bus
   - id: i2s_mic
     i2s_lrclk_pin: GPIO45
-    i2s_bclk_pin: GPIO42
+    i2s_bclk_pin:  GPIO42
+
+  # Speaker bus
   - id: i2s_audio_bus
     i2s_lrclk_pin: GPIO16
-    i2s_bclk_pin: GPIO18
-    i2s_mclk_pin: GPIO21
+    i2s_bclk_pin:  GPIO18
+    i2s_mclk_pin:  GPIO21
+
+# --- TOUCHSCREEN --------------------------------------------------------------
+touchscreen:
+  - platform: cst816
+    id: my_touchscreen
+    interrupt_pin: GPIO41
+    reset_pin: GPIO40
+    display: main_display
+    i2c_id: touchscreen_bus
+    on_touch:
+      then:
+        - binary_sensor.template.publish: { id: touch_input, state: ON }
+    on_release:
+      then:
+        - binary_sensor.template.publish: { id: touch_input, state: OFF }
+
+# --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
+display:
+  - platform: mipi_spi
+    id: main_display
+    model: JC3636W518
+    rotation: 180
+    update_interval: never
+    pages: !include ../display_pages.yaml
+
+# --- BACKLIGHT ----------------------------------------------------------------
+output:
+  - platform: ledc
+    id: backlight_output
+    pin: GPIO15
+    inverted: false
+
+light:
+  - platform: monochromatic
+    id: Sled
+    name: Screen
+    icon: mdi:television
+    entity_category: config
+    output: backlight_output
+    restore_mode: ALWAYS_ON
+    default_transition_length: 250ms
 
 # --- AUDIO DEVICES ------------------------------------------------------------
 microphone:
@@ -46,71 +84,18 @@ speaker:
     i2s_dout_pin: GPIO17
     dac_type: external
     sample_rate: 16000
-    channel: stereo
+    channel: mono
 
-# --- BACKLIGHT ----------------------------------------------------------------
-output:
-  - platform: ledc
-    id: backlight_output
-    pin: GPIO15
-    inverted: false
-
-light:
-  - platform: monochromatic
-    id: Sled
-    name: Screen
-    icon: "mdi:television"
-    entity_category: config
-    output: backlight_output
-    restore_mode: ALWAYS_ON
-    default_transition_length: 250ms
-
-# --- TOUCHSCREEN --------------------------------------------------------------
-touchscreen:
-  - platform: cst816
-    id: my_touchscreen
-    interrupt_pin: GPIO41
-    reset_pin: GPIO40
-    display: main_display
-    i2c_id: touchscreen_bus
-    on_touch:
-      then:
-        - binary_sensor.template.publish:
-            id: touch_input
-            state: ON
-    on_release:
-      then:
-        - binary_sensor.template.publish:
-            id: touch_input
-            state: OFF
-
-# --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
-display:
-  - platform: mipi_spi
-    id: main_display
-    model: JC3636W518
-    rotation: 180
-    update_interval: never
-    pages: !include ../display_pages.yaml
-
-# --- BATTERY ADC (OPTIONAL) ---------------------------------------------------
+# --- BATTERY (FAKE SOURCE TO KEEP WIDGET HAPPY) -------------------------------
 sensor:
   - platform: adc
-    pin: GPIO1
-    name: "Battery Voltage"
     id: battery_voltage
+    pin: GPIO8
     attenuation: 12db
-    accuracy_decimals: 2
-    update_interval: 10s
-    unit_of_measurement: "V"
-    icon: mdi:battery-medium
+    update_interval: 24h
+    internal: true
     filters:
-      - multiply: 3.0
-      - median:
-          window_size: 7
-          send_every: 7
-          send_first_at: 1
-      - throttle: 1min
+      - lambda: 'return 4.20;'
     on_value:
       then:
         - sensor.template.publish:
