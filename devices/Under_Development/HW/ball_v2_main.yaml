@@ -2,8 +2,10 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
+## Modular version v1.00
+## Split up the original yaml for easier maintance of many devices with different hardware.
+
 ## SETTINGS ######################################################################################################################################
-  hw_model: "ball_v2" # (options are: ball_v2, waveshare_185)
   imagewidth:  "240" # (options are: 240 for ball_v2, 360 for waveshare_185)
   imageheight: "240" # (options are: 240 for ball_v2, 360 for waveshare_185)
 
