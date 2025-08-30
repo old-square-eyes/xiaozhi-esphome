@@ -1,7 +1,9 @@
 substitutions:
   name: esphome-web-d81da0
   friendly_name: Waveshare_1.85 LCD
- 
+
+## VERSION 1.06 dev. ##
+## FIX: mediaplayer buffer 250000, speaker WAV, mono, remove handle_screen_tap from touchscreen section.
 ## VERSION 1.05 dev. ##
 ## show image API got it's own timer, added block so it will only show image in idle or replying phase, added swtich for time, added clock wallpaper.
 ## VERSION 1.04 dev. ##
@@ -393,7 +395,6 @@ output:
     type: float
     write_action:
       - lambda: |-
-          // Nothing to do — value is just stored
           return;
 
   - platform: template
@@ -743,7 +744,6 @@ script:
             - display.page.show: initializing_page
             - component.update: main_display
 
-
   - id: fetch_first_active_timer
     then:
       - lambda: |
@@ -920,7 +920,6 @@ script:
             - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
           else:
             - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
-
 
   - id: play_sound
     parameters:
@@ -1426,10 +1425,17 @@ i2c:
   scl: 10
   id: touchscreen_bus
 
+pca9554:
+  - id: pca9554a_device
+    address: 0x20
+
 touchscreen:
   - platform: cst816
     id: my_touchscreen
     interrupt_pin: 4
+    reset_pin:
+      pca9554: pca9554a_device
+      number: 0
     display: main_display
     i2c_id: touchscreen_bus
     on_touch:
@@ -1442,10 +1448,6 @@ touchscreen:
         - binary_sensor.template.publish:
             id: touch_input
             state: OFF
-
-pca9554:
-  - id: pca9554a_device
-    address: 0x20
 
 display:
   - platform: ${display_platform}
