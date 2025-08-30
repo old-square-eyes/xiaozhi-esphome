@@ -1,7 +1,59 @@
-Testing only!
 
-I'm testing splitting up the yaml into core, hardware and pages so changes to core (or pages) will affect all devices,
-and ease the work for me when adding or changing the core system.
+# Testing Only ⚠️
 
-If you try this and experience problems, return to one of the known working yaml's
-(and report back if you think it's not just a user error ;)
+I'm currently experimenting with splitting up the YAML into **core**, **hardware**, and **display pages**.  
+This way, changes to **core** (or **pages**) will affect all devices, making it easier for me to add or modify the core system.
+
+👉 If you try this and run into problems, please revert to one of the known working YAMLs.  
+And if you believe the issue isn’t just user error, please report back. 😉
+
+---
+
+## Previous Changes (before resetting to Modular 1.00)
+
+### Version 1.06 (dev)
+- **Fixes**  
+  - Media player buffer set to `250000`  
+  - Speaker WAV, mono  
+  - Removed `handle_screen_tap` from touchscreen section  
+
+### Version 1.05 (dev)
+- Show image API got its own timer  
+- Added block so images only display in *idle* or *replying* phase  
+- Added switch for time  
+- Added clock wallpaper  
+
+### Version 1.04 (dev)
+- **Added:** Online clock wallpaper with select in HA  
+- **New API service** to send images from HA:
+
+```yaml
+service: esphome.esphome_web_0bac48_show_fullscreen_image
+data:
+  url: "http://homeassistant.local:8123/local/funny.png"
+````
+
+### Version 1.03 (dev)
+
+* Minor memory fixes
+* Clock select from HA
+* Removed one font (req/res font same)
+* Removed `alpha_channel`
+
+### Version 1.02 (dev)
+
+* Cleanup and fixes
+
+### Version 1.01 (dev)
+
+* **Added:** Clock when idle for more than 10 seconds
+* **Added:** Virtual touch (same functionality as touch available from HA: start, stop, stop timer alarm)
+* **Added:** Use original `playing.png` emo when playing music on media player (still reverts to clock after 30s)
+* **Added:** Timer ringing entity (can trigger automations)
+* **Added:** Longer request/response entities for dashboards (limit 255 characters)
+* **Fix:** Timer pages now dynamic for different screen sizes
+
+### Version 1.00
+
+* First working code ✅
+
