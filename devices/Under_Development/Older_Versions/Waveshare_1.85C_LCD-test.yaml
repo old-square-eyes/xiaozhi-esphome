@@ -1,6 +1,6 @@
 substitutions:
   name: esphome-web-d81da0
-  friendly_name: Waveshare_1.85 LCD
+  friendly_name: Waveshare_1.85C LCD
 
 ## VERSION 1.06 dev. ##
 ## FIX: mediaplayer buffer 250000, speaker WAV, mono, remove handle_screen_tap from touchscreen section.
