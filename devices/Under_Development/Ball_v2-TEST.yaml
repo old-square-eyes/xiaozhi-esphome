@@ -2,6 +2,8 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
+## VERSION 1.06 dev. ##
+## FIX: mediaplayer buffer 250000, speaker WAV, mono, remove handle_screen_tap from touchscreen section.
 ## VERSION 1.05 dev. ##
 ## show image API got it's own timer, added block so it will only show image in idle or replying phase, added swtich for time, added clock wallpaper.
 ## VERSION 1.04 dev. ##
@@ -491,7 +493,7 @@ speaker:
     dac_type: external
     sample_rate: 16000
     audio_dac: es8311_dac
-    channel: left
+    channel: mono
 
 media_player:
   - platform: speaker
@@ -499,9 +501,10 @@ media_player:
     id: external_media_player
     announcement_pipeline:
       speaker: box_speaker
-      format: FLAC
+      format: WAV
       sample_rate: 16000
       num_channels: 1
+    buffer_size: 250000
     files:
       - id: timer_finished_sound
         file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/timer_finished.flac
@@ -2413,4 +2416,3 @@ display:
           const int H = it.get_height();
           // MUST be temp_fullscreen here:
           it.image(W / 2, H / 2, id(temp_fullscreen), ImageAlign::CENTER);
-
