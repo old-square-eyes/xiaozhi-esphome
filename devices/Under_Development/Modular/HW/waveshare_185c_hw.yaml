@@ -98,7 +98,7 @@ display:
 # --- BATTERY ADC --------------------------------------------------------------
 sensor:
   - platform: adc
-    pin: GPIO19
+    pin: GPIO8
     name: "Battery Voltage"
     id: battery_voltage
     attenuation: 12db
