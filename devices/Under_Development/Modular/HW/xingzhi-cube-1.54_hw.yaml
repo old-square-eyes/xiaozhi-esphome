@@ -1,7 +1,7 @@
 # xingzhi cube 1.54 — hardware pack (ESP32-S3 + ST7789V 240x240)
 
 # --- EXTRA BUTTONS -------------------------------------------------------------
-binary:sensor:
+binary_sensor:
   - platform: gpio
     pin: 
       number: GPIO39
