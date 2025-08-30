@@ -1,5 +1,37 @@
 # xingzhi cube 1.54 — hardware pack (ESP32-S3 + ST7789V 240x240)
 
+# --- EXTRA BUTTONS -------------------------------------------------------------
+binary:sensor:
+  - platform: gpio
+    pin: 
+      number: GPIO39
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Left Button"
+    id: left_button
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - logger.log: "Button was pressed"
+    on_release:
+      - logger.log: "Button was released"
+
+  - platform: gpio
+    pin: 
+      number: GPIO40
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Right Button"
+    id: right_button
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - logger.log: "Button was pressed"
+    on_release:
+      - logger.log: "Button was released"
+
 # --- CHIP & PSRAM -------------------------------------------------------------
 esp32:
   board: esp32-s3-devkitc-1
