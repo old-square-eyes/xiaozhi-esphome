@@ -1,0 +1,7 @@
+shell_command:
+  normalize_image_from_tmp: >
+    /usr/bin/ffmpeg -y -loglevel error -i /config/www/slides/_incoming.bin -vf scale=240:240:force_original_aspect_ratio=decrease,pad=240:240:(ow-iw)/2:(oh-ih)/2:color=black,format=rgb24 -vcodec png /config/www/slides/nowplaying.png
+  normalize_image_from_tmp_crop: >
+    /usr/bin/ffmpeg -y -loglevel error -i /config/www/slides/_incoming.bin -vf "scale=240:240:force_original_aspect_ratio=increase,crop=240:240,format=rgb24" -vcodec png /config/www/slides/nowplaying.png
+  cleanup_incoming: >
+    rm -f /config/www/slides/_incoming.bin
