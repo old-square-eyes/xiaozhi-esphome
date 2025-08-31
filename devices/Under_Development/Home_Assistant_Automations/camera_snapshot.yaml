@@ -1,9 +1,10 @@
-# Take image from camera and conert to display format, requires shell commands: normalize_image_from_tmp_crop & cleanup_incoming
-alias: Snapshot → (camera to PNG)
+# home assistant Script to take image from camera and convert to display format, requires shell commands: normalize_image_from_tmp_crop & cleanup_incoming
+# exposed to voice assistant with alias "show outside camera"
+
+alias: camera 2 display
 description: ""
-triggers: []
-conditions: []
-actions:
+fields: {}
+sequence:
   - variables:
       base: http://homeassistant.local:8123
       bust: "{{ now().timestamp() | int }}"
@@ -18,9 +19,9 @@ actions:
   - action: shell_command.cleanup_incoming
     data: {}
   - delay: "00:00:01"
-  - action: esphome.esphome_web_0bac48_show_fullscreen_image
-    data:
+  - data:
       url: "{{ final_url }}"
+    action: esphome.esphome_web_d81da0_show_fullscreen_image
 mode: single
 
 #shell_command for configuration.yaml:
