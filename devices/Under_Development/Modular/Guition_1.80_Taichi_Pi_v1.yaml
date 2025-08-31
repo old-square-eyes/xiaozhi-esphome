@@ -9,7 +9,7 @@ substitutions:
   imagewidth:  "360"
   imageheight: "360"
 
-  startup_sound: "Home_Connected" # (options are: available, Home_ Connected, Home_ Connected_Male, Computer_Ready)
+  startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
   clock_background_image: "clock" # (options are: clock, hacker, ha-girl, mission, starrysky)
   imagemodel: "ha-girl" # options are:
 
