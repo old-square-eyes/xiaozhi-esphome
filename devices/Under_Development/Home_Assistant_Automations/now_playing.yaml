@@ -1,0 +1,42 @@
+# shows coverart of whats playing, requires shell_commands for image.
+alias: Now playing → ESPHome cover (PNG)
+triggers:
+  - entity_id: media_player.wrover2
+    trigger: state
+conditions:
+  - condition: template
+    value_template: |
+      {{ trigger.from_state and trigger.to_state and
+         trigger.from_state.attributes.entity_picture != trigger.to_state.attributes.entity_picture and
+         state_attr('media_player.wrover2','entity_picture') not in [None, ''] }}
+actions:
+  - variables:
+      base: http://homeassistant.local:8123
+      ep: "{{ state_attr('media_player.wrover2','entity_picture') }}"
+      remote: "{{ state_attr('media_player.wrover2','media_image_url') }}"
+      remote_ok: >-
+        {{
+        is_state_attr('media_player.wrover2','media_image_remotely_accessible',
+        true) and remote not in [None, ''] }}
+      src_url: |
+        {% if remote_ok %}{{ remote }} {% else %}
+          {% if ep.startswith('http') %}{{ ep }}{% else %}{{ base ~ ep }}{% endif %}
+        {% endif %}
+      bust: "{{ now().timestamp() | int }}"
+      final_url: "{{ base ~ '/local/slides/nowplaying.png?t=' ~ bust }}"
+  - data:
+      url: "{{ src_url }}"
+      subdir: slides
+      filename: _incoming.bin
+      overwrite: true
+    action: downloader.download_file
+  - delay: "00:00:01"
+  - action: shell_command.normalize_image_from_tmp
+    data: {}
+  - action: shell_command.cleanup_incoming
+    data: {}
+  - delay: "00:00:01"
+  - data:
+      url: "{{ final_url }}"
+    action: esphome.esphome_web_0bac48_show_fullscreen_image
+mode: single
