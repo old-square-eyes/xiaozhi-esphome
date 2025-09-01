@@ -49,8 +49,11 @@ display:
   - platform: mipi_spi
     id: main_display
     model: JC3636W518V2
-    rotation: 180
+    rotation: ${rotate_display}
     update_interval: never
+    dimensions:
+        height: ${imageheight}
+        width: ${imagewidth}
     pages: !include ../display_pages.yaml
 
 # --- BACKLIGHT ----------------------------------------------------------------
@@ -71,6 +74,14 @@ light:
     default_transition_length: 250ms
 
 # --- AUDIO DEVICES ------------------------------------------------------------
+switch:
+  - platform: gpio
+    name: Speaker Enable
+    icon: "mdi:speaker"
+    entity_category: config
+    pin: GPIO48
+    restore_mode: RESTORE_DEFAULT_ON
+
 microphone:
   - platform: i2s_audio
     id: box_mic
