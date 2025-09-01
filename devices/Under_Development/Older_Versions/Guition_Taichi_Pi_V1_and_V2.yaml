@@ -947,6 +947,13 @@ switch:
       - delay: 15min
       - switch.turn_off: timer_ringing
 
+  - platform: gpio
+    name: Speaker Enable
+    icon: "mdi:speaker"
+    entity_category: config
+    pin: GPIO48
+    restore_mode: RESTORE_DEFAULT_ON
+
   - platform: template
     id: wake_sound
     name: Wake sound
