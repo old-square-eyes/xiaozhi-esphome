@@ -1336,6 +1336,10 @@ display:
     id: main_display
     model: ${display_model}
     rotation: ${rotate_display}
+    update_interval: never
+    dimensions:
+        height: ${imageheight}
+        width: ${imagewidth}
     pages:
       - id: idle_page
         lambda: |-
