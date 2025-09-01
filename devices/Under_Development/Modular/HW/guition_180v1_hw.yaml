@@ -44,7 +44,7 @@ display:
   - platform: mipi_spi
     id: main_display
     model: JC3636W518
-    rotation: 180
+    rotation: ${rotate_display}
     update_interval: never
     pages: !include ../display_pages.yaml
 
