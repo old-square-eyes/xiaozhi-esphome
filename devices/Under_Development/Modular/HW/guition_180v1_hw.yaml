@@ -46,6 +46,9 @@ display:
     model: JC3636W518
     rotation: ${rotate_display}
     update_interval: never
+    dimensions:
+        height: ${imageheight}
+        width: ${imagewidth}
     pages: !include ../display_pages.yaml
 
 # --- BACKLIGHT ----------------------------------------------------------------
