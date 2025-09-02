@@ -1,5 +1,4 @@
 
-# Testing Only ⚠️
 
 I'm currently experimenting with splitting up the YAML into **core**, **hardware**, and **display pages**.  
 This way, changes to **core** (or **pages**) will affect all devices, making it easier for me to add or modify the core system.
