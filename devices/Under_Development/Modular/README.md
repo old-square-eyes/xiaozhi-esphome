@@ -28,6 +28,15 @@ After this, if there is a update, all you need to do is compile again.
 
 ---
 
+### Modular core v1.01
+- **Fixes**  
+  - fixed timer widget, fixed clock screensaver so it doesn't go on when timer is running
+  - fixed so it also doesnt show clock until api image timer is done.
+- **Changes**  
+  - changed font for default clock from 30 to 42, and date font from 18 to 22
+  - changed timer widget to new design. and removed 1 font (more memory saving ;)
+  - removed removed 1 font, saved memory
+
 ## Previous Changes (before resetting to Modular 1.00)
 
 ### Version 1.06 (dev)
