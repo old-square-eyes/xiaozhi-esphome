@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
-## Modular version v1.00
+## Modular version Main v1.01
 ## Split up the original yaml for easier maintance of many devices with different hardware.
 
 ## SETTINGS ######################################################################################################################################
