@@ -1,3 +1,5 @@
+# display_pages v1.01
+
       - id: idle_page
         lambda: |-
           it.fill(id(idle_color));
