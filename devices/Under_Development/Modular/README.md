@@ -36,6 +36,7 @@ After this, if there is a update, all you need to do is compile again.
   - changed font for default clock from 30 to 42, and date font from 18 to 22
   - changed timer widget to new design. and removed 1 font (more memory saving ;)
   - removed removed 1 font, saved memory
+  - moved micro wake words to main and left only "okay nabu" in core, this gives a wider selection of mmw's without loading all
 
 ## Previous Changes (before resetting to Modular 1.00)
 
