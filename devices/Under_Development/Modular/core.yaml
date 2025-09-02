@@ -1,7 +1,4 @@
 # Core v1.01
-# ---- Shared core for Xiaozhi Voice Assistant (hardware-agnostic) ----
-# This file assumes the HW pack defines: esp32/psram, display (id: main_display + pages),
-# bus/driver components, ADC battery, and any board-specific pins.
 
 substitutions:
   # Provided by main.yaml or HW pack:
