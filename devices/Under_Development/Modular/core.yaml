@@ -1,3 +1,4 @@
+# Core v1.01
 # ---- Shared core for Xiaozhi Voice Assistant (hardware-agnostic) ----
 # This file assumes the HW pack defines: esp32/psram, display (id: main_display + pages),
 # bus/driver components, ADC battery, and any board-specific pins.
@@ -533,25 +534,27 @@ voice_assistant:
 interval:
   - interval: 1s
     then:
-      - if:
-          condition:
-            and:
-              - lambda: return id(voice_assistant_phase) == ${voice_assist_idle_phase_id};
-              - switch.is_off: mute
-              - lambda: return id(clock_enabled).state;
-          then:
-            - lambda: |-
-                id(idle_seconds)++;
-                int delay_s = (int) id(clock_delay_seconds).state;
-                delay_s = delay_s <= 0 ? 30 : delay_s;
-                if (id(idle_seconds) >= delay_s && !id(show_clock)) {
-                  id(show_clock) = true;
-                  id(show_clock_page).execute();
-                }
-          else:
-            - lambda: |-
-                if (id(show_clock)) { id(show_clock) = false; }
-                id(idle_seconds) = 0;
+      - lambda: |-
+          const bool idle_phase   = (id(voice_assistant_phase) == ${voice_assist_idle_phase_id});
+          const bool not_muted    = !id(mute).state;
+          const bool clock_ok     = id(clock_enabled).state;
+          const bool not_fullscreen   = !id(showing_fullscreen_image);
+
+          id(check_if_timers_active).execute();
+          const bool has_active_timer = id(global_is_timer_active);
+
+          if (idle_phase && not_muted && clock_ok && not_fullscreen && !has_active_timer) {
+            id(idle_seconds)++;
+            int delay_s = (int) id(clock_delay_seconds).state;
+            if (delay_s <= 0) delay_s = 30;
+            if (id(idle_seconds) >= delay_s && !id(show_clock)) {
+              id(show_clock) = true;
+              id(show_clock_page).execute();
+            }
+          } else {
+            if (id(show_clock)) id(show_clock) = false;
+            id(idle_seconds) = 0;
+          }
       - if:
           condition:
             lambda: return id(show_clock);
@@ -708,35 +711,94 @@ script:
           id(check_if_timers_active).execute();
           if (!id(global_is_timer_active)) return;
 
+          // --- geometry (slightly smaller than before) ---
           const int W = id(main_display).get_width();
           const int H = id(main_display).get_height();
           const int cx = W / 2;
+          const int cy = H / 2;
 
-          int box_w = std::min(W - 40, std::max((int)(W * 0.55f), 140));
-          int box_h = std::min((int)(H * 0.16f), 70);
-          box_h = std::max(box_h, 40);
+          const int S = std::min(W, H);
+          const int R_SEC = (int)(S * 0.30f);        // was ~0.33
+          const int L_SEC = std::max(5, S / 28);     // a hair shorter
+          const int TH_SEC = 2;
 
-          int x = (W - box_w) / 2;
-          int y = H / 8;
+          const int GAP   = std::max(6, S / 60);
+          const int R_MIN = R_SEC - L_SEC - GAP;     // inner ring end radius
+          const int L_MIN = std::max(4, L_SEC - 3);  // shorter than seconds
+          const int TH_MIN = 2;
 
-          id(main_display).filled_rectangle(x, y, box_w, box_h, Color::WHITE);
-          id(main_display).rectangle(x, y, box_w, box_h, Color::BLACK);
+          // --- colors ---
+          const Color GREY(60, 60, 60);
+          const Color SEC_COL = id(paused_timer_color); // blue
+          const Color MIN_COL(255, 64, 64);             // red
 
+          // --- time breakdown ---
           id(fetch_first_active_timer).execute();
-          int hours_left   = floor(id(global_first_active_timer).seconds_left / 3600);
-          int minutes_left = floor((id(global_first_active_timer).seconds_left - hours_left * 3600) / 60);
-          int seconds_left = id(global_first_active_timer).seconds_left - hours_left * 3600 - minutes_left * 60;
+          uint32_t left  = id(global_first_active_timer).seconds_left;
+          int hours_left   = left / 3600;
+          int minutes_left = (left / 60) % 60;
+          int seconds_left = left % 60;
 
-          auto hh = (hours_left   < 10 ? "0" : "") + std::to_string(hours_left);
-          auto mm = (minutes_left < 10 ? "0" : "") + std::to_string(minutes_left);
-          auto ss = (seconds_left < 10 ? "0" : "") + std::to_string(seconds_left);
-          std::string display_string = (hours_left > 0) ? (hh + ":" + mm) : (mm + ":" + ss);
+          int sec_active = seconds_left;
+          if ((minutes_left + hours_left) > 0 && seconds_left == 0) sec_active = 60;
 
-          id(main_display).printf(
-            cx, y + (box_h / 2),
-            id(font_timer), Color::BLACK,
-            TextAlign::CENTER, "%s", display_string.c_str()
-          );
+          int min_active = minutes_left;
+          if (hours_left > 0 && minutes_left == 0) min_active = 60;
+
+          // --- tick drawer (with thickness) ---
+          auto draw_tick = [&](float angle, int r_end, int len, Color col, int thick) {
+            const float ca = cosf(angle), sa = sinf(angle);
+            const int x1 = cx + (int)((r_end - len) * ca);
+            const int y1 = cy + (int)((r_end - len) * sa);
+            const int x2 = cx + (int)(r_end * ca);
+            const int y2 = cy + (int)(r_end * sa);
+
+            if (thick <= 1) {
+              id(main_display).line(x1, y1, x2, y2, col);
+              return;
+            }
+            const float px = -sa, py = ca;
+            for (int t = -thick/2; t <= thick/2; ++t) {
+              int ox = (int) lroundf(px * t);
+              int oy = (int) lroundf(py * t);
+              id(main_display).line(x1 + ox, y1 + oy, x2 + ox, y2 + oy, col);
+            }
+          };
+
+          // --- rings ---
+          const float TWO_PI = 6.2831853f;
+          for (int i = 0; i < 60; ++i) {
+            float a = -3.1415926f/2 + (i / 60.0f) * TWO_PI;
+            draw_tick(a, R_SEC, L_SEC, (i < sec_active) ? SEC_COL : GREY, TH_SEC);
+          }
+
+          if (left >= 60) {
+            for (int i = 0; i < 60; ++i) {
+              float a = -3.1415926f/2 + (i / 60.0f) * TWO_PI;
+              draw_tick(a, R_MIN, L_MIN, (i < min_active) ? MIN_COL : GREY, TH_MIN);
+            }
+          }
+
+          // --- numbers in monospace ---
+          // seconds centered
+          char s_buf[8];
+          snprintf(s_buf, sizeof(s_buf), "%02d", seconds_left);
+          id(main_display).printf(cx, cy + 2, id(font_big_clock_mono), Color::WHITE,
+                                  TextAlign::CENTER, "%s", s_buf);
+
+          // minutes above seconds (a bit higher to avoid collision)
+          if (left >= 60) {
+            int total_minutes = left / 60;
+            char m_buf[12];
+            snprintf(m_buf, sizeof(m_buf), "%d", total_minutes);
+
+            // push it further up based on ring length + a scale padding
+            const int TEXT_PAD = std::max(16, S / 14);   // increased from ~S/16 for extra clearance
+            int y_min = cy - (L_SEC + TEXT_PAD);
+
+            id(main_display).printf(cx, y_min, id(font_big_clock_mono), Color::WHITE,
+                                    TextAlign::CENTER, "%s", m_buf);
+          }
 
   - id: start_wake_word
     then:
@@ -1200,18 +1262,10 @@ font:
       - ${font_glyphsets}
   - file:
       type: gfonts
-      family: ${font_family}
-      weight: 300
-    id: font_timer
-    size: 28
-    glyphsets:
-      - ${font_glyphsets}
-  - file:
-      type: gfonts
       family: Syne Mono
       weight: 400
     id: font_big_clock_mono
-    size: 30
+    size: 42
     glyphsets:
       - ${font_glyphsets}
   - file:
@@ -1219,7 +1273,7 @@ font:
       family: ${font_family}
       weight: 400
     id: font_big_date
-    size: 18
+    size: 22
     glyphsets:
       - ${font_glyphsets}
 
