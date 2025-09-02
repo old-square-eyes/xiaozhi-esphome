@@ -388,8 +388,6 @@ micro_wake_word:
   id: mww
   models:
     - okay_nabu
-    - hey_jarvis
-    - alexa
   on_wake_word_detected:
     - script.execute: reset_screensaver
     - if:
