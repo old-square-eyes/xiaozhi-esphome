@@ -1,9 +1,10 @@
 
+<img width="1600" height="950" alt="esphome-yaml-layout-pro-v8" src="https://github.com/user-attachments/assets/92c246d2-295a-4a11-8c03-87963034dcd6" />
 
-I'm currently experimenting with splitting up the YAML into **core**, **hardware**, and **display pages**.  
-This way, changes to **core** (or **pages**) will affect all devices, making it easier for me to add or modify the core system.
+This section is for those that tried the standard full yaml in the respective directories and everything works, but want more ;)
+Those that just want the basics code to modify, might find it easier to use the non-modular yamls.
 
-👉 If you try this and run into problems, please revert to one of the known working YAMLs.  
+👉 If you try this and run into problems, please revert to the known working non-modular YAMLs.
 And if you believe the issue isn’t just user error, please report back. 😉
 
 ---
