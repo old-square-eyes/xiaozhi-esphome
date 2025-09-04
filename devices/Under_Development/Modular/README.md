@@ -2,6 +2,7 @@
 <img width="1600" height="950" alt="esphome-yaml-layout-pro-v8" src="https://github.com/user-attachments/assets/92c246d2-295a-4a11-8c03-87963034dcd6" />
 
 This section is for those that tried the standard full yaml in the respective directories and everything works, but want more ;)
+
 Those that just want the basics code to modify, might find it easier to use the non-modular yamls.
 
 👉 If you try this and run into problems, please revert to the known working non-modular YAMLs.
