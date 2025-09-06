@@ -1,4 +1,4 @@
-# Taichi Pi v1 hardware pack (JC3636W518, CST816, I2S mic+speaker)
+# Taichi Pi v1 hardware v1.02
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
