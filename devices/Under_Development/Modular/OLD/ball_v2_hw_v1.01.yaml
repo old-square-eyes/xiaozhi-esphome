@@ -1,0 +1,163 @@
+# Ball v2 hardware pack
+
+# --- BUSES / PERIPHERALS ------------------------------------------------------
+i2c:
+  - id: bus_a
+    sda: 15
+    scl: 14
+    scan: true
+  - id: bus_b
+    sda: 11
+    scl: 7
+    scan: true
+
+spi:
+  - id: spi_bus
+    clk_pin: GPIO4
+    mosi_pin: GPIO2
+
+i2s_audio:
+  - id: i2s_audio_bus
+    i2s_lrclk_pin: GPIO45
+    i2s_bclk_pin: GPIO9
+    i2s_mclk_pin: GPIO16
+
+audio_dac:
+  - platform: es8311
+    i2c_id: bus_a
+    id: es8311_dac
+    bits_per_sample: 16bit
+    sample_rate: 16000
+
+# --- AUDIO DEVICES ------------------------------------------------------------
+microphone:
+  - platform: i2s_audio
+    id: box_mic
+    i2s_audio_id: i2s_audio_bus
+    i2s_din_pin: GPIO10
+    adc_type: external
+    channel: left
+    pdm: false
+    sample_rate: 16000
+    bits_per_sample: 16bit
+
+speaker:
+  - platform: i2s_audio
+    id: box_speaker
+    i2s_audio_id: i2s_audio_bus
+    i2s_dout_pin: GPIO8
+    dac_type: external
+    audio_dac: es8311_dac
+    sample_rate: 16000
+    channel: mono
+
+# Optional speaker power enable (Ball v2 has this)
+switch:
+  - platform: gpio
+    name: Speaker Enable
+    icon: "mdi:speaker"
+    entity_category: config
+    pin: GPIO46
+    restore_mode: RESTORE_DEFAULT_ON
+
+# --- BACKLIGHT & AUX LED ------------------------------------------------------
+output:
+  - platform: ledc
+    pin: 42
+    id: backlight_output
+    inverted: true
+
+light:
+  - platform: monochromatic
+    id: Sled
+    name: Screen
+    icon: "mdi:television"
+    entity_category: config
+    output: backlight_output
+    restore_mode: ALWAYS_ON
+    default_transition_length: 250ms
+
+  # Ball v2 has a single WS2812 status LED
+  - platform: esp32_rmt_led_strip
+    id: led
+    name: none
+    disabled_by_default: false
+    entity_category: config
+    pin: GPIO48
+    default_transition_length: 0s
+    chipset: WS2812
+    num_leds: 1
+    rgb_order: grb
+    effects:
+      - pulse:
+          name: "Slow Pulse"
+          transition_length: 250ms
+          update_interval: 250ms
+          min_brightness: 50%
+          max_brightness: 100%
+      - pulse:
+          name: "Fast Pulse"
+          transition_length: 100ms
+          update_interval: 100ms
+          min_brightness: 50%
+          max_brightness: 100%
+
+# --- TOUCHSCREEN --------------------------------------------------------------
+touchscreen:
+  - platform: cst816
+    id: my_touchscreen
+    interrupt_pin: GPIO12
+    reset_pin: GPIO6
+    display: main_display
+    i2c_id: bus_b
+    on_touch:
+      then:
+        - binary_sensor.template.publish:
+            id: touch_input
+            state: ON
+    on_release:
+      then:
+        - binary_sensor.template.publish:
+            id: touch_input
+            state: OFF
+
+# --- DISPLAY DRIVER (ILI9xxx round GC9A01A) ----------------------------------
+display:
+  - platform: ili9xxx
+    id: main_display
+    model: GC9A01A
+    invert_colors: true
+    data_rate: 20MHz
+    cs_pin: GPIO5
+    dc_pin: GPIO47
+    reset_pin:
+      number: GPIO38
+    update_interval: never
+    dimensions:
+      height: ${imageheight}
+      width: ${imagewidth}
+    pages: !include ../display_pages.yaml
+
+# --- BATTERY ADC --------------------------------------------------------------
+sensor:
+  - platform: adc
+    pin: GPIO1
+    name: "Battery Voltage"
+    id: battery_voltage
+    attenuation: 12db
+    accuracy_decimals: 2
+    update_interval: 10s
+    unit_of_measurement: "V"
+    icon: mdi:battery-medium
+    filters:
+      - multiply: 2.0
+      - median:
+          window_size: 7
+          send_every: 7
+          send_first_at: 1
+      - throttle: 1min
+    on_value:
+      then:
+        - sensor.template.publish:
+            id: battery_percentage
+            state: !lambda 'return x;'
