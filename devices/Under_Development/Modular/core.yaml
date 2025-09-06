@@ -222,36 +222,30 @@ binary_sensor:
   - platform: template
     name: "Touch Button"
     id: touch_input
-    on_multi_click:
-      - timing:
-          - ON for 40ms to 400ms
-          - OFF for at least 330ms
-        then:
-          - if:
-              condition:
-                switch.is_on: timer_ringing
-              then:
-                - switch.turn_off: timer_ringing
-              else:
-                - if:
-                    condition:
-                      lambda: return id(wake_word_engine_location).state == "On device";
-                    then:
-                      - media_player.stop:
-                          id: external_media_player
-                      - if:
-                          condition:
-                            not:
-                              voice_assistant.is_running:
-                          then:
-                            - voice_assistant.start:
-                          else:
-                            - voice_assistant.stop:
-      - timing:
-          - ON for at least 1s
-        then:
-          - switch.toggle: show_battery_status
-          - script.execute: draw_display
+    on_click:
+      min_length: 30ms
+      max_length: 600ms
+      then:
+        - if:
+            condition:
+              switch.is_on: timer_ringing
+            then:
+              - switch.turn_off: timer_ringing
+            else:
+              - if:
+                  condition:
+                    lambda: return id(wake_word_engine_location).state == "On device";
+                  then:
+                    - media_player.stop:
+                        id: external_media_player
+                    - if:
+                        condition:
+                          not:
+                            voice_assistant.is_running:
+                        then:
+                          - voice_assistant.start:
+                        else:
+                          - voice_assistant.stop:
 
   - platform: gpio
     pin:
@@ -297,6 +291,30 @@ binary_sensor:
     device_class: sound
     lambda: |-
       return id(timer_ringing).state;
+
+  - platform: template
+    id: swipe_left
+    name: "Swipe Left"
+    device_class: moving
+    on_press: []
+
+  - platform: template
+    id: swipe_right
+    name: "Swipe Right"
+    device_class: moving
+    on_press: []
+
+  - platform: template
+    id: swipe_up
+    name: "Swipe Up"
+    device_class: moving
+    on_press: []
+
+  - platform: template
+    id: swipe_down
+    name: "Swipe Down"
+    device_class: moving
+    on_press: []
 
 output:
   # colors for the clock (logical; not the screen backlight)
@@ -1191,6 +1209,31 @@ globals:
     type: bool
     restore_value: no
     initial_value: "false"
+
+  - id: gs_touch_active
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: gs_start_x
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: gs_start_y
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: gs_last_x
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: gs_last_y
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: gs_start_ms
+    type: uint32_t
+    restore_value: no
+    initial_value: "0"
 
 image:
   - file: ${error_illustration_file}
