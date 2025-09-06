@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-619cd4
   friendly_name: "Xiaozhi Ball v1"
 
-## Modular version Main v1.01
+## Modular version Main v1.02
 ## Split up the original yaml for easier maintance of many devices with different hardware.
 
 ## SETTINGS ######################################################################################################################################
@@ -59,6 +59,6 @@ micro_wake_word:
 #    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/choo_choo_homie.json"
 #    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/hey_home_assistant.json"
 #    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/hey_peppa_pig.json"
-    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/okay_computer.json"
+#    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/okay_computer.json"
 ##################################################################################################################################################
 
