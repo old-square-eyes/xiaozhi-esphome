@@ -8,7 +8,8 @@ substitutions:
 ## SETTINGS ######################################################################################################################################
   imagewidth:  "240"
   imageheight: "240"
-
+  rotate_display: "0"
+  
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
   clock_background_image: "clock" # (options are: clock, hacker, ha-girl, mission, starrysky)
   imagemodel: "Gwen" # options are:
