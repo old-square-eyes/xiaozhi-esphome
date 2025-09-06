@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-6199a4
   friendly_name: Xiaozhi Muma Box v1
 
-## Modular version Main v1.01 (all Muma versions)
+## Modular version Main v1.02 (all Muma versions)
 ## Split up the original yaml for easier maintance of many devices with different hardware.
 
 ## SETTINGS ######################################################################################################################################
@@ -59,5 +59,5 @@ micro_wake_word:
 #    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/choo_choo_homie.json"
 #    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/hey_home_assistant.json"
 #    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/hey_peppa_pig.json"
-    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/okay_computer.json"
+#    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/okay_computer.json"
 ##################################################################################################################################################
