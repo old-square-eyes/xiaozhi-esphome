@@ -3,7 +3,7 @@
 
 This section is for those that tried the standard full yaml in the respective directories and everything works, but want more ;)
 
-Those that just want the basics code to modify, might find it easier to use the non-modular yamls.
+Those that just want the basics code to modify might find it easier to use the non-modular yamls.
 
 👉 If you try this and run into problems, please revert to the known working non-modular YAMLs.
 And if you believe the issue isn’t just user error, please report back. 😉
@@ -28,6 +28,16 @@ After this, if there is a update, all you need to do is compile again.
 ```
 
 ---
+
+### Modular v1.02
+- **Changes**  
+  -  added 4 binary sensors for screen swipes, these do nothing by themself but are available in HA for whatevery you desire.
+  -  Example automation that changes clock type (left and right swipes), changes wallpaper (swipe up) and toggles battery status (swipe down) can be found in: /Under_Development/Home_Assistant_Automations/
+  -  I did it this way so it's not a locked functionality and we can do whatever we want with the sensors.
+
+---
+
+## Older versions of Modular can be found in /OLD/ if wanting to revert to a previous version.
 
 ### Modular core v1.01
 - **Fixes**  
