@@ -1,0 +1,115 @@
+# Taichi Pi v1 hardware pack (JC3636W518, CST816, I2S mic+speaker)
+
+# --- BUSES / PERIPHERALS ------------------------------------------------------
+spi:
+  id: display_qspi
+  type: quad
+  clk_pin: 9
+  data_pins: [11, 12, 13, 14]
+
+i2c:
+  id: touchscreen_bus
+  sda: 7
+  scl: 8
+
+i2s_audio:
+  # Microphone bus
+  - id: i2s_mic
+    i2s_lrclk_pin: GPIO45
+    i2s_bclk_pin:  GPIO42
+
+  # Speaker bus
+  - id: i2s_audio_bus
+    i2s_lrclk_pin: GPIO16
+    i2s_bclk_pin:  GPIO18
+    i2s_mclk_pin:  GPIO21
+
+# --- TOUCHSCREEN --------------------------------------------------------------
+touchscreen:
+  - platform: cst816
+    id: my_touchscreen
+    interrupt_pin: GPIO41
+    reset_pin: GPIO40
+    display: main_display
+    i2c_id: touchscreen_bus
+    on_touch:
+      then:
+        - binary_sensor.template.publish: { id: touch_input, state: ON }
+    on_release:
+      then:
+        - binary_sensor.template.publish: { id: touch_input, state: OFF }
+
+# --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
+display:
+  - platform: mipi_spi
+    id: main_display
+    model: JC3636W518
+    rotation: ${rotate_display}
+    update_interval: never
+    dimensions:
+        height: ${imageheight}
+        width: ${imagewidth}
+    pages: !include ../display_pages.yaml
+
+# --- BACKLIGHT ----------------------------------------------------------------
+output:
+  - platform: ledc
+    id: backlight_output
+    pin: GPIO15
+    inverted: false
+
+light:
+  - platform: monochromatic
+    id: Sled
+    name: Screen
+    icon: mdi:television
+    entity_category: config
+    output: backlight_output
+    restore_mode: ALWAYS_ON
+    default_transition_length: 250ms
+
+# --- AUDIO DEVICES ------------------------------------------------------------
+
+switch:
+  - platform: gpio
+    name: Speaker Enable
+    icon: "mdi:speaker"
+    entity_category: config
+    pin: GPIO48
+    restore_mode: RESTORE_DEFAULT_ON
+
+microphone:
+  - platform: i2s_audio
+    id: box_mic
+    i2s_audio_id: i2s_mic
+    i2s_din_pin: GPIO46
+    adc_type: external
+    channel: left
+    pdm: false
+    sample_rate: 16000
+    bits_per_sample: 16bit
+
+speaker:
+  - platform: i2s_audio
+    id: box_speaker
+    i2s_audio_id: i2s_audio_bus
+    i2s_dout_pin: GPIO17
+    dac_type: external
+    sample_rate: 16000
+    channel: stereo
+
+# --- BATTERY (FAKE SOURCE TO KEEP WIDGET HAPPY) -------------------------------
+sensor:
+  - platform: adc
+    id: battery_voltage
+    pin: GPIO1
+    attenuation: 12db
+    update_interval: 24h
+    internal: true
+    filters:
+      - lambda: 'return 4.20;'
+    on_value:
+      then:
+        - sensor.template.publish:
+            id: battery_percentage
+            state: !lambda 'return x;'
