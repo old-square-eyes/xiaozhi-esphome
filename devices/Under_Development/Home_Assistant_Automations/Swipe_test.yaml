@@ -1,0 +1,72 @@
+# small test automation that uses the new "swipe sensors" of v1.02 to change clock type (left and right), show battery statys (down) and change wallpaper (up)
+
+alias: Taichi v1 Swipe
+description: ""
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.esphome_web_e9f624_swipe_left
+    to: "on"
+    id: left
+  - trigger: state
+    entity_id:
+      - binary_sensor.esphome_web_e9f624_swipe_right
+    to: "on"
+    id: right
+  - trigger: state
+    entity_id:
+      - binary_sensor.esphome_web_e9f624_swipe_up
+    to: "on"
+    id: up
+  - trigger: state
+    entity_id:
+      - binary_sensor.esphome_web_e9f624_swipe_down
+    to: "on"
+    id: down
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - up
+        sequence:
+          - action: select.select_next
+            metadata: {}
+            data:
+              cycle: true
+            target:
+              entity_id: select.esphome_web_e9f624_clock_wallpaper_online
+      - conditions:
+          - condition: trigger
+            id:
+              - down
+        sequence:
+          - action: switch.toggle
+            metadata: {}
+            data: {}
+            target:
+              entity_id: switch.esphome_web_e9f624_show_battery_status
+      - conditions:
+          - condition: trigger
+            id:
+              - left
+        sequence:
+          - action: select.select_next
+            metadata: {}
+            data:
+              cycle: true
+            target:
+              entity_id: select.esphome_web_e9f624_clock_style
+      - conditions:
+          - condition: trigger
+            id:
+              - right
+        sequence:
+          - action: select.select_previous
+            metadata: {}
+            data:
+              cycle: true
+            target:
+              entity_id: select.esphome_web_e9f624_clock_style
+mode: single
