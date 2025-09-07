@@ -2,10 +2,10 @@ substitutions:
   name: esphome-web-6199a4
   friendly_name: Xiaozhi Muma Box v1
 
-## Modular version Main v1.02 (all Muma versions)
-## Split up the original yaml for easier maintance of many devices with different hardware.
+## Modular version Main v1.03 (all Muma versions)
 
 ## SETTINGS ######################################################################################################################################
+
   imagewidth:  "240"
   imageheight: "240"
   rotate_display: "0"
@@ -16,6 +16,22 @@ substitutions:
 
 # Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
 # Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
+
+## PRESENCE / MOTION SENSORS #####################################################################################################################
+
+  sensor1_entity: "binary_sensor.8266_presense_2_presence"
+  sensor1_label: "Tech Room"
+  sensor2_entity: "binary_sensor.esp32s3_1_presence"
+  sensor2_label: "Kitchen"
+  sensor3_entity: "binary_sensor.esphome_web_1911bf_presence"
+  sensor3_label: "Living Room"
+  sensor4_entity: "binary_sensor.notifier_2_presence"
+  sensor4_label: "Toilet"
+  sensor5_entity: "binary_sensor.8266_presense_presence"
+  sensor5_label: "Hall"
+
+  weather_entity: "weather.forecast_home"
+
 ##################################################################################################################################################
 
   font_glyphsets: "GF_Latin_Core"
