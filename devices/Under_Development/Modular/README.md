@@ -28,6 +28,9 @@ After this, if there is a update, all you need to do is compile again.
 ```
 
 ---
+### Modular v1.03
+- **Changes**  
+  -  added 2 more clocks, a presence sensor clock and a weather clock
 
 ### Modular v1.02
 - **Changes**  
