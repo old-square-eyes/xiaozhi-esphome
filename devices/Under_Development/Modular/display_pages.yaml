@@ -1,4 +1,4 @@
-# display_pages v1.01
+# display_pages v1.02
 
       - id: idle_page
         lambda: |-
