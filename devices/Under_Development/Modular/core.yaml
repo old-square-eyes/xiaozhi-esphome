@@ -1425,6 +1425,24 @@ text_sensor:
           id(text_response_full).state = truncated.c_str();
         }
 
+  - platform: homeassistant
+    id: ha_weather_temperature_unit
+    entity_id: ${weather_entity}
+    attribute: temperature_unit
+    internal: true
+
+  - platform: homeassistant
+    id: ha_weather_wind_speed_unit
+    entity_id: ${weather_entity}
+    attribute: wind_speed_unit
+    internal: true
+
+  - platform: homeassistant
+    id: ha_weather_pressure_unit
+    entity_id: ${weather_entity}
+    attribute: pressure_unit
+    internal: true
+
 color:
   - id: idle_color
     hex: ${loading_illustration_background_color}
