@@ -972,8 +972,10 @@
           const int yB  = ORGY + CELL + GAP;
 
           const int CS  = std::max(16, (int)(CELL * CENTER_SCALE));
-          const int cX  = ORGX + GRID_W / 2 - CS / 2;
-          const int cY  = ORGY + GRID_H / 2 - CS / 2;
+          const int CW  = CELL;
+          const int CH  = CS;
+          const int cX  = ORGX + GRID_W / 2 - CW / 2;
+          const int cY  = ORGY + GRID_H / 2 - CH / 2;
 
           const Color C1_ON(0x5b,0xc0,0xde);
           const Color C2_ON(0x8c,0xc4,0x3c);
@@ -1011,7 +1013,7 @@
           draw_room(xR, yT, CELL, CELL, "${sensor2_label}", id(ha_sensor2), C2_ON);
           draw_room(xL, yB, CELL, CELL, "${sensor3_label}", id(ha_sensor3), C3_ON);
           draw_room(xR, yB, CELL, CELL, "${sensor4_label}", id(ha_sensor4), C4_ON);
-          draw_room(cX, cY, CS, CS, "${sensor5_label}", id(ha_sensor5), C5_ON);
+          draw_room(cX, cY, CW, CH, "${sensor5_label}", id(ha_sensor5), C5_ON);
 
           if (SHOW_TIME) {
             auto now = id(homeassistant_time).now();
