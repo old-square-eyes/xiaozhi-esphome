@@ -13,7 +13,7 @@ binary_sensor:
       - delayed_on: 10ms
       - delayed_off: 10ms
     on_press:
-      - logger.log: "Button was pressed"
+      - media_player.volume_down: external_media_player
     on_release:
       - logger.log: "Button was released"
 
@@ -28,7 +28,7 @@ binary_sensor:
       - delayed_on: 10ms
       - delayed_off: 10ms
     on_press:
-      - logger.log: "Button was pressed"
+      - media_player.volume_up: external_media_player
     on_release:
       - logger.log: "Button was released"
 
