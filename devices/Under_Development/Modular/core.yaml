@@ -218,7 +218,6 @@ sensor:
             then:
               - component.update: main_display
 
-sensor:
   - platform: homeassistant
     id: ha_weather_temperature
     entity_id: ${weather_entity}
