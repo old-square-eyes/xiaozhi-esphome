@@ -7,8 +7,8 @@ binary_sensor:
       number: GPIO39
       mode: INPUT_PULLUP
       inverted: true
-    name: "Left Button"
-    id: left_button
+    name: "Volume Down"
+    id: volume_down
     filters:
       - delayed_on: 10ms
       - delayed_off: 10ms
@@ -22,8 +22,8 @@ binary_sensor:
       number: GPIO40
       mode: INPUT_PULLUP
       inverted: true
-    name: "Right Button"
-    id: right_button
+    name: "Volume Up"
+    id: volume_up
     filters:
       - delayed_on: 10ms
       - delayed_off: 10ms
