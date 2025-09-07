@@ -112,7 +112,7 @@ light:
 # --- DISPLAY DRIVER (SPI GC9A01A, 240x240 round) ------------------------------
 display:
   - platform: ssd1306_i2c
-    id: s3_box_lcd
+    id: main_display
     model: "SH1106 128x64"
     address: 0x3C
     update_interval: 5s
