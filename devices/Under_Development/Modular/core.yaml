@@ -218,6 +218,43 @@ sensor:
             then:
               - component.update: main_display
 
+sensor:
+  - platform: homeassistant
+    id: ha_weather_temperature
+    entity_id: ${weather_entity}
+    attribute: temperature
+    internal: true
+  - platform: homeassistant
+    id: ha_weather_cloud_coverage
+    entity_id: ${weather_entity}
+    attribute: cloud_coverage
+    internal: true
+  - platform: homeassistant
+    id: ha_weather_uv_index
+    entity_id: ${weather_entity}
+    attribute: uv_index
+    internal: true
+  - platform: homeassistant
+    id: ha_weather_wind_speed
+    entity_id: ${weather_entity}
+    attribute: wind_speed
+    internal: true
+  - platform: homeassistant
+    id: ha_weather_wind_gust
+    entity_id: ${weather_entity}
+    attribute: wind_gust_speed
+    internal: true
+  - platform: homeassistant
+    id: ha_weather_humidity
+    entity_id: ${weather_entity}
+    attribute: humidity
+    internal: true
+  - platform: homeassistant
+    id: ha_weather_pressure
+    entity_id: ${weather_entity}
+    attribute: pressure
+    internal: true
+
 binary_sensor:
   - platform: template
     name: "Touch Button"
@@ -315,6 +352,31 @@ binary_sensor:
     name: "Swipe Down"
     device_class: moving
     on_press: []
+
+  - platform: homeassistant
+    id: ha_sensor1
+    entity_id: ${sensor1_entity}
+    internal: true
+
+  - platform: homeassistant
+    id: ha_sensor2
+    entity_id: ${sensor2_entity}
+    internal: true
+
+  - platform: homeassistant
+    id: ha_sensor3
+    entity_id: ${sensor3_entity}
+    internal: true
+
+  - platform: homeassistant
+    id: ha_sensor4
+    entity_id: ${sensor4_entity}
+    internal: true
+
+  - platform: homeassistant
+    id: ha_sensor5
+    entity_id: ${sensor5_entity}
+    internal: true
 
 output:
   # colors for the clock (logical; not the screen backlight)
@@ -914,6 +976,10 @@ script:
             id(main_display).show_page(default_clock);
           } else if (sel == "Flip") {
             id(main_display).show_page(flip_clock);
+          } else if (sel == "Presence") {
+            id(main_display).show_page(presense_sensor_clock);
+          } else if (sel == "Weather") {
+            id(main_display).show_page(weather_clock);
           } else {
             id(main_display).show_page(clock_7segment);
           }
@@ -1121,7 +1187,9 @@ select:
       - 7-segment
       - Flip
       - Default
-    initial_option: 7-segment
+      - Presence
+      - Weather
+    initial_option: Default
     on_value:
       - if:
           condition:
