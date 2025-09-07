@@ -12,7 +12,7 @@ substitutions:
   
   startup_sound: "Home_Connected" # options are: available, Home_Connected, Home_Connected_Male, Computer_Ready
   clock_background_image: "clock" # options are: clock, hacker, ha-girl, mission, starrysky
-  imagemodel: "Eyes" # options are: Eyes
+  imagemodel: "Eyes" # options are: Eyes, Eyes2
 
 # Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
 # Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
@@ -78,3 +78,25 @@ micro_wake_word:
 #    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/hey_peppa_pig.json"
 #    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/okay_computer.json"
 ##################################################################################################################################################
+
+image:
+  - id: !extend casita_error
+    transparency: alpha_channel
+  - id: !extend casita_idle
+    transparency: alpha_channel
+  - id: !extend casita_listening
+    transparency: alpha_channel
+  - id: !extend casita_thinking
+    transparency: alpha_channel
+  - id: !extend casita_replying
+    transparency: alpha_channel
+  - id: !extend casita_timer_finished
+    transparency: alpha_channel
+  - id: !extend casita_initializing
+    transparency: alpha_channel
+  - id: !extend casita_muted
+    transparency: alpha_channel
+  - id: !extend error_no_wifi
+    transparency: alpha_channel
+  - id: !extend error_no_ha
+    transparency: alpha_channel
