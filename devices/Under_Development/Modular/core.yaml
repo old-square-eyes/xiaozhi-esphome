@@ -1,4 +1,4 @@
-# Core v1.02
+# Core v1.04
 
 substitutions:
   # Provided by main.yaml or HW pack:
@@ -747,6 +747,67 @@ script:
       - lambda: |-
           const int W = id(main_display).get_width();
           const int H = id(main_display).get_height();
+          const bool SMALL = (W <= 128 && H <= 64);
+
+          // refresh timer state
+          id(check_if_timers_active).execute();
+          id(check_if_timers).execute();
+          if (!id(global_is_timer_active) && !id(global_is_timer)) return;
+
+          if (SMALL) {
+            // ---------- compact UI for tiny screens (monochrome safe) ----------
+            const int pad    = 6;
+            const int bar_h  = 6;
+            const int bar_w  = W - (pad * 2);
+            const int x      = pad;
+            const int y      = H - bar_h - pad;
+
+            uint32_t total = 0, left = 0;
+            if (id(global_is_timer_active)) {
+              id(fetch_first_active_timer).execute();
+              total = std::max(id(global_first_active_timer).total_seconds, (uint32_t)1);
+              left  = id(global_first_active_timer).seconds_left;
+            } else {
+              id(fetch_first_timer).execute();
+              total = std::max(id(global_first_timer).total_seconds, (uint32_t)1);
+              left  = id(global_first_timer).seconds_left;
+            }
+
+            // label "m:ss" if >=60s, else "ss"
+            char label[16];
+            if (left >= 60) {
+              unsigned long mm = left / 60;
+              unsigned long ss = left % 60;
+              snprintf(label, sizeof(label), "%lu:%02lu", mm, ss);
+            } else {
+              snprintf(label, sizeof(label), "%lus", (unsigned long) left);
+            }
+
+            // centered box (clear interior first)
+            const int box_w = 78;
+            const int box_h = 26;
+            const int box_x = (W - box_w) / 2;
+            const int box_y = (H - box_h) / 2 - 2;
+
+            id(main_display).filled_rectangle(box_x + 1, box_y + 1, box_w - 2, box_h - 2, Color::BLACK);
+            id(main_display).rectangle(box_x, box_y, box_w, box_h, Color::WHITE);
+            id(main_display).printf(W/2, box_y + box_h/2, id(font_big_date), Color::WHITE,
+                                    TextAlign::CENTER, "%s", label);
+
+            // progress bar (outline, clear interior, then fill progress)
+            id(main_display).rectangle(x, y, bar_w, bar_h, Color::WHITE);
+            const int in_w = bar_w - 2;
+            const int in_h = bar_h - 2;
+            id(main_display).filled_rectangle(x + 1, y + 1, in_w, in_h, Color::BLACK);
+
+            int filled_px = (int) lroundf(in_w * (float) left / (float) total);
+            if (filled_px > 0) {
+              id(main_display).filled_rectangle(x + 1, y + 1, filled_px, in_h, Color::WHITE);
+            }
+            return;  // small-screen path done
+          }
+
+          // ---------- original timeline for larger panels (unchanged) ----------
           const int padding = 20;
           const int bar_h   = 15;
           const int bar_w   = W - (padding * 2);
@@ -754,14 +815,11 @@ script:
           const int y       = H - (bar_h + 15);
           const int fill_h  = bar_h - 2;
 
-          id(check_if_timers_active).execute();
-          id(check_if_timers).execute();
-
           if (id(global_is_timer_active)) {
             id(fetch_first_active_timer).execute();
             int filled = round(
               bar_w * id(global_first_active_timer).seconds_left
-              / max(id(global_first_active_timer).total_seconds, static_cast<uint32_t>(1))
+              / std::max(id(global_first_active_timer).total_seconds, (uint32_t)1)
             );
             id(main_display).filled_rectangle(x, y, bar_w, bar_h, Color::WHITE);
             if (filled > 0) {
@@ -771,7 +829,7 @@ script:
             id(fetch_first_timer).execute();
             int filled = round(
               bar_w * id(global_first_timer).seconds_left
-              / max(id(global_first_timer).total_seconds, static_cast<uint32_t>(1))
+              / std::max(id(global_first_timer).total_seconds, (uint32_t)1)
             );
             id(main_display).filled_rectangle(x, y, bar_w, bar_h, Color::WHITE);
             if (filled > 0) {
@@ -782,31 +840,32 @@ script:
   - id: draw_active_timer_widget
     then:
       - lambda: |-
+          // Skip the circular widget on tiny screens; keep for larger panels
+          const int W = id(main_display).get_width();
+          const int H = id(main_display).get_height();
+          if (W <= 128 && H <= 64) return;
+
           id(check_if_timers_active).execute();
           if (!id(global_is_timer_active)) return;
 
-          // --- geometry (slightly smaller than before) ---
-          const int W = id(main_display).get_width();
-          const int H = id(main_display).get_height();
+          // --- original circular widget (unchanged) ---
           const int cx = W / 2;
           const int cy = H / 2;
 
           const int S = std::min(W, H);
-          const int R_SEC = (int)(S * 0.30f);        // was ~0.33
-          const int L_SEC = std::max(5, S / 28);     // a hair shorter
+          const int R_SEC = (int)(S * 0.30f);
+          const int L_SEC = std::max(5, S / 28);
           const int TH_SEC = 2;
 
           const int GAP   = std::max(6, S / 60);
-          const int R_MIN = R_SEC - L_SEC - GAP;     // inner ring end radius
-          const int L_MIN = std::max(4, L_SEC - 3);  // shorter than seconds
+          const int R_MIN = R_SEC - L_SEC - GAP;
+          const int L_MIN = std::max(4, L_SEC - 3);
           const int TH_MIN = 2;
 
-          // --- colors ---
           const Color GREY(60, 60, 60);
           const Color SEC_COL = id(paused_timer_color); // blue
           const Color MIN_COL(255, 64, 64);             // red
 
-          // --- time breakdown ---
           id(fetch_first_active_timer).execute();
           uint32_t left  = id(global_first_active_timer).seconds_left;
           int hours_left   = left / 3600;
@@ -819,7 +878,6 @@ script:
           int min_active = minutes_left;
           if (hours_left > 0 && minutes_left == 0) min_active = 60;
 
-          // --- tick drawer (with thickness) ---
           auto draw_tick = [&](float angle, int r_end, int len, Color col, int thick) {
             const float ca = cosf(angle), sa = sinf(angle);
             const int x1 = cx + (int)((r_end - len) * ca);
@@ -839,7 +897,6 @@ script:
             }
           };
 
-          // --- rings ---
           const float TWO_PI = 6.2831853f;
           for (int i = 0; i < 60; ++i) {
             float a = -3.1415926f/2 + (i / 60.0f) * TWO_PI;
@@ -853,23 +910,17 @@ script:
             }
           }
 
-          // --- numbers in monospace ---
-          // seconds centered
           char s_buf[8];
           snprintf(s_buf, sizeof(s_buf), "%02d", seconds_left);
           id(main_display).printf(cx, cy + 2, id(font_big_clock_mono), Color::WHITE,
                                   TextAlign::CENTER, "%s", s_buf);
 
-          // minutes above seconds (a bit higher to avoid collision)
           if (left >= 60) {
             int total_minutes = left / 60;
             char m_buf[12];
             snprintf(m_buf, sizeof(m_buf), "%d", total_minutes);
-
-            // push it further up based on ring length + a scale padding
-            const int TEXT_PAD = std::max(16, S / 14);   // increased from ~S/16 for extra clearance
+            const int TEXT_PAD = std::max(16, S / 14);
             int y_min = cy - (L_SEC + TEXT_PAD);
-
             id(main_display).printf(cx, y_min, id(font_big_clock_mono), Color::WHITE,
                                     TextAlign::CENTER, "%s", m_buf);
           }
