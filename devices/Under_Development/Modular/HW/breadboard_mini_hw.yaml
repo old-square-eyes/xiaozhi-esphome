@@ -123,7 +123,7 @@ display:
     id: main_display
     model: "SH1106 128x64"
     address: 0x3C
-    update_interval: 5s
+    update_interval: never
     contrast: 60%
     auto_clear_enabled: true
     pages: !include ../display_pages.yaml
