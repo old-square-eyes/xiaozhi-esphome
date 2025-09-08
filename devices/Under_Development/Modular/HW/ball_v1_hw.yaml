@@ -78,23 +78,6 @@ light:
           min_brightness: 50%
           max_brightness: 100%
 
-# --- DISPLAY DRIVER (SPI GC9A01A, 240x240 round) ------------------------------
-display:
-  - platform: ili9xxx
-    id: main_display
-    model: GC9A01A
-    spi_id: spi_bus
-    cs_pin: 13
-    dc_pin: 10
-    reset_pin: 18
-    invert_colors: true
-    data_rate: 40MHz
-    update_interval: never
-    dimensions:
-      height: ${imageheight}
-      width: ${imagewidth}
-    pages: !include ../display_pages.yaml
-
 # --- BATTERY ADC --------------------------------------------------------------
 sensor:
   - platform: adc
@@ -118,3 +101,20 @@ sensor:
         - sensor.template.publish:
             id: battery_percentage
             state: !lambda 'return x;'
+
+# --- DISPLAY DRIVER (SPI GC9A01A, 240x240 round) ------------------------------
+display:
+  - platform: ili9xxx
+    id: main_display
+    model: GC9A01A
+    spi_id: spi_bus
+    cs_pin: 13
+    dc_pin: 10
+    reset_pin: 18
+    invert_colors: true
+    data_rate: 40MHz
+    update_interval: never
+    dimensions:
+      height: ${imageheight}
+      width: ${imagewidth}
+    pages: !include ../display_pages.yaml
