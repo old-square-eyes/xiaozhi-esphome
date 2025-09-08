@@ -979,6 +979,8 @@ script:
             id(main_display).show_page(presense_sensor_clock);
           } else if (sel == "Weather") {
             id(main_display).show_page(weather_clock);
+          } else if (sel == "Small") {
+            id(main_display).show_page(small_clock);
           } else {
             id(main_display).show_page(clock_7segment);
           }
@@ -1188,6 +1190,7 @@ select:
       - Default
       - Presence
       - Weather
+      - Small
     initial_option: Default
     on_value:
       - if:
@@ -1379,6 +1382,14 @@ font:
       weight: 400
     id: font_big_date
     size: 22
+    glyphsets:
+      - ${font_glyphsets}
+  - file:
+      type: gfonts
+      family: Syne Mono
+      weight: 400
+    id: font_small_clock_mono
+    size: 24
     glyphsets:
       - ${font_glyphsets}
 
