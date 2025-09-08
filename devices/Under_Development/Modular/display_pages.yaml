@@ -1,9 +1,11 @@
-# display_pages v1.03
+# display_pages v1.04
+
       - id: idle_page
         lambda: |-
           it.fill(id(idle_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_idle), ImageAlign::CENTER);
           id(draw_active_timer_widget).execute();
+          id(draw_timer_timeline).execute();
 
           if (id(show_battery_status).state) {
             // ---- layout ----
