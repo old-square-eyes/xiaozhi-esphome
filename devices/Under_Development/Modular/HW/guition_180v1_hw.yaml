@@ -112,18 +112,6 @@ touchscreen:
             id(swipe_up).publish_state(false);
             id(swipe_down).publish_state(false);
 
-# --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
-display:
-  - platform: mipi_spi
-    id: main_display
-    model: JC3636W518
-    rotation: ${rotate_display}
-    update_interval: never
-    dimensions:
-        height: ${imageheight}
-        width: ${imagewidth}
-    pages: !include ../display_pages.yaml
-
 # --- BACKLIGHT ----------------------------------------------------------------
 output:
   - platform: ledc
@@ -186,3 +174,15 @@ sensor:
         - sensor.template.publish:
             id: battery_percentage
             state: !lambda 'return x;'
+
+# --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
+display:
+  - platform: mipi_spi
+    id: main_display
+    model: JC3636W518
+    rotation: ${rotate_display}
+    update_interval: never
+    dimensions:
+        height: ${imageheight}
+        width: ${imagewidth}
+    pages: !include ../display_pages.yaml
