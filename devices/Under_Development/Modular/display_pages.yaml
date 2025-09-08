@@ -1257,3 +1257,92 @@
             it.printf(bx + bw/2 + 1, by + bh/2 + 1, id(font_battery), Color::BLACK, TextAlign::CENTER, "%s", pct_txt);
             it.printf(bx + bw/2,     by + bh/2,     id(font_battery), Color::WHITE, TextAlign::CENTER, "%s", pct_txt);
           }
+
+      - id: small_clock
+        lambda: |-
+          const int W = it.get_width();   // 128
+          const int H = it.get_height();  //  64
+
+          // --- background / optional wallpaper ---
+          it.fill(Color::BLACK);
+          if (id(clock_show_wallpaper).state) {
+            it.image(W/2, H/2, id(clock_background), ImageAlign::CENTER);
+          }
+
+          // --- color from HA color wheel (default white) ---
+          float rr = id(clock_color_picker).current_values.get_red();
+          float gg = id(clock_color_picker).current_values.get_green();
+          float bb = id(clock_color_picker).current_values.get_blue();
+          if (rr == 0.0f && gg == 0.0f && bb == 0.0f) { rr = gg = bb = 1.0f; }
+          const Color FG((uint8_t)(rr * 255), (uint8_t)(gg * 255), (uint8_t)(bb * 255));
+
+          auto now = id(homeassistant_time).now();
+
+          // --- shared top metrics (so dots can center to temp) ---
+          const int TOP     = 2;     // top padding
+          const int TEMP_H  = 14;    // font_battery height
+          const int TEMP_Y  = TOP;   // temp top align
+          const int TEMP_CY = TEMP_Y + TEMP_H/2;  // vertical center of temp line
+
+          // --- tiny temperature (top-right) ---
+          {
+            std::string tunit = id(ha_weather_temperature_unit).state.c_str();
+            if (tunit.empty()) tunit = "°C";
+            char tbuf[20] = "N/A";
+            if (id(ha_weather_temperature).has_state()) {
+              float tv = id(ha_weather_temperature).state;
+              if (fabsf(tv - roundf(tv)) < 0.05f) snprintf(tbuf, sizeof(tbuf), "%.0f%s", tv, tunit.c_str());
+              else                                 snprintf(tbuf, sizeof(tbuf), "%.1f%s", tv, tunit.c_str());
+            }
+            it.printf(W - 2, TEMP_Y, id(font_battery), Color::WHITE, TextAlign::TOP_RIGHT, "%s", tbuf);
+          }
+
+          // --- presence dots (top-left) — centered to temp line, larger, respects switch ---
+          if (id(clock_show_dots).state) {
+            const int r   = 4;     // larger radius
+            const int dx  = 14;    // spacing between centers
+            const int x0  = 4 + r; // left margin + radius
+            const int y   = TEMP_CY;
+
+            // colors (on SH1106 it'll just be white, harmless to keep)
+            const Color COLORS[5] = {
+              Color(0x5b,0xc0,0xde), Color(0x8c,0xc4,0x3c), Color(0xD5,0x1B,0x21),
+              Color(0x00,0x00,0xFF), Color(0xFC,0xD4,0x44)
+            };
+
+            esphome::binary_sensor::BinarySensor* sensors[5] = {
+              id(ha_sensor1), id(ha_sensor2), id(ha_sensor3), id(ha_sensor4), id(ha_sensor5)
+            };
+
+            int x = x0;
+            for (int i = 0; i < 5; i++, x += dx) {
+              bool present = sensors[i] && sensors[i]->has_state() && sensors[i]->state;
+              if (present) it.filled_circle(x, y, r, COLORS[i]);
+              else         it.circle(x, y, r, Color::WHITE);
+            }
+          }
+
+          // --- time (monospaced; centered; no jitter) ---
+          if (id(clock_show_time).state) {
+            const int time_y = 30; // tuned for 24px mono on 128x64
+            if (id(clock_24h).state) {
+              if (id(clock_show_seconds).state)
+                it.strftime(W/2, time_y, id(font_small_clock_mono), FG, TextAlign::CENTER, "%H:%M:%S", now);
+              else
+                it.strftime(W/2, time_y, id(font_small_clock_mono), FG, TextAlign::CENTER, "%H:%M", now);
+            } else {
+              if (id(clock_show_seconds).state)
+                it.strftime(W/2, time_y, id(font_small_clock_mono), FG, TextAlign::CENTER, "%I:%M:%S%p", now);
+              else
+                it.strftime(W/2, time_y, id(font_small_clock_mono), FG, TextAlign::CENTER, "%I:%M%p", now);
+            }
+          }
+
+          // --- date (small, under time; same format as other clocks) ---
+          if (id(clock_show_date).state) {
+            const int date_y = 50;  // a touch lower to clear the time
+            if (id(clock_24h).state)
+              it.strftime(W/2, date_y, id(font_battery), FG, TextAlign::CENTER, "%a, %d %b", now);
+            else
+              it.strftime(W/2, date_y, id(font_battery), FG, TextAlign::CENTER, "%a, %b %d", now);
+          }
