@@ -77,7 +77,6 @@ light:
     restore_mode: ALWAYS_ON
     default_transition_length: 250ms
 
-  # Ball v2 has a single WS2812 status LED
   - platform: esp32_rmt_led_strip
     id: led
     name: none
@@ -190,23 +189,6 @@ touchscreen:
             id(swipe_up).publish_state(false);
             id(swipe_down).publish_state(false);
 
-# --- DISPLAY DRIVER (ILI9xxx round GC9A01A) ----------------------------------
-display:
-  - platform: ili9xxx
-    id: main_display
-    model: GC9A01A
-    invert_colors: true
-    data_rate: 20MHz
-    cs_pin: GPIO5
-    dc_pin: GPIO47
-    reset_pin:
-      number: GPIO38
-    update_interval: never
-    dimensions:
-      height: ${imageheight}
-      width: ${imagewidth}
-    pages: !include ../display_pages.yaml
-
 # --- BATTERY ADC --------------------------------------------------------------
 sensor:
   - platform: adc
@@ -230,3 +212,20 @@ sensor:
         - sensor.template.publish:
             id: battery_percentage
             state: !lambda 'return x;'
+
+# --- DISPLAY DRIVER (ILI9xxx round GC9A01A) ----------------------------------
+display:
+  - platform: ili9xxx
+    id: main_display
+    model: GC9A01A
+    invert_colors: true
+    data_rate: 20MHz
+    cs_pin: GPIO5
+    dc_pin: GPIO47
+    reset_pin:
+      number: GPIO38
+    update_interval: never
+    dimensions:
+      height: ${imageheight}
+      width: ${imagewidth}
+    pages: !include ../display_pages.yaml
