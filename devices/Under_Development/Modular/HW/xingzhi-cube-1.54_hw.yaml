@@ -32,22 +32,6 @@ binary_sensor:
     on_release:
       - logger.log: "Volume Up released"
 
-# --- CHIP & PSRAM -------------------------------------------------------------
-esp32:
-  board: esp32-s3-devkitc-1
-  flash_size: 16MB
-  cpu_frequency: 240MHz
-  framework:
-    type: esp-idf
-    sdkconfig_options:
-      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
-      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
-      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
-
-psram:
-  mode: octal
-  speed: 80MHz
-
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
   - id: spi_bus
@@ -102,22 +86,29 @@ light:
     restore_mode: ALWAYS_ON
     default_transition_length: 250ms
 
-# --- DISPLAY DRIVER (SPI GC9A01A, 240x240 round) ------------------------------
-display:
-  - platform: ili9xxx
-    id: main_display
-    model: ST7789V
-    spi_id: spi_bus
-    cs_pin: 14
-    dc_pin: 8
-    reset_pin: 18
-    invert_colors: true
-    data_rate: 40MHz
-    update_interval: never
-    dimensions:
-      height: ${imageheight}
-      width: ${imagewidth}
-    pages: !include ../display_pages.yaml
+  - platform: esp32_rmt_led_strip
+    id: led
+    name: none
+    disabled_by_default: false
+    entity_category: config
+    pin: GPIO48
+    default_transition_length: 0s
+    chipset: WS2812
+    num_leds: 1
+    rgb_order: grb
+    effects:
+      - pulse:
+          name: "Slow Pulse"
+          transition_length: 250ms
+          update_interval: 250ms
+          min_brightness: 50%
+          max_brightness: 100%
+      - pulse:
+          name: "Fast Pulse"
+          transition_length: 100ms
+          update_interval: 100ms
+          min_brightness: 50%
+          max_brightness: 100%
 
 # --- BATTERY ADC --------------------------------------------------------------
 sensor:
@@ -142,3 +133,20 @@ sensor:
         - sensor.template.publish:
             id: battery_percentage
             state: !lambda 'return x;'
+
+# --- DISPLAY DRIVER (SPI GC9A01A, 240x240 round) ------------------------------
+display:
+  - platform: ili9xxx
+    id: main_display
+    model: ST7789V
+    spi_id: spi_bus
+    cs_pin: 14
+    dc_pin: 8
+    reset_pin: 18
+    invert_colors: true
+    data_rate: 40MHz
+    update_interval: never
+    dimensions:
+      height: ${imageheight}
+      width: ${imagewidth}
+    pages: !include ../display_pages.yaml
