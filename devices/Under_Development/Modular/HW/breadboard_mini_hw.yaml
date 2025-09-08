@@ -32,22 +32,6 @@ binary_sensor:
     on_release:
       - logger.log: "Button was released"
 
-# --- CHIP & PSRAM -------------------------------------------------------------
-esp32:
-  board: esp32-s3-devkitc-1
-  flash_size: 16MB
-  cpu_frequency: 240MHz
-  framework:
-    type: esp-idf
-    sdkconfig_options:
-      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
-      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
-      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
-
-psram:
-  mode: octal
-  speed: 80MHz
-
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
   sda: 41
@@ -109,17 +93,6 @@ light:
           min_brightness: 50%
           max_brightness: 100%
 
-# --- DISPLAY DRIVER (SPI GC9A01A, 240x240 round) ------------------------------
-display:
-  - platform: ssd1306_i2c
-    id: main_display
-    model: "SH1106 128x64"
-    address: 0x3C
-    update_interval: 5s
-    contrast: 60%
-    auto_clear_enabled: true
-    pages: !include ../display_pages.yaml
-
 # --- BATTERY ADC --------------------------------------------------------------
 sensor:
   - platform: adc
@@ -143,3 +116,16 @@ sensor:
         - sensor.template.publish:
             id: battery_percentage
             state: !lambda 'return x;'
+
+# --- DISPLAY DRIVER (SPI GC9A01A, 240x240 round) ------------------------------
+display:
+  - platform: ssd1306_i2c
+    id: main_display
+    model: "SH1106 128x64"
+    address: 0x3C
+    update_interval: 5s
+    contrast: 60%
+    auto_clear_enabled: true
+    pages: !include ../display_pages.yaml
+
+
