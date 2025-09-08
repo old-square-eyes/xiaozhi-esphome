@@ -1,21 +1,5 @@
 # Xiaozhi Ball v1 — hardware pack (ESP32-S3 + GC9A01A round 240x240)
 
-# --- CHIP & PSRAM -------------------------------------------------------------
-esp32:
-  board: esp32-s3-devkitc-1
-  flash_size: 16MB
-  cpu_frequency: 240MHz
-  framework:
-    type: esp-idf
-    sdkconfig_options:
-      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
-      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
-      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
-
-psram:
-  mode: octal
-  speed: 80MHz
-
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
   - id: spi_bus
