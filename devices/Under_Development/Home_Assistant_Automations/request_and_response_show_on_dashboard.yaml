@@ -37,7 +37,7 @@ actions:
               value: "{{ 'AI: ' ~ trigger.to_state.state }}"
 mode: single
 
-# and add a markdown cared to dash:
+# and add a markdown card to dash:
 
 type: markdown
 content: "# {{ states('input_text.airesponse') }}"
