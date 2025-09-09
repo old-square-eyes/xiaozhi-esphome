@@ -1,20 +1,12 @@
+<div align="center">
 
 # XIAOZHI-ESPHOME
 
-**Use your Xiaozhi AI devices in ESPHome as voice assistants for Home Assistant.**
+**Use your Xiaozhi AI devices in ESPHome as voice assistant satellites for Home Assistant.**
 
-(fully working with on-device wake word and custom graphics.)
+<img width="600" src="https://github.com/user-attachments/assets/b66981ab-cdde-4507-821a-26e8d3c57ad6" />
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/958a2d99-5752-481b-be1e-d9ad797e6e33" alt="fam" width="250"/>
-  <img src="https://github.com/user-attachments/assets/96f173cd-9d57-492d-906c-83f3ce603ff2" alt="DIY" width="250"/>
-  <img src="https://github.com/user-attachments/assets/1f2c79c9-1963-415e-b43d-945bbc477cae" alt="DIY" width="250"/>
-</p>
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/5d364985-a4ce-4b49-bf03-af7ce22bbc35" alt="20250614_195218" width="250"/>
-  <img src="https://github.com/user-attachments/assets/8e66a3d6-527b-4047-9f0c-fb7c9cb2490f" alt="Xiaozhi Device" width="250"/>
-  <img src="https://github.com/user-attachments/assets/4aa49b9e-ab2c-4949-aefc-9d51ecf6ac40" alt="identify your model" width="250"/>
-</p>
+</div>
 
 
 By request, this GitHub project provides a simple way to use Xiaozhi-based devices with ESPHome. These compact devices can serve as voice assistants integrated with Home Assistant.
