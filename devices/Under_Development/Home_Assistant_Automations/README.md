@@ -14,7 +14,7 @@
 
 5. `shell_command.yaml` - Shell Comands for configuration.yaml, resize and convert images, needed for now_playing & camera_snapshot
 
-6. `swipe_test.yaml` -  Automation using the "swipe" binary sensors of v1.02
+6. `swipe_test.yaml` -  Automation using the "swipe" binary sensors of Modular v1.02
 
 7. `switch_voiceassist.yaml` — Talk to `<assistant>` (dynamic voice-agent switching by voice)**
    Say things like “**talk to Jarvis**” or “**let me talk to Harley Quinn**,” and the automation will switch the assistant/pipeline on your voice satellite **on the fly**. It reads the available options from your `select` entity at runtime, so you **don’t have to edit the Automation** when you add or rename assistants.
