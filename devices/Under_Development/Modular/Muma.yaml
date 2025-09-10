@@ -17,7 +17,7 @@ substitutions:
 # Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
 # Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
 
-## PRESENCE / MOTION SENSORS #####################################################################################################################
+## PRESENCE / MOTION SENSORS ######### IF NOT USING, LEAVE AS IS. REMOVING BREAKS THE CORE #######################################################
 
   sensor1_entity: "binary_sensor.8266_presense_2_presence"
   sensor1_label: "Tech Room"
