@@ -78,3 +78,9 @@ micro_wake_word:
 #    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/hey_peppa_pig.json"
 #    - model: "https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/okay_computer.json"
 ##################################################################################################################################################
+
+media_player:
+  - platform: speaker
+    id: !extend external_media_player
+    volume_min: 0.5
+    volume_max: 0.7
