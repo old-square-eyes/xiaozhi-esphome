@@ -52,6 +52,8 @@ Video going through the esphome install of device was removed by youtube and my 
 
 Ball v1 & v2: https://vi.aliexpress.com/item/1005008627679270.html
 
+alternative link: https://www.aliexpress.com/item/1005009762104155.html
+
 Muma Box: https://vi.aliexpress.com/item/1005009043526078.html
 
 Muma Horse: https://vi.aliexpress.com/item/1005008884232596.html
