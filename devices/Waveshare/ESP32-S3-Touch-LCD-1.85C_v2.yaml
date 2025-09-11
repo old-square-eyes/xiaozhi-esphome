@@ -16,7 +16,7 @@ substitutions:
 ##################################################################################################################################################
 
   display_platform: "mipi_spi"
-  display_model: "JC3636W518"
+  display_model: "JC3636W518V2"
   imagewidth: "360"
   imageheight: "360"
   rotate_display: "180"
@@ -120,6 +120,11 @@ wifi:
     - script.execute: draw_display
 
 captive_portal:
+
+external_components:
+  - source: github://pr#10392
+    components: [mipi_spi]
+    refresh: 1h
 
 time:
   - platform: homeassistant
