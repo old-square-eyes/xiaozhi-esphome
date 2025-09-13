@@ -28,6 +28,14 @@ After this, if there is a update, all you need to do is compile again.
 ```
 
 ---
+### Modular v1.04
+- **Changes**  
+  - Added Analog clock (yeah i know, why not)
+  - Added switch for doing swipe actions internally (for better first experience), turn of if using automations.
+    hardcoded swipe functions: left & right change clock style, down toggle battery, up change wallpaper.
+  - Added light sensors for all 5 rooms and changed so presence shows a red LED dot. if light is on in room color is filled.
+
+---
 ### Modular v1.03
 - **Changes**  
   -  added 2 more clocks, a presence sensor clock and a weather clock
