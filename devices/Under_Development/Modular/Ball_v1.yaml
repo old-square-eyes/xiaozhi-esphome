@@ -39,7 +39,6 @@ substitutions:
   light5_entity: "switch.nedis_smart_plug_tasmota1"
   sensor5_label: "Hall"
 
-
   weather_entity: "weather.forecast_home"
 
 ##################################################################################################################################################
