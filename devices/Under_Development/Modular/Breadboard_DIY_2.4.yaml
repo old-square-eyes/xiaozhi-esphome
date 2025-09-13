@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-d11acc
   friendly_name: Xiaozhi DIY 2.4
 
-## Modular version Main v1.03
+## Modular version Main v1.04
 
 ## SETTINGS ######################################################################################################################################
 
@@ -17,17 +17,26 @@ substitutions:
 # Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
 # Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
 
-## PRESENCE / MOTION SENSORS #####################################################################################################################
+## PRESENCE / MOTION SENSORS ########## IF NOT USING THESE LEAVE THEM ALONE, SCRIPT WILL BREAK WITHOUT ###########################################
 
   sensor1_entity: "binary_sensor.8266_presense_2_presence"
+  light1_entity: "light.livingroom_all_lights"
   sensor1_label: "Tech Room"
+
   sensor2_entity: "binary_sensor.esp32s3_1_presence"
+  light2_entity: "group.kitchen_lights"
   sensor2_label: "Kitchen"
+
   sensor3_entity: "binary_sensor.esphome_web_1911bf_presence"
+  light3_entity: "light.mom_s_room"
   sensor3_label: "Living Room"
+
   sensor4_entity: "binary_sensor.notifier_2_presence"
+  light4_entity: "light.hue_toilet_light_light"
   sensor4_label: "Toilet"
+
   sensor5_entity: "binary_sensor.8266_presense_presence"
+  light5_entity: "switch.nedis_smart_plug_tasmota1"
   sensor5_label: "Hall"
 
   weather_entity: "weather.forecast_home"
