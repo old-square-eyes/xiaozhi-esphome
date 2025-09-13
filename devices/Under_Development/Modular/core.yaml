@@ -1,4 +1,4 @@
-# Core v1.04
+# Core v1.05
 
 substitutions:
   allowed_characters: >-
@@ -353,25 +353,42 @@ binary_sensor:
     id: ha_sensor1
     entity_id: ${sensor1_entity}
     internal: true
-
   - platform: homeassistant
     id: ha_sensor2
     entity_id: ${sensor2_entity}
     internal: true
-
   - platform: homeassistant
     id: ha_sensor3
     entity_id: ${sensor3_entity}
     internal: true
-
   - platform: homeassistant
     id: ha_sensor4
     entity_id: ${sensor4_entity}
     internal: true
-
   - platform: homeassistant
     id: ha_sensor5
     entity_id: ${sensor5_entity}
+    internal: true
+
+  - platform: homeassistant
+    id: ha_light1
+    entity_id: ${light1_entity}
+    internal: true
+  - platform: homeassistant
+    id: ha_light2
+    entity_id: ${light2_entity}
+    internal: true
+  - platform: homeassistant
+    id: ha_light3
+    entity_id: ${light3_entity}
+    internal: true
+  - platform: homeassistant
+    id: ha_light4
+    entity_id: ${light4_entity}
+    internal: true
+  - platform: homeassistant
+    id: ha_light5
+    entity_id: ${light5_entity}
     internal: true
 
 output:
@@ -1029,10 +1046,57 @@ script:
             id(main_display).show_page(weather_clock);
           } else if (sel == "Small") {
             id(main_display).show_page(small_clock);
+          } else if (sel == "Analog") {
+            id(main_display).show_page(analog_clock);
           } else {
             id(main_display).show_page(clock_7segment);
           }
           id(main_display).update();
+
+  - id: swipe_left_action   # next clock style
+    then:
+      - lambda: |-
+          static const char* const opts[] = {
+            "7-segment","Flip","Default","Presence","Weather","Small","Analog"
+          };
+          const int N = sizeof(opts)/sizeof(opts[0]);
+          std::string cur = id(clock_style).state.c_str();
+          int idx = 0;
+          for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
+          int next = (idx + 1) % N;
+          id(clock_style).publish_state(opts[next]);
+      - script.execute: show_clock_page
+
+  - id: swipe_right_action  # previous clock style
+    then:
+      - lambda: |-
+          static const char* const opts[] = {
+            "7-segment","Flip","Default","Presence","Weather","Small","Analog"
+          };
+          const int N = sizeof(opts)/sizeof(opts[0]);
+          std::string cur = id(clock_style).state.c_str();
+          int idx = 0;
+          for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
+          int prev = (idx - 1 + N) % N;
+          id(clock_style).publish_state(opts[prev]);
+      - script.execute: show_clock_page
+
+  - id: swipe_up_action     # next wallpaper (cycle)
+    then:
+      - lambda: |-
+          static const char* const opts[] = { "clock","hacker","ha-girl","mission","starrysky" };
+          const int N = sizeof(opts)/sizeof(opts[0]);
+          std::string cur = id(clock_wallpaper_image).state.c_str();
+          int idx = 0;
+          for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
+          int next = (idx + 1) % N;
+          id(clock_wallpaper_image).publish_state(opts[next]);
+      - script.execute: draw_display
+
+  - id: swipe_down_action   # toggle battery widget
+    then:
+      - switch.toggle: show_battery_status
+      - script.execute: draw_display
 
 switch:
   - platform: template
@@ -1180,6 +1244,14 @@ switch:
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
 
+  - platform: template
+    id: swipe_local
+    name: "Handle swipes on device"
+    icon: "mdi:gesture-swipe"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
 select:
   - platform: template
     entity_category: config
@@ -1239,6 +1311,7 @@ select:
       - Presence
       - Weather
       - Small
+      - Analog
     initial_option: Default
     on_value:
       - if:
