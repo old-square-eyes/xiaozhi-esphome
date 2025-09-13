@@ -1,4 +1,4 @@
-# display_pages v1.04
+# display_pages v1.05
 
       - id: idle_page
         lambda: |-
@@ -931,12 +931,14 @@
             it.fill(Color::BLACK);
           }
 
+          // Clock color
           float rr = id(clock_color_picker).current_values.get_red();
           float gg = id(clock_color_picker).current_values.get_green();
           float bb = id(clock_color_picker).current_values.get_blue();
           if (rr == 0.0f && gg == 0.0f && bb == 0.0f) { rr = gg = bb = 1.0f; }
           const Color FG((uint8_t)(rr * 255.0f), (uint8_t)(gg * 255.0f), (uint8_t)(bb * 255.0f));
 
+          // Geometry
           const int MINWH = std::min(W, H);
           const bool SMALL = (MINWH <= 240);
           const bool MED   = (!SMALL && MINWH <= 320);
@@ -979,15 +981,19 @@
           const int cX  = ORGX + GRID_W / 2 - CW / 2;
           const int cY  = ORGY + GRID_H / 2 - CH / 2;
 
+          // Colors
           const Color C1_ON(0x5b,0xc0,0xde);
           const Color C2_ON(0x8c,0xc4,0x3c);
           const Color C3_ON(0xD5,0x1B,0x21);
           const Color C4_ON(0x00,0x00,0xFF);
           const Color C5_ON(0xFC,0xD4,0x44);
 
-          const Color FILL_OFF  = Color::BLACK;
+          const Color FILL_OFF   = Color::BLACK;
           const Color EDGE_WHITE = Color::WHITE;
+          const Color LED_RED(255, 0, 0);
+          const Color LED_RED_BORDER(180, 0, 0);
 
+          // Fit room label nicely
           auto fit_label = [&](const char* label, int w) -> std::string {
             int max_chars = std::max(3, (w - 10) / 7);
             std::string s(label ? label : "");
@@ -996,11 +1002,25 @@
             return s.substr(0, max_chars - 1) + "…";
           };
 
-          auto draw_room = [&](int x, int y, int w, int h, const char* label,
-                               esphome::binary_sensor::BinarySensor *bs,
-                               const Color &on_col) {
-            Color fill_col = FILL_OFF;
-            if (bs->has_state() && bs->state) fill_col = on_col;
+          // Draw presence LED: only if presence==true; corner depends on "left vs right" box
+          auto draw_presence_led = [&](int x, int y, int w, bool right_side) {
+            const int inset  = std::max(4, CELL / 12);
+            const int radius = std::max(3, CELL / 12);   // smaller LED
+            int cx = right_side ? (x + w - inset - radius) : (x + inset + radius);
+            int cy = y + inset + radius;
+            it.filled_circle(cx, cy, radius, LED_RED);
+            it.circle(cx, cy, radius, LED_RED_BORDER);
+          };
+
+          // Draw one room: fill by LIGHT state; add red LED if presence true
+          auto draw_room = [&](int x, int y, int w, int h,
+                               const char* label,
+                               esphome::binary_sensor::BinarySensor *presence,
+                               esphome::binary_sensor::BinarySensor *light_bs,
+                               const Color &on_col,
+                               bool right_side) {
+            bool light_on = (light_bs && light_bs->has_state() && light_bs->state);
+            Color fill_col = light_on ? on_col : FILL_OFF;
 
             it.filled_rectangle(x, y, w, h, fill_col);
             it.rectangle(x, y, w, h, EDGE_WHITE);
@@ -1009,14 +1029,21 @@
               std::string txt = fit_label(label, w);
               it.printf(x + w/2, y + h/2, id(font_battery), Color::WHITE, TextAlign::CENTER, "%s", txt.c_str());
             }
+
+            bool motion = (presence && presence->has_state() && presence->state);
+            if (motion) {
+              draw_presence_led(x, y, w, right_side);
+            }
           };
 
-          draw_room(xL, yT, CELL, CELL, "${sensor1_label}", id(ha_sensor1), C1_ON);
-          draw_room(xR, yT, CELL, CELL, "${sensor2_label}", id(ha_sensor2), C2_ON);
-          draw_room(xL, yB, CELL, CELL, "${sensor3_label}", id(ha_sensor3), C3_ON);
-          draw_room(xR, yB, CELL, CELL, "${sensor4_label}", id(ha_sensor4), C4_ON);
-          draw_room(cX, cY, CW, CH, "${sensor5_label}", id(ha_sensor5), C5_ON);
+          // Boxes: LEFT column -> LED on left; RIGHT column -> LED on right; CENTER -> left
+          draw_room(xL, yT, CELL, CELL, "${sensor1_label}", id(ha_sensor1), id(ha_light1), C1_ON, false); // left col
+          draw_room(xR, yT, CELL, CELL, "${sensor2_label}", id(ha_sensor2), id(ha_light2), C2_ON, true);  // right col
+          draw_room(xL, yB, CELL, CELL, "${sensor3_label}", id(ha_sensor3), id(ha_light3), C3_ON, false); // left col
+          draw_room(xR, yB, CELL, CELL, "${sensor4_label}", id(ha_sensor4), id(ha_light4), C4_ON, true);  // right col
+          draw_room(cX, cY, CW,   CH,   "${sensor5_label}", id(ha_sensor5), id(ha_light5), C5_ON, false); // center -> left
 
+          // Time under grid (unchanged)
           if (SHOW_TIME) {
             auto now = id(homeassistant_time).now();
             const int CX = (L + R) / 2;
@@ -1035,39 +1062,8 @@
             }
           }
 
-          if (id(show_battery_status).state) {
-            const int top = 2, bw = 56, bh = 24, capw = 5, pad = 3;
-            const int cx = it.get_width() / 2;
-            const int bx = cx - (bw + capw) / 2;
-            const int by = top;
+          // (Battery chip stays handled elsewhere as you already had)
 
-            float pct = id(battery_percentage).state;
-            if (pct < 0) pct = 0; else if (pct > 100) pct = 100;
-
-            Color lvl = Color(0x00,0xA8,0x00);
-            if (pct <= 20)       lvl = Color(0xD0,0x00,0x00);
-            else if (pct <= 50)  lvl = Color(0xD0,0x9A,0x00);
-
-            it.filled_rectangle(bx, by, bw, bh, Color::BLACK);
-            it.rectangle(bx, by, bw, bh, Color::WHITE);
-
-            const int capx = bx + bw, caph = bh - 8;
-            const int capy = by + (bh - caph) / 2;
-            it.filled_rectangle(capx, capy, capw, caph, Color::BLACK);
-            it.rectangle(capx, capy, capw, caph, Color::WHITE);
-
-            const int inx = bx + pad, iny = by + pad, inw = bw - 2*pad, inh = bh - 2*pad;
-            it.filled_rectangle(inx, iny, inw, inh, Color::BLACK);
-
-            const int fw = (int)(inw * (pct / 100.0f));
-            if (fw > 0) it.filled_rectangle(inx, iny, fw, inh, lvl);
-            it.rectangle(bx, by, bw, bh, Color::WHITE);
-
-            char pct_txt[8];
-            snprintf(pct_txt, sizeof(pct_txt), "%.0f%%", pct);
-            it.printf(bx + bw/2 + 1, by + bh/2 + 1, id(font_battery), Color::BLACK, TextAlign::CENTER, "%s", pct_txt);
-            it.printf(bx + bw/2,     by + bh/2,     id(font_battery), Color::WHITE, TextAlign::CENTER, "%s", pct_txt);
-          }
 
       - id: weather_clock
         lambda: |-
@@ -1347,4 +1343,179 @@
               it.strftime(W/2, date_y, id(font_battery), FG, TextAlign::CENTER, "%a, %d %b", now);
             else
               it.strftime(W/2, date_y, id(font_battery), FG, TextAlign::CENTER, "%a, %b %d", now);
+          }
+
+      - id: analog_clock
+        lambda: |-
+          // ----- basics & background -----
+          const int W  = it.get_width();
+          const int H  = it.get_height();
+          const int CX = W / 2;
+          const int CY = H / 2;
+
+          if (id(clock_show_wallpaper).state) {
+            it.image(CX, CY, id(clock_background), ImageAlign::CENTER);
+          } else {
+            it.fill(Color::BLACK);
+          }
+
+          // ----- color & fonts -----
+          float rr = id(clock_color_picker).current_values.get_red();
+          float gg = id(clock_color_picker).current_values.get_green();
+          float bb = id(clock_color_picker).current_values.get_blue();
+          if (rr == 0.0f && gg == 0.0f && bb == 0.0f) { rr = gg = bb = 1.0f; }  // default white
+          const Color FG((uint8_t)(rr * 255.0f), (uint8_t)(gg * 255.0f), (uint8_t)(bb * 255.0f));
+          const Color FACE_ACC(60,60,60);
+          const Color RING(180,180,180);
+          const Color SEC_COL = id(seconds_dot_color);
+
+          auto &date_font = id(font_big_date);
+
+          // ----- geometry (auto scale) -----
+          const int M       = std::max(8, std::min(W, H) / 18);       // safe margin
+          const int R       = std::min(W, H) / 2 - M;                  // radius
+          const int R_TICKS = R - std::max(4, R / 18);                 // tick ring radius
+
+          // Size awareness for tiny displays
+          const int  MINWH     = std::min(W, H);
+          const bool TINY      = (MINWH <= 160);                       // e.g. 128x64 OLED
+          auto &num_font       = TINY ? id(font_battery) : id(font_big_date);
+          const bool DRAW_NUMS = id(clock_show_time).state && !TINY;   // hide numerals on tiny screens
+
+          const int R_NUMBERS  = R - std::max(16, R / 6);              // numeral ring
+          const int NUM_PAD    = TINY ? std::max(2, R / 28)
+                                      : std::max(4, R / 22);           // gap between ticks and numerals
+
+          // ----- fast unit circle LUT -----
+          static bool LUT_INIT = false;
+          static int16_t ux[60], uy[60];
+          if (!LUT_INIT) {
+            const float TWO_PI = 6.2831853f;
+            for (int i = 0; i < 60; i++) {
+              float a = (i / 60.0f) * TWO_PI - (3.1415926f / 2.0f);   // 0 at 12 o'clock
+              ux[i] = (int16_t) lroundf(cosf(a) * 10000.0f);
+              uy[i] = (int16_t) lroundf(sinf(a) * 10000.0f);
+            }
+            LUT_INIT = true;
+          }
+          auto rx = [&](int r, int i){ return CX + (int)(( (long)r * ux[i]) / 10000L); };
+          auto ry = [&](int r, int i){ return CY + (int)(( (long)r * uy[i]) / 10000L); };
+
+          // ----- time (smooth sweep) -----
+          auto now = id(homeassistant_time).now();
+          int s = now.second;
+          int m = now.minute;
+          int h = now.hour % 12;
+
+          static int last_sec = -1;
+          static uint32_t sec_anchor_ms = 0;
+          if (s != last_sec) { last_sec = s; sec_anchor_ms = millis(); }
+          float sec_frac = (millis() - sec_anchor_ms) / 1000.0f;
+          if (sec_frac < 0.0f) sec_frac = 0.0f;
+          if (sec_frac > 0.999f) sec_frac = 0.999f;
+
+          float s_pos = (s + sec_frac) / 60.0f;
+          float m_pos = (m + (id(clock_show_seconds).state ? s_pos : 0.0f)) / 60.0f;
+          float h_pos = (h + m_pos) / 12.0f;
+
+          auto polar = [&](float pos, int r, int &ox, int &oy) {
+            const float TWO_PI = 6.2831853f;
+            float a = pos * TWO_PI - (3.1415926f / 2.0f);
+            ox = CX + (int) lroundf(r * cosf(a));
+            oy = CY + (int) lroundf(r * sinf(a));
+          };
+
+          // ----- hand lengths & widths (size-aware) -----
+          const int L_H = (int)(R * 0.52f);
+          const int L_M = (int)(R * 0.72f);
+          const int L_S = (int)(R * 0.82f);
+          const int W_H = std::max(TINY ? 2 : 3, R / 16);
+          const int W_M = std::max(TINY ? 1 : 2, R / 22);
+          const int W_S = std::max(1, R / 50);
+
+          auto thick_hand = [&](int x0, int y0, int x1, int y1, int w, Color col) {
+            if (w <= 1) { it.line(x0, y0, x1, y1, col); return; }
+            float dx = (float)(x1 - x0), dy = (float)(y1 - y0);
+            float L = sqrtf(dx*dx + dy*dy);
+            if (L < 1.0f) { it.line(x0, y0, x1, y1, col); return; }
+            float px = -dy / L, py = dx / L;
+            int half = w / 2;
+            for (int t = -half; t <= half; ++t) {
+              int ox = (int) lroundf(px * t);
+              int oy = (int) lroundf(py * t);
+              it.line(x0 + ox, y0 + oy, x1 + ox, y1 + oy, col);
+            }
+          };
+
+          // ----- dial graphics (toggle with Clock Show Time) -----
+          if (id(clock_show_time).state) {
+            // Rings
+            it.circle(CX, CY, R,   RING);
+            it.circle(CX, CY, R-2, FACE_ACC);
+
+            // Ticks (thicker at 12/3/6/9), clamped away from numeral ring
+            for (int i = 0; i < 60; i++) {
+              bool major    = (i % 5  == 0);
+              bool quadrant = (i % 15 == 0);                 // numeral positions
+              int  len_base = quadrant ? std::max(10, R / 6)
+                                       : (major ? std::max(8, R / 10)
+                                                : std::max(4, R / 18));
+              Color col = major ? FG : FACE_ACC;
+
+              int r_outer = R_TICKS;
+              int r_inner = R_TICKS - len_base;
+              if (quadrant && DRAW_NUMS) {
+                r_inner = std::max(r_inner, R_NUMBERS + NUM_PAD);     // never cross numerals
+              }
+
+              int x1 = rx(r_outer, i), y1 = ry(r_outer, i);
+              int x2 = rx(r_inner, i), y2 = ry(r_inner, i);
+
+              if (quadrant) {
+                it.line(x1, y1, x2, y2, col);
+                it.line(x1+1, y1, x2+1, y2, col);                     // pseudo thickness
+              } else {
+                it.line(x1, y1, x2, y2, col);
+              }
+            }
+
+            // Numerals (hide on tiny screens)
+            if (DRAW_NUMS) {
+              auto print_center = [&](int i, const char* txt) {
+                int tx = rx(R_NUMBERS, i);
+                int ty = ry(R_NUMBERS, i);
+                it.printf(tx, ty, num_font, FG, TextAlign::CENTER, "%s", txt);
+              };
+              print_center(0,  "12");
+              print_center(15, "3");
+              print_center(30, "6");
+              print_center(45, "9");
+            }
+          }
+
+          // ----- hands (always visible) -----
+          { int hx, hy; polar(h_pos, L_H, hx, hy);
+            thick_hand(CX, CY, hx, hy, W_H, FG);
+          }
+          { int mx, my; polar(m_pos, L_M, mx, my);
+            thick_hand(CX, CY, mx, my, W_M, FG);
+          }
+          if (id(clock_show_seconds).state) {
+            int sx, sy; polar(s_pos, L_S, sx, sy);
+            it.line(CX, CY, sx, sy, SEC_COL);
+            // counterweight
+            int bwx, bwy; polar(fmodf(s_pos + 0.5f, 1.0f), (int)(R * 0.18f), bwx, bwy);
+            it.line(CX, CY, bwx, bwy, SEC_COL);
+          }
+
+          // Center cap
+          it.filled_circle(CX, CY, std::max(3, R / 20), FG);
+
+          // ----- optional date (unchanged position) -----
+          if (id(clock_show_date).state) {
+            const int date_y = CY + (int)(R * 0.55f);
+            if (id(clock_24h).state)
+              it.strftime(CX, date_y, date_font, FG, TextAlign::TOP_CENTER, "%a, %d %b", now);
+            else
+              it.strftime(CX, date_y, date_font, FG, TextAlign::TOP_CENTER, "%a, %b %d", now);
           }
