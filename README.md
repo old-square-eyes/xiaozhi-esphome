@@ -53,6 +53,8 @@ Video going through the esphome install of device was removed by youtube and my 
 
 ## 🛒 Where to Buy
 
+EchoEar: https://www.aliexpress.com/item/1005009834934442.html
+
 Ball v1 & v2: https://vi.aliexpress.com/item/1005008627679270.html
 
 alternative link: https://www.aliexpress.com/item/1005009762104155.html
