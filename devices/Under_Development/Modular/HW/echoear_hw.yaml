@@ -43,6 +43,7 @@ touchscreen:
   - platform: cst816
     id: my_touchscreen
     interrupt_pin: GPIO10
+#    reset_pin: GPIO40
     display: main_display
     i2c_id: bus_a
 
@@ -162,7 +163,11 @@ switch:
     entity_category: config
     pin: GPIO48
     restore_mode: RESTORE_DEFAULT_ON
-
+  - platform: gpio
+    name: "Top Green LED"
+    pin:
+      number: GPIO43
+      inverted: true
 microphone:
   - platform: i2s_audio
     id: box_mic
@@ -222,6 +227,21 @@ interval:
 
           uint16_t mv = (uint16_t(rx[1]) << 8) | rx[0];  // little-endian
           id(battery_voltage).publish_state(mv / 1000.0f);
+
+esp32_touch:
+  setup_mode: false
+  measurement_duration: 0.25ms
+  sleep_duration: 0.5ms
+
+binary_sensor:
+  - platform: esp32_touch
+    id: top_touch_pad
+    name: "Top Touch Pad"
+    pin: GPIO7
+    threshold: 2000
+    filters:
+      - delayed_on: 15ms
+      - delayed_off: 60ms
 
 # --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
 display:
