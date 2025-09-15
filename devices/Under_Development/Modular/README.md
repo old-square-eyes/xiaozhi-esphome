@@ -27,6 +27,20 @@ And if you believe the issue isn’t just user error, please report back. 😉
 After this, if there is a update, all you need to do is compile again.
 ```
 
+```markdown
+## 🚀 Running locally
+
+If you want to run and edit the Modular files locally:
+1. Create a directory in your esphome/ directory called "localtest" and copy core.yaml + display_pages.yaml there.
+2. Create a directory inside localtest/ called "HW" and copy the hardware file for your device there (eg. ball_v2_hw.yaml)
+3. change the packages in main yaml on the device to:
+
+packages:
+  core: !include localtest/core.yaml
+  hw:   !include localtest/HW/ball_v2_hw.yaml
+
+```
+
 ---
 ### Modular v1.04
 - **Changes**  
