@@ -6,7 +6,7 @@ i2c:
     sda: 15
     scl: 14
     scan: true
-  - id: touchscreen_bus
+  - id: bus_b
     sda: 11
     scl: 7
     scan: true
@@ -108,7 +108,7 @@ touchscreen:
     interrupt_pin: GPIO12
     reset_pin: GPIO6
     display: main_display
-    i2c_id: touchscreen_bus
+    i2c_id: bus_b
 
     on_touch:
       then:
