@@ -105,8 +105,8 @@ light:
 touchscreen:
   - platform: cst816
     id: my_touchscreen
-    interrupt_pin: GPIO41
-    reset_pin: GPIO40
+    interrupt_pin: GPIO12
+    reset_pin: GPIO6
     display: main_display
     i2c_id: touchscreen_bus
 
