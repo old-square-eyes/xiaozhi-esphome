@@ -65,11 +65,12 @@ light:
 touchscreen:
   - platform: cst816
     id: my_touchscreen
-    interrupt_pin: GPIO41
-    reset_pin: GPIO40
+    interrupt_pin: 4
+    reset_pin:
+      pca9554: pca9554a_device
+      number: 0
     display: main_display
     i2c_id: touchscreen_bus
-
     on_touch:
       then:
         - lambda: |-
