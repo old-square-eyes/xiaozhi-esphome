@@ -1,4 +1,4 @@
-# EchoEar hardware pack v1.06
+# EchoEar hardware pack v1.05
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
@@ -76,14 +76,8 @@ touchscreen:
             const int w = id(main_display).get_width();
             const int h = id(main_display).get_height();
             const int min_dim = (w < h) ? w : h;
-
-            // Swipe thresholds (a bit easier to hit)
-            const int MIN_DIST = std::max(16, min_dim / 8);   // was min_dim/6
-            const uint32_t MAX_TIME = 1500;                   // was 1200
-
-            // Tap guard: only treat as tap if VERY small & quick
-            const int TAP_MAX_DIST = std::max(8,  min_dim / 20);
-            const uint32_t TAP_MAX_TIME = 300;
+            const int MIN_DIST = std::max(20, min_dim / 6);
+            const uint32_t MAX_TIME = 1200; // ms
 
             // Normalize for display rotation
             const int ROT = ${rotate_display};
@@ -96,35 +90,36 @@ touchscreen:
               default: break;
             }
 
-            const int absx = std::abs(ndx);
-            const int absy = std::abs(ndy);
-
             bool is_left=false, is_right=false, is_up=false, is_down=false;
 
-            // Detect swipe if fast enough and moved enough in any primary axis
-            if (dt <= MAX_TIME && (absx >= MIN_DIST || absy >= MIN_DIST)) {
-              if (absx >= absy) {
+            if (dt <= MAX_TIME) {
+              if (std::abs(ndx) > std::abs(ndy) && std::abs(ndx) >= MIN_DIST) {
                 if (ndx < 0) is_left = true; else is_right = true;
-              } else {
+              } else if (std::abs(ndy) >= MIN_DIST) {
                 if (ndy < 0) is_up = true; else is_down = true;
               }
             }
 
-            // If not a swipe, only treat as tap when tiny & quick; otherwise ignore.
+            // If nothing: treat as tap
             if (!(is_left || is_right || is_up || is_down)) {
-              if (absx <= TAP_MAX_DIST && absy <= TAP_MAX_DIST && dt <= TAP_MAX_TIME) {
-                id(pulse_touch_input).execute();   // short tap -> VA
-              }
+              id(touch_input).publish_state(true);
+              delay(250);
+              id(touch_input).publish_state(false);
               return;
             }
 
-            // Always expose to HA via non-blocking pulses
-            if (is_left)  id(pulse_swipe_left).execute();
-            if (is_right) id(pulse_swipe_right).execute();
-            if (is_up)    id(pulse_swipe_up).execute();
-            if (is_down)  id(pulse_swipe_down).execute();
+            // Always expose to HA
+            if (is_left)  id(swipe_left).publish_state(true);
+            if (is_right) id(swipe_right).publish_state(true);
+            if (is_up)    id(swipe_up).publish_state(true);
+            if (is_down)  id(swipe_down).publish_state(true);
+            delay(200);
+            id(swipe_left).publish_state(false);
+            id(swipe_right).publish_state(false);
+            id(swipe_up).publish_state(false);
+            id(swipe_down).publish_state(false);
 
-            // Optional local handling
+            // Optional local handling (by switch)
             if (id(swipe_local).state) {
               if (is_left)  id(swipe_left_action).execute();
               if (is_right) id(swipe_right_action).execute();
