@@ -1041,7 +1041,7 @@ script:
           } else if (sel == "Flip") {
             id(main_display).show_page(flip_clock);
           } else if (sel == "Presence") {
-            id(main_display).show_page(presense_sensor_clock);
+            id(main_display).show_page(presence_sensor_clock);
           } else if (sel == "Weather") {
             id(main_display).show_page(weather_clock);
           } else if (sel == "Small") {
