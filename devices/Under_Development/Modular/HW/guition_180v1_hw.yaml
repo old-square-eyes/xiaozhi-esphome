@@ -74,13 +74,17 @@ touchscreen:
             const int h = id(main_display).get_height();
             const int min_dim = (w < h) ? w : h;
 
-            // Swipe thresholds (a bit easier to hit)
-            const int MIN_DIST = std::max(16, min_dim / 8);   // was min_dim/6
-            const uint32_t MAX_TIME = 1500;                   // was 1200
+            // Swipe thresholds
+            const int MIN_DIST = std::max(16, min_dim / 8);
+            const uint32_t MAX_TIME = 1500;
 
-            // Tap guard: only treat as tap if VERY small & quick
-            const int TAP_MAX_DIST = std::max(8,  min_dim / 20);
+            // Tap guard (strict)
+            const int TAP_MAX_DIST  = std::max(8,  min_dim / 20);
             const uint32_t TAP_MAX_TIME = 300;
+
+            // Tap fallback (more forgiving)
+            const int TAP_FB_DIST  = std::max(14, min_dim / 12);
+            const uint32_t TAP_FB_TIME = 700;
 
             // Normalize for display rotation
             const int ROT = ${rotate_display};
@@ -98,7 +102,7 @@ touchscreen:
 
             bool is_left=false, is_right=false, is_up=false, is_down=false;
 
-            // Detect swipe if fast enough and moved enough in any primary axis
+            // Swipe?
             if (dt <= MAX_TIME && (absx >= MIN_DIST || absy >= MIN_DIST)) {
               if (absx >= absy) {
                 if (ndx < 0) is_left = true; else is_right = true;
@@ -107,10 +111,11 @@ touchscreen:
               }
             }
 
-            // If not a swipe, only treat as tap when tiny & quick; otherwise ignore.
+            // Not a swipe → tap (strict, then forgiving fallback)
             if (!(is_left || is_right || is_up || is_down)) {
-              if (absx <= TAP_MAX_DIST && absy <= TAP_MAX_DIST && dt <= TAP_MAX_TIME) {
-                id(pulse_touch_input).execute();   // short tap -> VA
+              if ((absx <= TAP_MAX_DIST && absy <= TAP_MAX_DIST && dt <= TAP_MAX_TIME) ||
+                  (absx <= TAP_FB_DIST  && absy <= TAP_FB_DIST  && dt <= TAP_FB_TIME)) {
+                id(pulse_touch_input).execute();
               }
               return;
             }
