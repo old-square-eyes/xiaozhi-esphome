@@ -1,4 +1,4 @@
-# Ball v2 hardware v1.06
+# Ball v2 hardware v1.07
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
@@ -48,7 +48,7 @@ speaker:
     i2s_dout_pin: GPIO8
     dac_type: external
     audio_dac: es8311_dac
-    sample_rate: 16000
+    sample_rate: 48000
     channel: mono
 
 # Optional speaker power enable (Ball v2 has this)
@@ -68,7 +68,7 @@ media_player:
     announcement_pipeline:
       speaker: box_speaker
       format: WAV
-      sample_rate: 16000
+      sample_rate: 48000
       num_channels: 1
     buffer_size: 250000
     files:
