@@ -51,7 +51,6 @@ speaker:
     sample_rate: 48000
     channel: mono
 
-# Optional speaker power enable (Ball v2 has this)
 switch:
   - platform: gpio
     name: Speaker Enable
@@ -64,7 +63,6 @@ media_player:
   - platform: speaker
     name: None
     id: external_media_player
-    # HW pack must provide "speaker: box_speaker"
     announcement_pipeline:
       speaker: box_speaker
       format: WAV
