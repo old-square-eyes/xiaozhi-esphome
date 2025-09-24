@@ -2,17 +2,20 @@ substitutions:
   name: esphome-web-7aa010
   friendly_name: Xiaozhi Taichi Pi v2
 
-## Modular version Main v1.04
+## Modular version Main v1.07
 
 ## SETTINGS ######################################################################################################################################
 
+  display_model: "JC3636W518V2"
+  pdm_mic_type: "true"
+  rotate_display: "180"
+
   imagewidth:  "360"
   imageheight: "360"
-  rotate_display: "180"
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
   clock_background_image: "clock" # (options are: clock, hacker, ha-girl, mission, starrysky)
-  imagemodel: "ha-girl" # options are:
+  imagemodel: "Gwen" # options are:
 
 # Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
 # Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
@@ -61,6 +64,10 @@ psram:
   mode: octal
   speed: 80MHz
 
+#packages:
+#  core: !include localtest/core.yaml
+#  hw:   !include localtest/HW/guition_180v1_hwMA-TEST.yaml
+
 packages:
   core:
     url: https://github.com/RealDeco/xiaozhi-esphome.git
@@ -73,7 +80,7 @@ packages:
     ref: main
     refresh: 1d
     files:
-      - devices/Under_Development/Modular/HW/guition_180v2_hw.yaml
+      - devices/Under_Development/Modular/HW/guition_180v1_hw.yaml
 
 ## ENABLE / DISABLE WAKE WORDS ## IF LOW ON MEMORY, USE LESS WAKE WORDS ##########################################################################
 micro_wake_word:
