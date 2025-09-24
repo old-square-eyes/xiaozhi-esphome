@@ -42,10 +42,14 @@ packages:
 ```
 Changes:
 ---
+### Modular v1.07
+- **Changes**
+  - Updated most devices with Music Assistant support. still missing Echoear and waveshare 1.85
+
 ### Modular v1.06
 - **Changes**  
- - Fixed swipes didn't work when "handle swipes locally" switch was off, optimized timing
- - changed minor non-breaking spelling mistake
+  - Fixed swipes didn't work when "handle swipes locally" switch was off, optimized timing
+  - changed minor non-breaking spelling mistake
 
 ### Modular v1.05
 - **Changes**  
