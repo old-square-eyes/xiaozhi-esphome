@@ -61,6 +61,10 @@ psram:
   mode: octal
   speed: 80MHz
 
+#packages:
+#  core: !include localtest/core3.49.yaml
+#  hw:   !include localtest/HW/waveshare_349_hw.yaml
+
 packages:
   core:
     url: https://github.com/RealDeco/xiaozhi-esphome.git
