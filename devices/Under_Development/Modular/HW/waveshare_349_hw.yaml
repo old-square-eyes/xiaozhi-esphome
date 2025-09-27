@@ -1,4 +1,4 @@
-# EchoEar hardware pack v1.05
+# waveshare 3.49 hardware pack v1.07
 
 pca9554:
   - id: pca9554a_device
