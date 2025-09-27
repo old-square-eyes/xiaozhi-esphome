@@ -44,7 +44,7 @@ Changes:
 ---
 ### Modular v1.07
 - **Changes**
-  - Updated most devices with Music Assistant support. still missing Echoear and waveshare 1.85
+  - Updated most devices with Music Assistant support. still missing waveshare 1.85
 
 ### Modular v1.06
 - **Changes**  
