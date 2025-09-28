@@ -81,6 +81,8 @@ Waveshare 2.06" OLED Wrist Watch: https://vi.aliexpress.com/item/100500951643884
 
 Waveshare ESP32-S3-Touch-LCD-1.85C: https://www.aliexpress.com/item/1005008634826817.html
 
+Waveshare ESP32-S3-Touch-LCD-3.49: https://www.aliexpress.com/item/1005009894437640.html
+
 ## Accesories:
 
 3D file of "Eggvenger" figure used to hold the Ball in image above, use 115% for v2 since it's larger than v1.
