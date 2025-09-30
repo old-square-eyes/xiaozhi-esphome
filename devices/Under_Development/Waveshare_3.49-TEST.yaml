@@ -1717,7 +1717,7 @@ i2c:
     scl: GPIO18
     sda: GPIO17
     scan: true
-    frequency: 400kHz
+#    frequency: 400kHz
 
 # --- TOUCHSCREEN --------------------------------------------------------------
 touchscreen:
@@ -1725,7 +1725,7 @@ touchscreen:
     id: my_touchscreen
     i2c_id: bus_b
     address: 0x3b
-    update_interval: 10ms
+#    update_interval: 10ms
     display: main_display
 
     on_touch:
@@ -1898,7 +1898,7 @@ media_player:
     media_pipeline:
       speaker: media_resampling_speaker
       format: FLAC
-      num_channels: 2
+      num_channels: 1
       sample_rate: 48000
     buffer_size: 250000
 
