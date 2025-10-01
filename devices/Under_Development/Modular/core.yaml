@@ -1,4 +1,4 @@
-# Core v1.06
+# Core v1.07
 
 substitutions:
   allowed_characters: >-
@@ -503,8 +503,10 @@ voice_assistant:
           - and:
               - not:
                   media_player.is_announcing:
-#              - not:
-#                  speaker.is_playing:
+              - not:
+                  speaker.is_playing:
+                    id: box_speaker
+
     - if:
         condition:
           - lambda: return id(wake_word_engine_location).state == "On device";
