@@ -12,16 +12,6 @@ i2c:
   sda: 7
   scl: 8
 
-i2s_audio:
-  - id: i2s_mic
-    i2s_lrclk_pin: GPIO45
-    i2s_bclk_pin:  GPIO42
-
-  - id: i2s_audio_bus
-    i2s_lrclk_pin: GPIO16
-    i2s_bclk_pin:  GPIO18
-    i2s_mclk_pin:  GPIO21
-
 # --- TOUCHSCREEN --------------------------------------------------------------
 touchscreen:
   - platform: cst816
@@ -159,6 +149,16 @@ switch:
     pin: GPIO48
     restore_mode: RESTORE_DEFAULT_ON
 
+i2s_audio:
+  - id: i2s_mic
+    i2s_lrclk_pin: GPIO45
+    i2s_bclk_pin:  GPIO42
+
+  - id: i2s_audio_bus
+    i2s_lrclk_pin: GPIO16
+    i2s_bclk_pin:  GPIO18
+    i2s_mclk_pin:  GPIO21
+
 microphone:
   - platform: i2s_audio
     id: box_mic
@@ -176,8 +176,8 @@ speaker:
     i2s_audio_id: i2s_audio_bus
     i2s_dout_pin: GPIO17
     dac_type: external
+    sample_rate: 48000
     channel: stereo
-    timeout: never
     buffer_duration: 300ms
 
   - platform: mixer
@@ -186,35 +186,37 @@ speaker:
     num_channels: 2
     source_speakers:
       - id: announcement_mixer_input
-        timeout: never
       - id: media_mixer_input
-        timeout: never
 
   - platform: resampler
     id: media_resampling_input
     output_speaker: media_mixer_input
-    sample_rate: 44100
-    bits_per_sample: 16
+    sample_rate: 48000
+
   - platform: resampler
     id: announcement_resampling_input
     output_speaker: announcement_mixer_input    
-    sample_rate: 44100
-    bits_per_sample: 16
+    sample_rate: 48000
 
 media_player:
   - platform: speaker
     name: none
     id: external_media_player
+    volume_increment: 0.05
+    volume_min: 0.5
+    volume_max: 0.8
+
     announcement_pipeline:
       speaker: announcement_resampling_input
       format: FLAC
       num_channels: 1
-      sample_rate: 44100
+      sample_rate: 48000
+
     media_pipeline:
       speaker: media_resampling_input
       format: FLAC
       num_channels: 2      
-      sample_rate: 44100
+      sample_rate: 48000
     buffer_size: 250000
 
     on_announcement:
@@ -231,6 +233,7 @@ media_player:
                       condition:
                         - not:
                             voice_assistant.is_running:
+
       - if:
           condition:
             lambda: 'return id(playing_internal_sound);'
@@ -240,6 +243,41 @@ media_player:
             - script.execute: reset_screensaver
             - display.page.show: now_playing_page
             - component.update: main_display
+
+    on_play:
+      - if:
+          condition:
+            - microphone.is_capturing:
+          then:
+            - script.execute: stop_wake_word
+            - if:
+                condition:
+                  - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+                then:
+                  - wait_until:
+                      condition:
+                        - not:
+                            voice_assistant.is_running:
+
+      - if:
+          condition:
+            lambda: 'return id(playing_internal_sound);'
+          then:
+            - lambda: 'id(playing_internal_sound) = false;'
+          else:
+#            - script.execute: reset_screensaver
+            - display.page.show: now_playing_page
+            - component.update: main_display
+
+    on_pause:
+      - if:
+          condition:
+            not:
+              voice_assistant.is_running:
+          then:
+            - script.execute: start_wake_word
+            - script.execute: set_idle_or_mute_phase
+            - script.execute: draw_display
 
     on_idle:
       - if:
