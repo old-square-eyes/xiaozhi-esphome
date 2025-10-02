@@ -2,17 +2,24 @@ substitutions:
   name: esphome-web-c0c120
   friendly_name: Touch-LCD-3.49
 
-## NON-Modular version Main v1.07
+## NON-Modular version Main v1.07 small images
 
 ## SETTINGS ######################################################################################################################################
 
-  imagewidth:  "640"
+  imagewidth:  "172"
   imageheight: "172"
+
+  useimagewidth: "240"
+  useimageheight: "240"
+
+  displaywidth: "640"
+  displayheight: "172"
+  
   rotate_display: "90"
 
   startup_sound: "Home_Connected" # options are: available, Home_Connected, Home_Connected_Male, Computer_Ready
   clock_background_image: "clock" # options are: clock, hacker, ha-girl, mission, starrysky
-  imagemodel: "Sarah" # options are: Sarah (currently only one model in this image format)
+  imagemodel: "Dory" # options are: Sarah (currently only one model in this image format)
 
 ## PRESENCE / MOTION SENSORS ########## IF NOT USING THESE LEAVE THEM ALONE, SCRIPT WILL BREAK WITHOUT ###########################################
 
@@ -42,16 +49,16 @@ substitutions:
 
   allowed_characters: >-
     !#%'()+,-./0123456789:;<>?@ABCDEFGHIJKLMNOPQRSTUVWYZ[]_abcdefghijklmnopqrstuvwxyz{|}°²³µ¿ÁÂÄÅÉÖÚßàáâãäåæçèéêëìíîðñòóôõöøùúûüýþāăąćčďĐđēėęěğĮįıļľŁłńňőřśšťũūůűųźŻżŽžơưșțΆΈΌΐΑΒΓΔΕΖΗΘΚΜΝΠΡΣΤΥΦάέήίαβγδεζηθικλμνξοπρςστυφχψωϊόύώАБВГДЕЖЗИКЛМНОПРСТУХЦЧШЪЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяёђєіїјљњћאבגדהוזחטיכלםמןנסעפץצקרשת،ءآأإئابةتجحخدذرزسشصضطظعغفقكلمنهوىيٹپچڈکگںھہیےংকচতধনফবযরলশষস়ািু্చయలిెొ్ംഅആഇഈഉഎഓകഗങചജഞടഡണതദധനപഫബഭമയരറലളവശസഹാിീുൂെേൈ്ൺൻർൽൾაბგდევზთილმნოპრსტუფქყშჩცძჭხạảấầẩậắặẹẽếềểệỉịọỏốồổỗộớờởợụủứừửữựỳ—、一上不个中为主乾了些亮人任低佔何作供依侧係個側偵充光入全关冇冷几切到制前動區卧厅厨及口另右吊后吗启吸呀咗哪唔問啟嗎嘅嘛器圍在场執場外多大始安定客室家密寵对將小少左已帘常幫幾库度庫廊廚廳开式後恆感態成我戲戶户房所扇手打执把拔换掉控插摄整斯新明是景暗更最會有未本模機檯櫃欄次正氏水沒没洗活派温測源溫漏潮激濕灯為無煙照熱燈燥物狀玄现現瓦用發的盞目着睡私空窗立笛管節簾籬紅線红罐置聚聲脚腦腳臥色节著行衣解設調請謝警设调走路車车运連遊運過道邊部都量鎖锁門閂閉開關门闭除隱離電震霧面音頂題顏颜風风食餅餵가간감갔강개거게겨결경고공과관그금급기길깥꺼껐꼽나난내네놀누는능니다닫담대더데도동됐되된됨둡드든등디때떤뜨라래러렇렌려로료른를리림링마많명몇모무문물뭐바밝방배변보부불블빨뽑사산상색서설성세센션소쇼수스습시신실싱아안않알았애야어얼업없었에여연열옆오온완외왼요운움워원위으은을음의이인일임입있작잠장재전절정제져조족종주줄중줘지직진짐쪽차창천최추출충치침커컴켜켰쿠크키탁탄태탬터텔통트튼티파팬퍼폰표퓨플핑한함해했행혀현화활후휴힘，？
-  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
-  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/idle.png
-  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/listening.png
-  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/thinking.png
-  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/replying.png
-  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/error.png
-  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
-  mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/mute.png
-  playing_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/playing.png
-  clock_background_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/${imagewidth}x${imageheight}/${clock_background_image}.png
+  loading_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${useimagewidth}x${useimageheight}/loading.png
+  idle_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${useimagewidth}x${useimageheight}/idle.png
+  listening_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${useimagewidth}x${useimageheight}/listening.png
+  thinking_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${useimagewidth}x${useimageheight}/thinking.png
+  replying_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${useimagewidth}x${useimageheight}/replying.png
+  error_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${useimagewidth}x${useimageheight}/error.png
+  timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${useimagewidth}x${useimageheight}/timer_finished.png
+  mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${useimagewidth}x${useimageheight}/mute.png
+  playing_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${useimagewidth}x${useimageheight}/playing.png
+  clock_background_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/${useimagewidth}x${useimageheight}/${clock_background_image}.png
   startup_sound_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
   loading_illustration_background_color: "000000"
@@ -98,14 +105,8 @@ esphome:
   on_boot:
     priority: 600
     then:
-#      - script.execute: draw_display
-#      - delay: 30s
-      - if:
-          condition:
-            lambda: return id(init_in_progress);
-          then:
-            - lambda: id(init_in_progress) = false;
-            - script.execute: draw_display
+      - script.execute: draw_display
+      - switch.turn_on: sys_en_hold
 
 ota:
   - platform: esphome
@@ -151,6 +152,7 @@ time:
 api:
   on_client_connected:
     - script.execute: draw_display
+    - voice_assistant.stop:
     - lambda: |-
         if (!id(boot_sound_played)) {
           id(boot_sound_played) = true;
@@ -159,6 +161,7 @@ api:
           }
         }
     - delay: 600ms
+    - lambda: 'id(init_in_progress) = false;'
     - script.execute: reset_screensaver
   on_client_disconnected:
     - script.execute: draw_display
@@ -247,7 +250,7 @@ sensor:
     unit_of_measurement: "V"
     icon: mdi:battery-medium
     filters:
-      - multiply: 2.0
+      - multiply: 3.0
       - median:
           window_size: 7
           send_every: 7
@@ -334,6 +337,24 @@ sensor:
     internal: true
 
 binary_sensor:
+  - platform: gpio
+    id: pwr_button
+    name: "PWR Button"
+    pin:
+      number: GPIO16
+      inverted: true
+    on_multi_click:
+      - timing:
+          - ON for 40ms to 400ms
+          - OFF for at least 330ms
+        then:
+          - logger.log: "PWR short press"
+      - timing:
+          - ON for at least 1s
+        then:
+          - logger.log: "PWR long-press: power OFF"
+          - switch.turn_off: sys_en_hold
+
   - platform: template
     name: "Touch Button"
     id: touch_input
@@ -604,8 +625,10 @@ voice_assistant:
           - and:
               - not:
                   media_player.is_announcing:
-#              - not:
-#                  speaker.is_playing:
+              - not:
+                  speaker.is_playing:
+                    id: box_speaker
+
     - if:
         condition:
           - lambda: return id(wake_word_engine_location).state == "On device";
@@ -1187,6 +1210,14 @@ script:
 
 switch:
   - platform: gpio
+    id: sys_en_hold
+    pin:
+      pca9554: pca9554a_device
+      number: 6
+      mode: OUTPUT
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: gpio
     name: Speaker Enable
     icon: "mdi:speaker"
     entity_category: config
@@ -1444,7 +1475,7 @@ select:
           id: clock_background
           url: !lambda |-
             std::string base = "https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/"
-                               "${imagewidth}x${imageheight}/";
+                               "${useimagewidth}x${useimageheight}/";
             return base + std::string(x) + ".png";
           update: true
       - script.execute: draw_display
@@ -1987,8 +2018,8 @@ display:
     rotation: ${rotate_display}
     update_interval: never
     dimensions:
-        height: ${imagewidth}
-        width: ${imageheight}
+        height: ${displaywidth}
+        width: ${displayheight}
     pages:
       - id: idle_page
         lambda: |-
