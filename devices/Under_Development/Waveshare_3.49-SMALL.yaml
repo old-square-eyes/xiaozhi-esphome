@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-c0c120
   friendly_name: Touch-LCD-3.49
 
-## NON-Modular version Main v1.07
+## NON-Modular version Main v1.07 small images
 
 ## SETTINGS ######################################################################################################################################
 
@@ -107,13 +107,6 @@ esphome:
     then:
       - script.execute: draw_display
       - switch.turn_on: sys_en_hold
-#      - delay: 30s
-      - if:
-          condition:
-            lambda: return id(init_in_progress);
-          then:
-            - lambda: id(init_in_progress) = false;
-            - script.execute: draw_display
 
 ota:
   - platform: esphome
@@ -159,6 +152,7 @@ time:
 api:
   on_client_connected:
     - script.execute: draw_display
+    - voice_assistant.stop:
     - lambda: |-
         if (!id(boot_sound_played)) {
           id(boot_sound_played) = true;
@@ -167,6 +161,7 @@ api:
           }
         }
     - delay: 600ms
+    - lambda: 'id(init_in_progress) = false;'
     - script.execute: reset_screensaver
   on_client_disconnected:
     - script.execute: draw_display
@@ -249,7 +244,7 @@ sensor:
     pin: GPIO4
     name: "Battery Voltage"
     id: battery_voltage
-    attenuation: 11db
+    attenuation: 12db
     accuracy_decimals: 2
     update_interval: 10s
     unit_of_measurement: "V"
@@ -342,6 +337,24 @@ sensor:
     internal: true
 
 binary_sensor:
+  - platform: gpio
+    id: pwr_button
+    name: "PWR Button"
+    pin:
+      number: GPIO16
+      inverted: true
+    on_multi_click:
+      - timing:
+          - ON for 40ms to 400ms
+          - OFF for at least 330ms
+        then:
+          - logger.log: "PWR short press"
+      - timing:
+          - ON for at least 1s
+        then:
+          - logger.log: "PWR long-press: power OFF"
+          - switch.turn_off: sys_en_hold
+
   - platform: template
     name: "Touch Button"
     id: touch_input
@@ -1198,13 +1211,11 @@ script:
 switch:
   - platform: gpio
     id: sys_en_hold
-    name: "SYS_EN (Power Hold)"
-    restore_mode: RESTORE_DEFAULT_OFF
     pin:
       pca9554: pca9554a_device
       number: 6
       mode: OUTPUT
-      inverted: false
+    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     name: Speaker Enable
