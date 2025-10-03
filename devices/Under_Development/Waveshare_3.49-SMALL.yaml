@@ -3,7 +3,10 @@ substitutions:
   friendly_name: Touch-LCD-3.49
 
 ## NON-Modular version Main v1.07+ Small
-
+## This version uses the 240x240 images so all models are available, it resizes to 172x172 and show in the middle of screen.
+## Orientation can be toggled by the same button that turns on/off battery power (single click to switch orientation, hold to power on or off)
+## also has the 3 clock in one clocks called "Wide", that works in both orientations.
+## full screen models IS possible, but only with model "Sarah" and not supporting changing orientation at runtine.
 ## SETTINGS ######################################################################################################################################
 
 # image size from collection to use (240x240, 172x640 or 640x172), note only 240x240 can rotate during use
