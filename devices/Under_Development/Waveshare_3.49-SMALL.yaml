@@ -6,22 +6,26 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
-  #virtual display size
-  imagewidth:  "172"
-  imageheight: "172"
-
-  #image size from collection to use and resize
+# image size from collection to use (240x240, 172x640 or 640x172), note only 240x240 can rotate during use
   useimagewidth: "240"
   useimageheight: "240"
 
-  #physical display size
-  displaywidth: "640"
-  displayheight: "172"
+# size to resize to (172x172, 172x640 or 640x172), note only 172x172 can rotate during use
+  modelwidth: "172"
+  modelheight: "172"
   
+# set to 90 for 172x640, 0 for 640x172 and 0 or 90 for 240x240
   rotate_display: "90"
 
   startup_sound: "Home_Connected" # options are: available, Home_Connected, Home_Connected_Male, Computer_Ready
-  imagemodel: "Gwen" # options are: Sarah (currently only one model in this image format)
+
+  imagemodel: "Sarah" # options are: 
+
+# in 172x640 or 640x172 only "Sarah" (currently only one model in this image format)
+# in 240x240 all the models:
+
+# Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
+# Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Sarah, Shaun
 
 ## PRESENCE / MOTION SENSORS ########## IF NOT USING THESE LEAVE THEM ALONE, SCRIPT WILL BREAK WITHOUT ###########################################
 
@@ -47,7 +51,14 @@ substitutions:
 
   weather_entity: "weather.forecast_home"
 
-##################################################################################################################################################
+## END OF SETTINGS ###############################################################################################################################
+
+  #virtual display size
+  imagewidth:  "172"
+  imageheight: "172"
+  #physical display size
+  displaywidth: "640"
+  displayheight: "172"
 
   allowed_characters: >-
     !#%'()+,-./0123456789:;<>?@ABCDEFGHIJKLMNOPQRSTUVWYZ[]_abcdefghijklmnopqrstuvwxyz{|}°²³µ¿ÁÂÄÅÉÖÚßàáâãäåæçèéêëìíîðñòóôõöøùúûüýþāăąćčďĐđēėęěğĮįıļľŁłńňőřśšťũūůűųźŻżŽžơưșțΆΈΌΐΑΒΓΔΕΖΗΘΚΜΝΠΡΣΤΥΦάέήίαβγδεζηθικλμνξοπρςστυφχψωϊόύώАБВГДЕЖЗИКЛМНОПРСТУХЦЧШЪЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяёђєіїјљњћאבגדהוזחטיכלםמןנסעפץצקרשת،ءآأإئابةتجحخدذرزسشصضطظعغفقكلمنهوىيٹپچڈکگںھہیےংকচতধনফবযরলশষস়ািু্చయలిెొ్ംഅആഇഈഉഎഓകഗങചജഞടഡണതദധനപഫബഭമയരറലളവശസഹാിീുൂെേൈ്ൺൻർൽൾაბგდევზთილმნოპრსტუფქყშჩცძჭხạảấầẩậắặẹẽếềểệỉịọỏốồổỗộớờởợụủứừửữựỳ—、一上不个中为主乾了些亮人任低佔何作供依侧係個側偵充光入全关冇冷几切到制前動區卧厅厨及口另右吊后吗启吸呀咗哪唔問啟嗎嘅嘛器圍在场執場外多大始安定客室家密寵对將小少左已帘常幫幾库度庫廊廚廳开式後恆感態成我戲戶户房所扇手打执把拔换掉控插摄整斯新明是景暗更最會有未本模機檯櫃欄次正氏水沒没洗活派温測源溫漏潮激濕灯為無煙照熱燈燥物狀玄现現瓦用發的盞目着睡私空窗立笛管節簾籬紅線红罐置聚聲脚腦腳臥色节著行衣解設調請謝警设调走路車车运連遊運過道邊部都量鎖锁門閂閉開關门闭除隱離電震霧面音頂題顏颜風风食餅餵가간감갔강개거게겨결경고공과관그금급기길깥꺼껐꼽나난내네놀누는능니다닫담대더데도동됐되된됨둡드든등디때떤뜨라래러렇렌려로료른를리림링마많명몇모무문물뭐바밝방배변보부불블빨뽑사산상색서설성세센션소쇼수스습시신실싱아안않알았애야어얼업없었에여연열옆오온완외왼요운움워원위으은을음의이인일임입있작잠장재전절정제져조족종주줄중줘지직진짐쪽차창천최추출충치침커컴켜켰쿠크키탁탄태탬터텔통트튼티파팬퍼폰표퓨플핑한함해했행혀현화활후휴힘，？
@@ -108,6 +119,16 @@ esphome:
       then:
         - switch.turn_on: sys_en_hold
 
+    - priority: 690
+      then:
+        # Sync our rot90 flag to the configured display rotation
+        - lambda: |-
+            // ${rotate_display} is a string substitution ("0","90","180","270")
+            // set rot90 true iff we're using 90° or 270° (tall canvas)
+            bool tall = (std::string("${rotate_display}") == "90"
+                      || std::string("${rotate_display}") == "270");
+            id(rot90) = tall;
+
     - priority: 200
       then:
         - wait_until:
@@ -116,6 +137,11 @@ esphome:
             timeout: 45s
         - delay: 800ms
         - script.execute: preload_wallpapers
+        # NEW: give the decoder a breath and refresh once
+        - delay: 300ms
+        - component.update: clock_bg_land
+        - component.update: clock_bg_port
+        - script.execute: draw_display
 
 ota:
   - platform: esphome
@@ -1615,39 +1641,39 @@ globals:
 image:
   - file: ${error_illustration_file}
     id: casita_error
-    resize: ${imagewidth}x${imageheight}
+    resize: ${modelwidth}x${modelheight}
     type: RGB565
   - file: ${idle_illustration_file}
     id: casita_idle
-    resize: ${imagewidth}x${imageheight}
+    resize: ${modelwidth}x${modelheight}
     type: RGB565
   - file: ${listening_illustration_file}
     id: casita_listening
-    resize: ${imagewidth}x${imageheight}
+    resize: ${modelwidth}x${modelheight}
     type: RGB565
   - file: ${thinking_illustration_file}
     id: casita_thinking
-    resize: ${imagewidth}x${imageheight}
+    resize: ${modelwidth}x${modelheight}
     type: RGB565
   - file: ${replying_illustration_file}
     id: casita_replying
-    resize: ${imagewidth}x${imageheight}
+    resize: ${modelwidth}x${modelheight}
     type: RGB565
   - file: ${timer_finished_illustration_file}
     id: casita_timer_finished
-    resize: ${imagewidth}x${imageheight}
+    resize: ${modelwidth}x${modelheight}
     type: RGB565
   - file: ${loading_illustration_file}
     id: casita_initializing
-    resize: ${imagewidth}x${imageheight}
+    resize: ${modelwidth}x${modelheight}
     type: RGB565
   - file: ${mute_illustration_file}
     id: casita_muted
-    resize: ${imagewidth}x${imageheight}
+    resize: ${modelwidth}x${modelheight}
     type: RGB565
   - file: ${playing_illustration_file}
     id: casita_playing
-    resize: ${imagewidth}x${imageheight}
+    resize: ${modelwidth}x${modelheight}
     type: RGB565
   - file: https://raw.githubusercontent.com/RealDeco/xiaozhi-esphome/main/images/Other/error-no-wifi.png
     id: error_no_wifi
@@ -1946,8 +1972,8 @@ speaker:
     audio_dac: es8311_dac
     buffer_duration: 300ms
 
-  - id: mixing_speaker
-    platform: mixer
+  - platform: mixer
+    id: mixing_speaker
     output_speaker: box_speaker
     source_speakers:
       - id: announcement_mixing_input
@@ -4124,6 +4150,3 @@ display:
             it.printf(x + bw/2 + 1, y + bh/2 + 1, id(font_battery), Color::BLACK, TextAlign::CENTER, "%s", pct_txt);
             it.printf(x + bw/2,     y + bh/2,     id(font_battery), Color::WHITE, TextAlign::CENTER, "%s", pct_txt);
           }
-
-
-
