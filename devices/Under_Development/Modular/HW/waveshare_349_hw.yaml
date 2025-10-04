@@ -1,5 +1,11 @@
 # waveshare 3.49 hardware pack v1.07
 
+esphome:
+  on_boot:
+    - priority: 700
+      then:
+        - switch.turn_on: sys_en_hold
+
 pca9554:
   - id: pca9554a_device
     address: 0x20
@@ -139,6 +145,14 @@ light:
 # --- AUDIO DEVICES ------------------------------------------------------------
 switch:
   - platform: gpio
+    id: sys_en_hold
+    pin:
+      pca9554: pca9554a_device
+      number: 6
+      mode: OUTPUT
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: gpio
     name: Speaker Enable
     icon: "mdi:speaker"
     entity_category: config
@@ -196,8 +210,8 @@ speaker:
     audio_dac: es8311_dac
     buffer_duration: 300ms
 
-  - id: mixing_speaker
-    platform: mixer
+  - platform: mixer
+    id: mixing_speaker
     output_speaker: box_speaker
     source_speakers:
       - id: announcement_mixing_input
@@ -220,7 +234,6 @@ media_player:
     volume_increment: 0.05
     volume_min: 0.5
     volume_max: 0.8
-#    task_stack_in_psram: true
     announcement_pipeline:
       speaker: announcement_resampling_speaker
       format: FLAC
@@ -230,9 +243,9 @@ media_player:
     media_pipeline:
       speaker: media_resampling_speaker
       format: FLAC
-      num_channels: 2
+      num_channels: 1
       sample_rate: 48000
-#    buffer_size: 250000
+    buffer_size: 250000
 
     on_announcement:
       - if:
@@ -315,7 +328,7 @@ sensor:
     unit_of_measurement: "V"
     icon: mdi:battery-medium
     filters:
-      - multiply: 2.0
+      - multiply: 3.0
       - median:
           window_size: 7
           send_every: 7
@@ -326,6 +339,20 @@ sensor:
         - sensor.template.publish:
             id: battery_percentage
             state: !lambda 'return x;'
+
+binary_sensor:
+  - platform: gpio
+    id: pwr_button
+    name: "PWR Button"
+    pin:
+      number: GPIO16
+      inverted: true
+    on_multi_click:
+      - timing:
+          - ON for at least 1s
+        then:
+          - switch.turn_off: sys_en_hold
+          - logger.log: "PWR long-press: power OFF"
 
 # --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
 spi:
