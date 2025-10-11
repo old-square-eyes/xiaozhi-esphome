@@ -1,15 +1,11 @@
 # Muma all versions hardware pack v1.07
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
-i2c:
-  - id: bus_a
-    sda: 15
-    scl: 14
-    scan: true
-  - id: bus_b
-    sda: 11
-    scl: 7
-    scan: true
+#i2c:
+#  - id: bus_a
+#    sda: 15
+#    scl: 14
+#    scan: true
 
 spi:
   - id: spi_bus
