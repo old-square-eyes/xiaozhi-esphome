@@ -153,7 +153,7 @@ touchscreen:
     interrupt_pin: GPIO12
     reset_pin: GPIO6
     display: main_display
-    i2c_id: bus_b
+    i2c_id: bus_a
 
     on_touch:
       then:
