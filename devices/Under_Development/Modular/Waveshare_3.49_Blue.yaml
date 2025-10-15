@@ -2,20 +2,17 @@ substitutions:
   name: esphome-web-c0c120
   friendly_name: Touch-LCD-3.49
 
-## Modular version Main v1.07
+## Modular version Main v1.08
 
 ## SETTINGS ######################################################################################################################################
 
-  display_model: "JC3636W518"
-  pdm_mic_type: "false"
-  rotate_display: "90"
-
   imagewidth:  "640"
   imageheight: "172"
+  rotate_display: "90"
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
-  clock_background_image: "clock" # (options are: clock, hacker, ha-girl, mission, starrysky)
-  imagemodel: "Sarah" # options are: Sarah
+  clock_background_image: "waves" # (options are: clock, hacker, ha-girl, mission, starrysky, waves)
+  imagemodel: "Gwen" # options are: Alfred, Gwen, Sarah, Jarvis
 
 ## PRESENCE / MOTION SENSORS ########## IF NOT USING THESE LEAVE THEM ALONE, SCRIPT WILL BREAK WITHOUT ###########################################
 
