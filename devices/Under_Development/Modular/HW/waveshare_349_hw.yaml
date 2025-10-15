@@ -1,4 +1,4 @@
-# waveshare 3.49 hardware pack v1.07
+# waveshare 3.49 hardware pack v1.08
 
 esphome:
   on_boot:
@@ -355,6 +355,11 @@ binary_sensor:
           - logger.log: "PWR long-press: power OFF"
 
 # --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
+external_components:
+  - source: github://pr#11226
+    components: [display, mipi, mipi_spi]
+    refresh: 1h
+
 spi:
   id: display_qspi
   type: quad
@@ -362,15 +367,8 @@ spi:
   data_pins: [11, 12, 13, 14]
 
 display:
-  - platform: qspi_dbi
+  - platform: mipi_spi
     id: main_display
-    model: AXS15231
-    data_rate: 80MHz
-    cs_pin: 9
-    reset_pin: 21
+    model: WAVESHARE-ESP32-S3-TOUCH-LCD-3.49
     rotation: ${rotate_display}
-    update_interval: never
-    dimensions:
-        height: ${imagewidth}
-        width: ${imageheight}
     pages: !include ../display_pages.yaml
