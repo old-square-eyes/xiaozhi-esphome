@@ -1,4 +1,4 @@
-# Muma all versions hardware pack v1.07
+# Lichuang_s3_cam hardware pack v1.08
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
@@ -18,12 +18,25 @@ i2s_audio:
     i2s_bclk_pin: GPIO14
     i2s_mclk_pin: GPIO38
 
+audio_adc:
+  - platform: es7210
+    i2c_id: bus_a
+    address: 0x41
+    id: es7210_adc
+    bits_per_sample: 16bit
+    sample_rate: 16000
+
 audio_dac:
   - platform: es8311
     i2c_id: bus_a
     id: es8311_dac
+    address: 0x18
     bits_per_sample: 16bit
-    sample_rate: 16000
+    sample_rate: 48000
+
+pca9554:
+  - id: pca9557
+    address: 0x19
 
 # --- AUDIO DEVICES ------------------------------------------------------------
 microphone:
@@ -46,14 +59,6 @@ speaker:
     audio_dac: es8311_dac
     sample_rate: 48000
     channel: mono
-
-switch:
-  - platform: gpio
-    name: Speaker Enable
-    icon: "mdi:speaker"
-    entity_category: config
-    pin: GPIO46
-    restore_mode: RESTORE_DEFAULT_ON
 
 media_player:
   - platform: speaker
@@ -148,13 +153,11 @@ light:
 
 # --- TOUCHSCREEN --------------------------------------------------------------
 touchscreen:
-  - platform: cst816
+  - platform: ft5x06
     id: my_touchscreen
-#    interrupt_pin: GPIO12
-    reset_pin: GPIO6
     display: main_display
     i2c_id: bus_a
-
+    address: 0x38
     on_touch:
       then:
         - lambda: |-
@@ -280,19 +283,47 @@ sensor:
             id: battery_percentage
             state: !lambda 'return x;'
 
+# --- SWITCHES -----------------------------------------------------------------
+
+switch:
+  - platform: gpio
+    name: "AMP Enable"
+    id: amp_enable
+    pin:
+      pca9554: pca9557
+      number: 1
+      mode:
+        output: true
+      inverted: false
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: gpio
+    id: lcd_en
+    name: "LCD EN (PCA bit0)"
+    pin:
+      pca9554: pca9557
+      number: 0
+      mode: { output: true }
+      inverted: true
+    restore_mode: ALWAYS_ON 
+
+  - platform: gpio
+    name: "Camera Power (PCA bit2)"
+    id: cam_power
+    entity_category: config
+    pin:
+      pca9554: pca9557
+      number: 2
+      mode: { output: true }
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_ON
+
 # --- DISPLAY DRIVER (ILI9xxx round GC9A01A) ----------------------------------
 display:
-  - platform: ili9xxx
+  - platform: mipi_spi
     id: main_display
     model: ST7789V
-    invert_colors: true
-    data_rate: 20MHz
-#    cs_pin: GPIO5
     dc_pin: GPIO39
-#    reset_pin:
-#      number: GPIO38
+    invert_colors: true
     update_interval: never
-    dimensions:
-      height: ${imageheight}
-      width: ${imagewidth}
     pages: !include ../display_pages.yaml
