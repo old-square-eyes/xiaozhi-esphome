@@ -1,4 +1,4 @@
-# xingzhi cube 1.54 — hardware pack (ESP32-S3 + ST7789V 240x240)
+# xingzhi cube 1.54 — hardware pack (ESP32-S3 + ST7789V 240x240) v1.08
 
 # --- EXTRA BUTTONS -------------------------------------------------------------
 binary_sensor:
@@ -216,15 +216,13 @@ sensor:
 
 # --- DISPLAY DRIVER (SPI GC9A01A, 240x240 round) ------------------------------
 display:
-  - platform: ili9xxx
+  - platform: mipi_spi
     id: main_display
     model: ST7789V
-    spi_id: spi_bus
     cs_pin: 14
     dc_pin: 8
     reset_pin: 18
     invert_colors: true
-    data_rate: 40MHz
     update_interval: never
     dimensions:
       height: ${imageheight}
