@@ -42,6 +42,10 @@ packages:
 ```
 Changes:
 ---
+### Modular v1.08
+- **Changes**
+  - Updated most devices for mipi spi display drivers
+
 ### Modular v1.07
 - **Changes**
   - Updated most devices with Music Assistant support. still missing waveshare 1.85
