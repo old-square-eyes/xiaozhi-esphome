@@ -1,4 +1,4 @@
-# Ball v2 hardware v1.07
+# Ball v2 hardware v1.08
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
@@ -286,17 +286,12 @@ sensor:
 
 # --- DISPLAY DRIVER (ILI9xxx round GC9A01A) ----------------------------------
 display:
-  - platform: ili9xxx
+  - platform: mipi_spi
     id: main_display
     model: GC9A01A
     invert_colors: true
-    data_rate: 20MHz
     cs_pin: GPIO5
     dc_pin: GPIO47
-    reset_pin:
-      number: GPIO38
+    reset_pin: GPIO38
     update_interval: never
-    dimensions:
-      height: ${imageheight}
-      width: ${imagewidth}
     pages: !include ../display_pages.yaml
