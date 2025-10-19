@@ -1,4 +1,4 @@
-# Xiaozhi Breadboard — hardware pack (ESP32-S3 + ILI9341 round 240x320)
+# Xiaozhi Breadboard — hardware pack (ESP32-S3 + ILI9341 round 240x320) v1.08
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
@@ -155,17 +155,12 @@ sensor:
 
 # --- DISPLAY DRIVER (SPI GC9A01A, 240x240 round) ------------------------------
 display:
-  - platform: ili9xxx
+  - platform: mipi_spi
     id: main_display
     model: ILI9341
     spi_id: spi_bus
     cs_pin: 13
     dc_pin: 10
     reset_pin: 18
-    invert_colors: false
-    data_rate: 40MHz
     update_interval: never
-    dimensions:
-      height: ${imageheight}
-      width: ${imagewidth}
     pages: !include ../display_pages.yaml
