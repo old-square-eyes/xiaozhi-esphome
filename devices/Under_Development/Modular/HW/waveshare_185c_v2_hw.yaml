@@ -1,4 +1,4 @@
-# Waveshare ESP32-S3-Touch-LCD-1.85C v2 / 1.85C-BOX v2 hardware pack. v1.06
+# Waveshare ESP32-S3-Touch-LCD-1.85C v2 / 1.85C-BOX v2 hardware pack. v1.07
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
@@ -52,7 +52,7 @@ media_player:
     announcement_pipeline:
       speaker: box_speaker
       format: WAV
-      sample_rate: 16000
+      sample_rate: 48000
       num_channels: 1
     buffer_size: 250000
     files:
