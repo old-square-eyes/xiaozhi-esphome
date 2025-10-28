@@ -1,11 +1,18 @@
 
 # EchoEar hardware pack v1.08
 
+esphome:
+  on_boot:
+    - priority: 800
+      then:
+        - switch.turn_on: power_ctrl
+
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
   - id: bus_a
     scl: GPIO1
     sda: GPIO2
+    frequency: 100kHz
     scan: true
 
 i2s_audio:
@@ -169,9 +176,10 @@ switch:
       number: GPIO43
       inverted: true
   - platform: gpio
+    id: power_ctrl
     name: "Power"
     pin: GPIO9
-    restore_mode: RESTORE_DEFAULT_ON
+    restore_mode: ALWAYS_ON
     inverted: true
 
 microphone:
