@@ -6,6 +6,7 @@ esphome:
     - priority: -100
       then:
         - switch.turn_on: power_ctrl
+        - switch.turn.on: codec_power
         - delay: 150ms 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
