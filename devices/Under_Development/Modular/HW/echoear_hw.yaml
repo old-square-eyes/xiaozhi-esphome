@@ -3,10 +3,10 @@
 
 esphome:
   on_boot:
-    - priority: 800
+    - priority: -100
       then:
         - switch.turn_on: power_ctrl
-
+        - delay: 150ms 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
   - id: bus_a
@@ -306,8 +306,16 @@ esp32_touch:
 
 binary_sensor:
   - platform: esp32_touch
-    id: top_touch_pad
-    name: "Top Touch Pad"
+    id: top_touch_pad1
+    name: "Top Touch Pad 1"
+    pin: GPIO6
+    threshold: 2000
+    filters:
+      - delayed_on: 15ms
+      - delayed_off: 60ms
+  - platform: esp32_touch
+    id: top_touch_pad2
+    name: "Top Touch Pad 2"
     pin: GPIO7
     threshold: 2000
     filters:
