@@ -1,5 +1,5 @@
 
-# EchoEar hardware pack v1.07
+# EchoEar hardware pack v1.08
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
@@ -197,6 +197,8 @@ speaker:
 
 media_player:
   - platform: speaker
+    volume_min: 0.5
+    volume_max: 0.7 # don't go higher than 0.8
     name: None
     id: external_media_player
     announcement_pipeline:
