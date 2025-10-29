@@ -493,7 +493,6 @@ output:
     pin: GPIO44
     inverted: false
 
-  # colors for the clock (logical; not the screen backlight)
   - platform: template
     id: clock_color_r
     type: float
@@ -518,13 +517,13 @@ output:
 power_supply:
   - id: vcc3v3_sw
     pin:
-      number: GPIO9        # POWER_CTRL
-      inverted: true       # set true/false to match your unit
+      number: GPIO9
+      inverted: true
     enable_time: 150ms
     enable_on_boot: true
 
   - id: codec_3v3
-    pin: GPIO48            # CODEC_PWR_CTRL (active HIGH on v1.2)
+    pin: GPIO48
     enable_time: 150ms
     enable_on_boot: true
 
