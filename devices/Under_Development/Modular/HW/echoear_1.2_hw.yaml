@@ -1,12 +1,19 @@
 
 # EchoEar hardware pack v1.08
 
-esphome:
-  on_boot:
-    - priority: -100
-      then:
-        - switch.turn_on: power_ctrl
-        - delay: 150ms 
+power_supply:
+  - id: vcc3v3_sw
+    pin:
+      number: GPIO9
+      inverted: true
+    enable_time: 150ms
+    enable_on_boot: true
+
+  - id: codec_3v3
+    pin: GPIO48
+    enable_time: 150ms
+    enable_on_boot: true
+    
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
   - id: bus_a
@@ -175,18 +182,6 @@ switch:
     pin:
       number: GPIO43
       inverted: true
-  - platform: gpio
-    id: power_ctrl
-    name: "Power"
-    pin: GPIO9
-    restore_mode: ALWAYS_ON
-    inverted: true
-  - platform: gpio
-    id: codec_power
-    name: "Codec Power"
-    pin: GPIO48
-    restore_mode: ALWAYS_ON
-    inverted: true
 
 microphone:
   - platform: i2s_audio
