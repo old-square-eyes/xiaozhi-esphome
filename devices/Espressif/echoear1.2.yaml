@@ -488,10 +488,10 @@ binary_sensor:
     internal: true
 
 output:
-#  - platform: ledc
-#    id: backlight_output
-#    pin: GPIO43
-#    inverted: false
+  - platform: ledc
+    id: backlight_output
+    pin: GPIO43
+    inverted: false
 
   - platform: template
     id: clock_color_r
@@ -1248,11 +1248,11 @@ switch:
     pin: GPIO15
     restore_mode: RESTORE_DEFAULT_ON
 
-  - platform: gpio
-    name: "Top Green LED"
-    pin:
-      number: GPIO43
-      inverted: true
+#  - platform: gpio
+#    name: "Top Green LED"
+#    pin:
+#      number: GPIO43
+#      inverted: true
 
   - platform: template
     name: Mute
