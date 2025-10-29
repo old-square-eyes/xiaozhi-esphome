@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-aec6f4
   friendly_name: echoear
 
-## Modular version Main v1.08 SINGLE FILE
+## Modular version Main v1.08 SINGLE FILE for Echoear 1.2
 ###################################################################
 ### NOTE: THIS REQUIRES ESPHOME 2025.9.0+ DUE TO DISPLAY DRIVER ###
 ###################################################################
