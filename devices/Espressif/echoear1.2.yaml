@@ -490,7 +490,7 @@ binary_sensor:
 output:
   - platform: ledc
     id: backlight_output
-    pin: GPIO44
+    pin: GPIO43
     inverted: false
 
   - platform: template
