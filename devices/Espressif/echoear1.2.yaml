@@ -1994,6 +1994,10 @@ display:
     dimensions:
         height: ${imageheight}
         width: ${imagewidth}
+    init_sequence:
+      - [0x11]              # Sleep Out
+      - delay 120ms
+      - [0x29]              # Display ON
     pages:
       - id: idle_page
         lambda: |-
