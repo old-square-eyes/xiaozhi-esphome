@@ -488,10 +488,10 @@ binary_sensor:
     internal: true
 
 output:
-  - platform: ledc
-    id: backlight_output
-    pin: GPIO43
-    inverted: false
+#  - platform: ledc
+#    id: backlight_output
+#    pin: GPIO43
+#    inverted: false
 
   - platform: template
     id: clock_color_r
