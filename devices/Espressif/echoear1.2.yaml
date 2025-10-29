@@ -97,10 +97,6 @@ esphome:
   min_version: 2025.9.0
   name_add_mac_suffix: false
   on_boot:
-    - priority: -100
-      then:
-        - switch.turn_on: power_ctrl
-        - delay: 150ms 
     - priority: 600
       then:
         - script.execute: draw_display
@@ -518,6 +514,19 @@ output:
     write_action:
       - lambda: |-
           return;
+
+power_supply:
+  - id: vcc3v3_sw
+    pin:
+      number: GPIO9        # POWER_CTRL
+      inverted: true       # set true/false to match your unit
+    enable_time: 150ms
+    enable_on_boot: true
+
+  - id: codec_3v3
+    pin: GPIO48            # CODEC_PWR_CTRL (active HIGH on v1.2)
+    enable_time: 150ms
+    enable_on_boot: true
 
 light:
   - platform: monochromatic
@@ -1245,20 +1254,6 @@ switch:
     pin:
       number: GPIO43
       inverted: true
-
-  - platform: gpio
-    id: power_ctrl
-    name: "Power"
-    pin: GPIO9
-    restore_mode: ALWAYS_ON
-    inverted: true
-
-  - platform: gpio
-    id: codec_power
-    name: "Codec Power"
-    pin: GPIO48
-    restore_mode: ALWAYS_ON
-    inverted: true
 
   - platform: template
     name: Mute
