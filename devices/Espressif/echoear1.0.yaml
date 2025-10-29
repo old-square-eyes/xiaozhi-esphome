@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-aec6f4
   friendly_name: echoear
 
-## Modular version Main v1.08 SINGLE FILE
+## Modular version Main v1.08 SINGLE FILE for Echoear 1.0
 ###################################################################
 ### NOTE: THIS REQUIRES ESPHOME 2025.9.0+ DUE TO DISPLAY DRIVER ###
 ###################################################################
@@ -97,10 +97,6 @@ esphome:
   min_version: 2025.9.0
   name_add_mac_suffix: false
   on_boot:
-    - priority: -100
-      then:
-        - switch.turn_on: power_ctrl
-        - delay: 150ms 
     - priority: 600
       then:
         - script.execute: draw_display
@@ -497,7 +493,6 @@ output:
     pin: GPIO44
     inverted: false
 
-  # colors for the clock (logical; not the screen backlight)
   - platform: template
     id: clock_color_r
     type: float
@@ -518,6 +513,14 @@ output:
     write_action:
       - lambda: |-
           return;
+
+power_supply:
+  - id: vcc3v3_sw
+    pin:
+      number: GPIO9
+      inverted: true
+    enable_time: 150ms
+    enable_on_boot: true
 
 light:
   - platform: monochromatic
@@ -1239,17 +1242,12 @@ switch:
     entity_category: config
     pin: GPIO4
     restore_mode: RESTORE_DEFAULT_ON
+
   - platform: gpio
     name: "Top Green LED"
     pin:
       number: GPIO43
       inverted: true
-  - platform: gpio
-    id: power_ctrl
-    name: "Power"
-    pin: GPIO9
-    restore_mode: ALWAYS_ON
-    inverted: true
 
   - platform: template
     name: Mute
