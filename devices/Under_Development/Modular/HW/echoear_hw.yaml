@@ -335,7 +335,7 @@ display:
     id: main_display
     model: JC3636W518V2
     cs_pin: 14
-#    reset_pin: 3
+    reset_pin: 3
     rotation: ${rotate_display}
     update_interval: never
     dimensions:
