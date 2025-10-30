@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-aec6f4
   friendly_name: echoear
 
-## Modular version Main v1.08 SINGLE FILE for Echoear 1.2
+## Modular version Main v1.08 SINGLE FILE for Echoear 1.0
 ###################################################################
 ### NOTE: THIS REQUIRES ESPHOME 2025.9.0+ DUE TO DISPLAY DRIVER ###
 ###################################################################
@@ -1988,16 +1988,12 @@ display:
     id: main_display
     model: JC3636W518V2
     cs_pin: 14
-    reset_pin: 47
+    reset_pin: 4
     rotation: ${rotate_display}
     update_interval: never
     dimensions:
         height: ${imageheight}
         width: ${imagewidth}
-    init_sequence:
-      - [0x11]              # Sleep Out
-      - delay 120ms
-      - [0x29]              # Display ON
     pages:
       - id: idle_page
         lambda: |-
