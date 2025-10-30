@@ -37,7 +37,8 @@ Video going through the esphome install of device was removed by youtube and my 
 
 ## ✅ Supported Devices (so far)
 
-* Espressif EchoEar **NEW**
+* Espressif EchoEar v1.0
+* Espressif EchoEar v1.2
 * Spotpear Ball v1
 * Spotpear Ball v2
 * Spotpear Muma Box v1
