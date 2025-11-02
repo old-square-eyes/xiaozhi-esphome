@@ -122,6 +122,7 @@ media_player:
                       condition:
                         - not:
                             voice_assistant.is_running:
+
       - if:
           condition:
             lambda: 'return id(playing_internal_sound);'
@@ -131,6 +132,41 @@ media_player:
             - script.execute: reset_screensaver
             - display.page.show: now_playing_page
             - component.update: main_display
+
+    on_play:
+      - if:
+          condition:
+            - microphone.is_capturing:
+          then:
+            - script.execute: stop_wake_word
+            - if:
+                condition:
+                  - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+                then:
+                  - wait_until:
+                      condition:
+                        - not:
+                            voice_assistant.is_running:
+
+      - if:
+          condition:
+            lambda: 'return id(playing_internal_sound);'
+          then:
+            - lambda: 'id(playing_internal_sound) = false;'
+          else:
+#            - script.execute: reset_screensaver
+            - display.page.show: now_playing_page
+            - component.update: main_display
+
+    on_pause:
+      - if:
+          condition:
+            not:
+              voice_assistant.is_running:
+          then:
+            - script.execute: start_wake_word
+            - script.execute: set_idle_or_mute_phase
+            - script.execute: draw_display
 
     on_idle:
       - if:
