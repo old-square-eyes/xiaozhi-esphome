@@ -1,4 +1,4 @@
-# Taichi Pi v2 hardware v1.07
+# Taichi Pi v2 hardware v1.08
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
@@ -11,16 +11,6 @@ i2c:
   id: touchscreen_bus
   sda: 7
   scl: 8
-
-i2s_audio:
-  - id: i2s_mic
-    i2s_lrclk_pin: GPIO45
-    i2s_bclk_pin:  GPIO42
-
-  - id: i2s_audio_bus
-    i2s_lrclk_pin: GPIO16
-    i2s_bclk_pin:  GPIO18
-    i2s_mclk_pin:  GPIO21
 
 # --- TOUCHSCREEN --------------------------------------------------------------
 touchscreen:
@@ -159,6 +149,16 @@ switch:
     pin: GPIO48
     restore_mode: RESTORE_DEFAULT_ON
 
+i2s_audio:
+  - id: i2s_mic
+    i2s_lrclk_pin: GPIO45
+    i2s_bclk_pin:  GPIO42
+
+  - id: i2s_audio_bus
+    i2s_lrclk_pin: GPIO16
+    i2s_bclk_pin:  GPIO18
+    i2s_mclk_pin:  GPIO21
+
 microphone:
   - platform: i2s_audio
     id: box_mic
@@ -176,6 +176,7 @@ speaker:
     i2s_audio_id: i2s_audio_bus
     i2s_dout_pin: GPIO17
     dac_type: external
+    sample_rate: 48000
     channel: stereo
     buffer_duration: 300ms
 
@@ -190,13 +191,13 @@ speaker:
   - platform: resampler
     id: media_resampling_input
     output_speaker: media_mixer_input
-    sample_rate: 44100
+    sample_rate: 48000
 
   - platform: resampler
     id: announcement_resampling_input
     output_speaker: announcement_mixer_input    
-    sample_rate: 44100
-  
+    sample_rate: 48000
+
 media_player:
   - platform: speaker
     name: none
@@ -209,13 +210,13 @@ media_player:
       speaker: announcement_resampling_input
       format: FLAC
       num_channels: 1
-      sample_rate: 44100
+      sample_rate: 48000
 
     media_pipeline:
       speaker: media_resampling_input
       format: FLAC
       num_channels: 2      
-      sample_rate: 44100
+      sample_rate: 48000
     buffer_size: 250000
 
     on_announcement:
