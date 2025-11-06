@@ -61,6 +61,8 @@ psram:
   mode: octal
   speed: 80MHz
 
+### USE MODULES FROM GITHUB (default) ############################################################################################################
+
 packages:
   core:
     url: https://github.com/RealDeco/xiaozhi-esphome.git
