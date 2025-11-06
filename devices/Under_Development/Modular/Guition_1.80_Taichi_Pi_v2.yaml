@@ -64,7 +64,7 @@ psram:
   mode: octal
   speed: 80MHz
 
-### USE MODULES FROM GITHUB (default) ###################################
+### USE MODULES FROM GITHUB (default) ############################################################################################################
 
 packages:
   core:
