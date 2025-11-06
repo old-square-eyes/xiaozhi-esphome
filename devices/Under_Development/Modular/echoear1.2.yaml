@@ -58,11 +58,6 @@ esp32:
       CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
       CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
 
-esphome:
-  name: ${name}
-  friendly_name: ${friendly_name}
-  min_version: 2025.9.0
-
 psram:
   mode: octal
   speed: 80MHz
