@@ -896,9 +896,9 @@ script:
             and:
               - not:
                   voice_assistant.is_running:
-              - not:
-                  speaker.is_playing:
-                    id: box_speaker
+#              - not:
+#                  speaker.is_playing:
+#                    id: box_speaker
               - lambda: return id(wake_word_engine_location).state == "On device";
           then:
             - lambda: id(va).set_use_wake_word(false);
