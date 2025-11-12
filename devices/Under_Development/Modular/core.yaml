@@ -471,6 +471,9 @@ voice_assistant:
     - script.execute: draw_display
 
   on_stt_end:
+    - script.execute:
+        id: send_stt_text_event
+        stt_text: !lambda 'return x;'
     - text_sensor.template.publish:
         id: text_request
         state: !lambda return x;
@@ -478,11 +481,12 @@ voice_assistant:
         id: text_request_full
         state: !lambda return x;
     - script.execute: draw_display
-    - script.execute:
-        id: send_stt_text_event
-        stt_text: !lambda 'return x;'
+
 
   on_tts_start:
+    - script.execute:
+        id: send_tts_text_event
+        tts_text: !lambda 'return x;'
     - script.execute: reset_screensaver
     - text_sensor.template.publish:
         id: text_response
@@ -1109,6 +1113,14 @@ script:
           event: esphome.stt_text
           data:
             text: !lambda return stt_text;
+  - id: send_tts_text_event
+    parameters:
+      tts_text: string
+    then:
+      - homeassistant.event:
+          event: esphome.tts_text
+          data:
+            text: !lambda return tts_text;
 
 switch:
   - platform: template
