@@ -12,7 +12,7 @@ substitutions:
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
   clock_background_image: "tron" # (options are: clock, hacker, ha-girl, mission, starrysky, waves, tron)
-  imagemodel: "Gwen" # options are:
+  imagemodel: "Sarah" # options are:
 
 # Gwen, HA-character, ha-girl, Sarah
 
@@ -62,39 +62,39 @@ psram:
 
 ### USE MODULES FROM GITHUB (default) ############################################################################################################
 
-#packages:
-#  core:
-#    url: https://github.com/RealDeco/xiaozhi-esphome.git
-#    ref: main
-#    refresh: 1d
-#    files:
-#      - devices/Under_Development/Modular/core.yaml
-#  hw:
-#    url: https://github.com/RealDeco/xiaozhi-esphome.git
-#    ref: main
-#    refresh: 1d
-#    files:
-#      - devices/Under_Development/Modular/HW/Waveshare-3.5_hw.yaml
+packages:
+  core:
+    url: https://github.com/RealDeco/xiaozhi-esphome.git
+    ref: main
+    refresh: 1d
+    files:
+      - devices/Under_Development/Modular/core.yaml
+  hw:
+    url: https://github.com/RealDeco/xiaozhi-esphome.git
+    ref: main
+    refresh: 1d
+    files:
+      - devices/Under_Development/Modular/HW/Waveshare-3.5_hw.yaml
 
 ### USE LOCAL MODULES (read description https://github.com/RealDeco/xiaozhi-esphome/blob/main/devices/Under_Development/Modular/README.md) #######
 
-packages: # Local
-  core: !include localtest/core.yaml
-  hw:   !include localtest/HW/Waveshare-3.5_hw.yaml
+#packages: # Local
+#  core: !include localtest/core.yaml
+#  hw:   !include localtest/HW/Waveshare-3.5_hw.yaml
 
 ## ENABLE / DISABLE WAKE WORDS ## IF LOW ON MEMORY, USE LESS WAKE WORDS ##########################################################################
 
 micro_wake_word:
   id: mww
   models:
-    - okay_nabu
-    - hey_jarvis
-    - alexa
+#    - okay_nabu
+#    - hey_jarvis
+#    - alexa
 #    - hey_mycroft
-#    - model: https://raw.githubusercontent.com/RealDeco/xiaozhi-esphome/refs/heads/main/MicroWakeWords/models/v2/hey_sarah.json
+    - model: https://raw.githubusercontent.com/RealDeco/xiaozhi-esphome/refs/heads/main/MicroWakeWords/models/v2/hey_sarah.json
 #    - model: https://raw.githubusercontent.com/JohnnyPrimus/Custom_V2_MicroWakeWords/refs/heads/main/models/computer/computer.json
 #    - model: https://raw.githubusercontent.com/JohnnyPrimus/Custom_V2_MicroWakeWords/refs/heads/main/models/hey_friday/hey_friday.json
-#    - model: https://github.com/kahrendt/microWakeWord/releases/download/okay_nabu_20241226.3/okay_nabu.json
+    - model: https://github.com/kahrendt/microWakeWord/releases/download/okay_nabu_20241226.3/okay_nabu.json
 #    - model: https://raw.githubusercontent.com/formatBCE/Respeaker-Lite-ESPHome-integration/refs/heads/main/microwakeword/models/v2/kenobi.json
 #    - model: https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/choo_choo_homie.json
 #    - model: https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/hey_home_assistant.json
