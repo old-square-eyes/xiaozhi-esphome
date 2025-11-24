@@ -1,6 +1,6 @@
 substitutions:
   name: esphome-web-ac89bc
-  friendly_name: Xiaozhi 3.5
+  friendly_name: Waveshare 3.5
 
 ### NOTICE! this is for the esp32-s3-touch-lcd-3.5 ###
 
@@ -9,8 +9,8 @@ substitutions:
   imagemodel: "Gwen" # (options are: Gwen)
   startup_sound: "Home_Connected" # (options are: available,Home_Connected)
 
-  imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
-  imageheight: "320" # GC9A01A (Ball v2 & Muma & Puck) "240"
+  imagewidth: "320" # GC9A01A (Ball v2 & Muma & Puck) "240"
+  imageheight: "480" # GC9A01A (Ball v2 & Muma & Puck) "240"
   rotate_display: "180" # Set to "180" to flip the display
 
 ##################################################################################################################################################
@@ -922,16 +922,10 @@ display:
     id: main_display
     model: ST7796
     dc_pin: GPIO3
-#    dimensions:
-#      width: 480
-#      height: 320
-#    transform:
-#      swap_xy: true
-#      mirror_x: true
-#      mirror_y: true
-#    color_order: BGR
     invert_colors: true
-#    auto_clear_enabled: false
+    rotation: ${rotate_display}
+    data_rate: 80MHz
+    auto_clear_enabled: false
     update_interval: never
     pages:
       - id: idle_page
