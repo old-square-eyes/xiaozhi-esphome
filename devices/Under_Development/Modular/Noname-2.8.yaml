@@ -87,7 +87,7 @@ packages:
 ### USE LOCAL MODULES (read description https://github.com/RealDeco/xiaozhi-esphome/blob/main/devices/Under_Development/Modular/README.md) #######
 
 #packages: # Local
-#  core: !include localtest/coreORIG.yaml
+#  core: !include localtest/core.yaml
 #  hw:   !include localtest/HW/Noname-2.8_hw.yaml
 
 ## ENABLE / DISABLE WAKE WORDS ## IF LOW ON MEMORY, USE LESS WAKE WORDS ##########################################################################
