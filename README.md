@@ -95,6 +95,9 @@ Waveshare ESP32-P4-86-Panel-ETH-2RO: https://www.aliexpress.com/item/10050091971
 
 ## Accesories:
 
+Back side case for the 4" (wall mount) nice for desktop use.
+https://www.aliexpress.com/item/1005006149480110.html
+
 3D file of "Eggvenger" figure used to hold the Ball in image above, use 115% for v2 since it's larger than v1.
 https://makerworld.com/en/models/1238732-eggvenger-superhero-egg-holder
 
