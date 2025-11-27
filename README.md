@@ -54,7 +54,8 @@ Video going through the esphome install of device was removed by youtube and my 
 * Waveshare 2.06" OLED Wrist Watch
 * Waveshare ESP32-S3-Touch-LCD-1.85C v1
 * Waveshare ESP32-S3-Touch-LCD-1.85C v2
-* Waveshare ESP32-S3-Touch-LCD-3.49 **NEW**
+* Waveshare ESP32-S3-Touch-LCD-3.49
+* Waveshare ESP32-P4-86-Panel-ETH-2RO **NEW**
 
 ## 🛒 Where to Buy
 
@@ -83,6 +84,8 @@ Waveshare 2.06" OLED Wrist Watch: https://vi.aliexpress.com/item/100500951643884
 Waveshare ESP32-S3-Touch-LCD-1.85C: https://www.aliexpress.com/item/1005008634826817.html
 
 Waveshare ESP32-S3-Touch-LCD-3.49: https://www.aliexpress.com/item/1005009894437640.html
+
+Waveshare ESP32-P4-86-Panel-ETH-2RO: https://www.aliexpress.com/item/1005009197112179.html
 
 ## Accesories:
 
