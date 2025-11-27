@@ -57,6 +57,9 @@ Video going through the esphome install of device was removed by youtube and my 
 * Waveshare ESP32-S3-Touch-LCD-3.49
 * Waveshare ESP32-P4-86-Panel-ETH-2RO **NEW**
 
+(New devices appear in the [modular version](devices/Under_Development/Modular)
+ first during testing.)
+
 ## 🛒 Where to Buy
 
 EchoEar: https://www.aliexpress.com/item/1005009834934442.html
