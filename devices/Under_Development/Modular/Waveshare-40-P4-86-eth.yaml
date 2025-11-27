@@ -2,7 +2,7 @@ substitutions:
   name: Waveshare-40-p4-86-eth
   friendly_name: Waveshare 4.0
 
-## Modular version Main P4 v1.0
+## Modular version Main P4 v1.0.01
 
 ## SETTINGS ######################################################################################################################################
 
@@ -12,9 +12,7 @@ substitutions:
 
   startup_sound: "available" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
   clock_background_image: "tron" # (options are: clock, hacker, ha-girl, mission, starrysky, waves, tron)
-  imagemodel: "Luffy" # options are:
-
-# Gwen, Luffy
+  imagemodel: "Luffy" # options are: Gwen, Luffy, Dory, HA-character
 
 ## PRESENCE / MOTION SENSORS ########## IF NOT USING THESE LEAVE THEM ALONE, SCRIPT WILL BREAK WITHOUT ###########################################
 
@@ -105,7 +103,7 @@ micro_wake_word:
   models:
     - okay_nabu
     - hey_jarvis
-    - alexa
+#    - alexa
 #    - hey_mycroft
 #    - model: https://raw.githubusercontent.com/RealDeco/xiaozhi-esphome/refs/heads/main/MicroWakeWords/models/v2/hey_sarah.json
 #    - model: https://raw.githubusercontent.com/JohnnyPrimus/Custom_V2_MicroWakeWords/refs/heads/main/models/computer/computer.json
