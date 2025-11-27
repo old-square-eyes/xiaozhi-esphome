@@ -1,5 +1,5 @@
 
-# waveshare 4.0 p4 eth hardware pack v1.00
+# waveshare 4.0 p4 eth hardware pack v1.01
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
@@ -246,49 +246,58 @@ sensor:
   - platform: template
     id: battery_voltage
     name: "Battery Voltage"
+    lambda: |-
+      return 4.20;   // fake constant voltage
     unit_of_measurement: "V"
-    accuracy_decimals: 2
     device_class: voltage
     state_class: measurement
+    update_interval: 24h
     on_value:
       then:
+        # Feed the shared battery_percentage template sensor
         - sensor.template.publish:
             id: battery_percentage
             state: !lambda 'return x;'
 
-interval:
-  - interval: 60s        # safe poll rate for the BQ27220
-    then:
-      - lambda: |-
-          using esphome::i2c::ERROR_OK;
-          constexpr uint8_t BQ_ADDR = 0x55;
-          constexpr uint8_t REG_VOLTAGE = 0x08;  // Voltage() command
-
-          // write register, then read 2 bytes (little-endian mV)
-          uint8_t reg = REG_VOLTAGE;
-          uint8_t rx[2] = {0};
-
-          if (id(bus_a)->write(BQ_ADDR, &reg, 1) != ERROR_OK) {
-            ESP_LOGW("bq27220", "I2C write failed");
-            return;
-          }
-          delayMicroseconds(200);
-          if (id(bus_a)->read(BQ_ADDR, rx, 2) != ERROR_OK) {
-            ESP_LOGW("bq27220", "I2C read failed");
-            return;
-          }
-
-          uint16_t mv = (uint16_t(rx[1]) << 8) | rx[0];  // little-endian
-          id(battery_voltage).publish_state(mv / 1000.0f);
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: 35
+      mode: INPUT_PULLUP
+      inverted: true
+    id: boot_button
+    on_multi_click:
+      - timing:
+          - ON for 40ms to 400ms
+          - OFF for at least 330ms
+        then:
+          - if:
+              condition:
+                switch.is_on: timer_ringing
+              then:
+                - switch.turn_off: timer_ringing
+              else:
+                - if:
+                    condition:
+                      lambda: return id(wake_word_engine_location).state == "On device";
+                    then:
+                      - media_player.stop:
+                          id: external_media_player
+                      - if:
+                          condition:
+                            not:
+                              voice_assistant.is_running:
+                          then:
+                            - voice_assistant.start:
+                          else:
+                            - voice_assistant.stop:
+      - timing:
+          - ON for at least 1s
+        then:
+          - switch.toggle: show_battery_status
+          - script.execute: draw_display
 
 # --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
-
-#spi:
-#  id: display_qspi
-#  type: quad
-#  clk_pin: 18
-#  data_pins: [46, 13, 11, 12]
-
 display:
   - platform: mipi_dsi
     id: main_display
