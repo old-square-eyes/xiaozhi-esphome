@@ -1,12 +1,14 @@
 
 <img width="1600" height="950" alt="esphome-yaml-layout-pro-v8" src="https://github.com/user-attachments/assets/92c246d2-295a-4a11-8c03-87963034dcd6" />
 
-This section is for those that tried the standard full yaml in the respective directories and everything works, but want more ;)
+This section is for users who have **already tried the standard full YAML**, followed the installation instructions on the main page, and are familiar with the general setup process.
+Because of that, the instructions here are kept to the **bare minimum**.
 
-Those that just want the basics code to modify might find it easier to use the non-modular yamls.
+It’s also the place where **new boards** are introduced first—often in an **alpha or beta stage**—before eventually being added to the main device list (when time allows).
 
-👉 If you try this and run into problems, please revert to the known working non-modular YAMLs.
-And if you believe the issue isn’t just user error, please report back. 😉
+👉 **If you try this and run into problems, please return to the known-working non-modular YAMLs.**
+If you believe the issue isn’t just user error, please report it. 😉
+
 
 ---
 
@@ -88,9 +90,6 @@ Changes:
   - moved micro wake words to main and left only "okay nabu" in core, this gives a wider selection of mmw's without loading all
 ---
 
-## Older versions of Modular can be found in /OLD/ if wanting to revert to a previous version.
-
----
 
 ## Previous Changes (before resetting to Modular 1.00)
 
