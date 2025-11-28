@@ -44,6 +44,16 @@ packages:
 ```
 Changes:
 ---
+### Modular v1.10
+- **Changes**
+  - added EVENTS for phase id, request text and response text, this makes it to play audio on another mediaplayer, or graphics on other display or dashboard.
+  - fixed pipeline to react the same with both single and dual i2s devices, sometimes if would show idle when listening.
+  - added the ESP32-P4 series to the family, adjusting clocks to this bigger size displays will be a work in progress.
+
+### Modular v1.09
+- **Changes**
+  - minor changes and bugfixes
+
 ### Modular v1.08
 - **Changes**
   - Updated most devices for mipi spi display drivers
