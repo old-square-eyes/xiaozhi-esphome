@@ -1,6 +1,11 @@
 
-# EchoEar hardware pack v1.08
+# EchoEar hardware pack v1.10
 
+# --- CLOCKS PACKAGE -----------------------------------------------------------
+packages:
+  clocks: !include ../clocks-standard.yaml
+
+# --- EXTRAS--------------------------------------------------------------------
 power_supply:
   - id: vcc3v3_sw
     pin:
