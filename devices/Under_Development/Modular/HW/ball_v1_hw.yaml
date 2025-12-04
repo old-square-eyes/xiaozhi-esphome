@@ -1,4 +1,8 @@
-# Xiaozhi Ball v1 — hardware pack (ESP32-S3 + GC9A01A round 240x240) v1.08
+# Xiaozhi Ball v1 — hardware pack (ESP32-S3 + GC9A01A round 240x240) v1.10
+
+# --- CLOCKS PACKAGE -----------------------------------------------------------
+packages:
+  clocks: !include ../clocks-standard.yaml
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
