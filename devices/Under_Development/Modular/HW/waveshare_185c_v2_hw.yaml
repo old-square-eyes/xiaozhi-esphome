@@ -1,4 +1,8 @@
-# Waveshare ESP32-S3-Touch-LCD-1.85C v2 / 1.85C-BOX v2 hardware pack. v1.07
+# Waveshare ESP32-S3-Touch-LCD-1.85C v2 / 1.85C-BOX v2 hardware pack. v1.10
+
+# --- CLOCKS PACKAGE -----------------------------------------------------------
+packages:
+  clocks: !include ../clocks-standard.yaml
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
