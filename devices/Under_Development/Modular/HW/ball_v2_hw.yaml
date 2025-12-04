@@ -1,4 +1,8 @@
-# Ball v2 hardware v1.08
+# Ball v2 hardware v1.10
+
+# --- CLOCKS PACKAGE -----------------------------------------------------------
+packages:
+  clocks: !include ../clocks-standard.yaml
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
