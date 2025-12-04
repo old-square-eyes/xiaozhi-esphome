@@ -1,4 +1,8 @@
-# Xiaozhi Breadboard — hardware pack (ESP32-S3 + ILI9341 round 240x320) v1.08
+# Xiaozhi Breadboard — hardware pack (ESP32-S3 + ILI9341 round 240x320) v1.10
+
+# --- CLOCKS PACKAGE -----------------------------------------------------------
+packages:
+  clocks: !include ../clocks-standard.yaml
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
