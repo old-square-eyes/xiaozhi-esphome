@@ -1,4 +1,8 @@
-# Taichi Pi v1 hardware v1.08
+# Taichi Pi v1 hardware v1.10
+
+# --- CLOCKS PACKAGE -----------------------------------------------------------
+packages:
+  clocks: !include ../clocks-standard.yaml
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 spi:
