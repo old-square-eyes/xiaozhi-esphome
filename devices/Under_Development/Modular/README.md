@@ -47,7 +47,8 @@ Changes:
 ---
 ### Modular v1.10
 - **Changes**
-  - added EVENTS for phase id, request text and response text, this makes it to play audio on another mediaplayer, or graphics on other display or dashboard.
+  - added EVENTS for phase id, request text and response text, this makes it easier to play audio on another mediaplayer, or show
+    graphics on other displays or dashboards.
   - fixed pipeline to react the same with both single and dual i2s devices, sometimes if would show idle when listening.
   - added the ESP32-P4 series to the family, adjusting clocks to this bigger size displays will be a work in progress.
   - moved clock and wallpaper selectors to external file, so very small or very wide displays can have their own.
