@@ -8,7 +8,7 @@ select:
     restore_value: true
     options:
       - Small
-    initial_option: Default
+    initial_option: Small
     on_value:
       - if:
           condition:
