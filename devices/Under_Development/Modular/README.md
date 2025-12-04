@@ -33,7 +33,7 @@ After this, if there is a update, all you need to do is compile again.
 ## 🚀 Running locally (optional)
 
 If you want to run and edit the Modular files locally:
-1. Create a directory in your esphome/ directory called "localtest" and copy core.yaml + display_pages.yaml there.
+1. Create a directory in your esphome/ directory called "localtest" and copy core.yaml + display_pages.yaml + clocks-standard.yaml there.
 2. Create a directory inside localtest/ called "HW" and copy the hardware file for your device there (eg. ball_v2_hw.yaml)
 3. change the packages in main yaml on the device to:
 
@@ -49,6 +49,7 @@ Changes:
   - added EVENTS for phase id, request text and response text, this makes it to play audio on another mediaplayer, or graphics on other display or dashboard.
   - fixed pipeline to react the same with both single and dual i2s devices, sometimes if would show idle when listening.
   - added the ESP32-P4 series to the family, adjusting clocks to this bigger size displays will be a work in progress.
+  - moved clock and wallpaper selectors to external file, so very small or very wide displays can have their own.
 
 ### Modular v1.09
 - **Changes**
