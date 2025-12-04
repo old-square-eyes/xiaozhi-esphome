@@ -1,4 +1,8 @@
-# Xiaozhi breadboard mini v1
+# Xiaozhi breadboard mini v1.10
+
+# --- CLOCKS PACKAGE -----------------------------------------------------------
+packages:
+  clocks: !include ../clocks-standard.yaml
 
 # --- EXTRAS -------------------------------------------------------------------
 binary_sensor:
