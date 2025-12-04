@@ -11,7 +11,7 @@ substitutions:
   rotate_display: "0"
   
   startup_sound: "Home_Connected" # options are: available, Home_Connected, Home_Connected_Male, Computer_Ready
-  clock_background_image: "tron" # (options are: clock, hacker, ha-girl, mission, starrysky, waves, tron)
+  clock_background_image: "tron" # options are: clock
   imagemodel: "Eyes" # options are: Eyes, Eyes2
 
 ## PRESENCE / MOTION SENSORS ########## IF NOT USING THESE LEAVE THEM ALONE, SCRIPT WILL BREAK WITHOUT ###########################################
