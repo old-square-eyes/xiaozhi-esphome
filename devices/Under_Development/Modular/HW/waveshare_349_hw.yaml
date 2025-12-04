@@ -1,5 +1,10 @@
-# waveshare 3.49 hardware pack v1.08
+# waveshare 3.49 hardware pack v1.10
 
+# --- CLOCKS PACKAGE -----------------------------------------------------------
+packages:
+  clocks: !include ../clocks-standard.yaml
+
+# --- EXTRAS -------------------------------------------------------------------
 esphome:
   on_boot:
     - priority: 700
