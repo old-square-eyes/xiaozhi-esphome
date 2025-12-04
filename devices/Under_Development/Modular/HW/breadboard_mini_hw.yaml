@@ -2,7 +2,7 @@
 
 # --- CLOCKS PACKAGE -----------------------------------------------------------
 packages:
-  clocks: !include ../clocks-standard.yaml
+  clocks: !include ../clocks-small.yaml
 
 # --- EXTRAS -------------------------------------------------------------------
 binary_sensor:
