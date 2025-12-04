@@ -1,5 +1,5 @@
 
-<img width="1600" height="950" alt="esphome-yaml-layout-pro-v8" src="https://github.com/user-attachments/assets/92c246d2-295a-4a11-8c03-87963034dcd6" />
+<img width="1600" height="950" alt="esphome-yaml-layout-pro-v8" src="https://github.com/user-attachments/assets/d9d11428-0f0f-4900-b30c-21c989c6bfba" />
 
 This section is for users who have **already tried the standard full YAML**, followed the installation instructions on the main page, and are familiar with the general setup process.
 Because of that, the instructions here are kept to the **bare minimum**.
