@@ -1,5 +1,9 @@
 
-# waveshare 4.0 p4 eth hardware pack v1.01
+# waveshare 4.0 p4 eth hardware pack v1.10
+
+# --- CLOCKS PACKAGE -----------------------------------------------------------
+packages:
+  clocks: !include ../clocks-standard.yaml
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
