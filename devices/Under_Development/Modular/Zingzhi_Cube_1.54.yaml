@@ -67,13 +67,13 @@ packages:
   core:
     url: https://github.com/RealDeco/xiaozhi-esphome.git
     ref: main
-    refresh: 1d
+    refresh: 0s
     files:
       - devices/Under_Development/Modular/core.yaml
   hw:
     url: https://github.com/RealDeco/xiaozhi-esphome.git
     ref: main
-    refresh: 1d
+    refresh: 0s
     files:
       - devices/Under_Development/Modular/HW/xingzhi-cube-1.54_hw.yaml
 
