@@ -1,0 +1,139 @@
+alias: Set light color from voice assistant phase sensor (audioboard)
+description: Changes LED color when the phase ID sensor updates
+triggers:
+  - trigger: state
+    entity_id: sensor.voicemouth_voice_assistant_phase_id
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == '1' }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.waveshare_audio_board
+            data:
+              rgb_color:
+                - 0
+                - 0
+                - 255
+              brightness_pct: 50
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == '2' }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.waveshare_audio_board
+            data:
+              rgb_color:
+                - 0
+                - 0
+                - 255
+              brightness_pct: 100
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == '3' }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.waveshare_audio_board
+            data:
+              rgb_color:
+                - 0
+                - 255
+                - 255
+              brightness_pct: 100
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == '4' }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.waveshare_audio_board
+            data:
+              rgb_color:
+                - 255
+                - 255
+                - 0
+              brightness_pct: 100
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == '5' }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.waveshare_audio_board
+            data:
+              rgb_color:
+                - 0
+                - 255
+                - 51
+              brightness_pct: 100
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == '10' }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.waveshare_audio_board
+            data:
+              rgb_color:
+                - 255
+                - 213
+                - 0
+              brightness_pct: 100
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == '11' }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.waveshare_audio_board
+            data:
+              rgb_color:
+                - 255
+                - 0
+                - 0
+              brightness_pct: 100
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == '12' }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.waveshare_audio_board
+            data:
+              rgb_color:
+                - 128
+                - 128
+                - 128
+              brightness_pct: 100
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == '13' }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.waveshare_audio_board
+            data:
+              rgb_color:
+                - 255
+                - 255
+                - 255
+              brightness_pct: 100
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == '20' }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.waveshare_audio_board
+            data:
+              rgb_color:
+                - 255
+                - 0
+                - 255
+              brightness_pct: 100
+mode: single
