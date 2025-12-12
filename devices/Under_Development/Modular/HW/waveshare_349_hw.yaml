@@ -1,10 +1,9 @@
-# waveshare 3.49 hardware pack v1.10
+# waveshare 3.49 hardware pack v1.07
 
 # --- CLOCKS PACKAGE -----------------------------------------------------------
 packages:
   clocks: !include ../clocks-standard.yaml
 
-# --- EXTRAS -------------------------------------------------------------------
 esphome:
   on_boot:
     - priority: 700
@@ -34,27 +33,40 @@ touchscreen:
     id: my_touchscreen
     i2c_id: bus_b
     address: 0x3b
-    update_interval: 10ms
+    update_interval: 20ms
     display: main_display
 
     on_touch:
       then:
         - lambda: |-
             id(gs_touch_active) = true;
-            id(gs_start_x) = touch.x;
-            id(gs_start_y) = touch.y;
-            id(gs_last_x)  = touch.x;
-            id(gs_last_y)  = touch.y;
+
+            // Mirror both axes like the vendor "Rotated" example (640x172)
+            const int W = id(main_display).get_width();
+            const int H = id(main_display).get_height();
+            const int mx = W - touch.x;
+            const int my = H - touch.y;
+
+            id(gs_start_x) = mx;
+            id(gs_start_y) = my;
+            id(gs_last_x)  = mx;
+            id(gs_last_y)  = my;
             id(gs_start_ms) = millis();
 
     on_update:
       then:
         - lambda: |-
             if (!id(gs_touch_active)) return;
+
+            const int W = id(main_display).get_width();
+            const int H = id(main_display).get_height();
+
             for (auto &t : touches) {
               if (t.state >= 1 && t.state <= 2) {
-                id(gs_last_x) = t.x;
-                id(gs_last_y) = t.y;
+                const int mx = W - t.x;
+                const int my = H - t.y;
+                id(gs_last_x) = mx;
+                id(gs_last_y) = my;
                 break;
               }
             }
@@ -65,69 +77,91 @@ touchscreen:
             if (!id(gs_touch_active)) return;
             id(gs_touch_active) = false;
 
-            const int start_x = id(gs_start_x);
-            const int start_y = id(gs_start_y);
-            const int end_x   = id(gs_last_x);
-            const int end_y   = id(gs_last_y);
-            const int dx = end_x - start_x;
-            const int dy = end_y - start_y;
+            // ---- per-gesture dedupe: run at most once per press ----
+            static uint32_t last_handled_start_ms = 0;
+            if (id(gs_start_ms) == last_handled_start_ms) {
+              return;  // already handled this gesture
+            }
+            last_handled_start_ms = id(gs_start_ms);
+            // --------------------------------------------------------
+
+            // Deltas/time
+            const int dx = id(gs_last_x) - id(gs_start_x);
+            const int dy = id(gs_last_y) - id(gs_start_y);
             const uint32_t dt = millis() - id(gs_start_ms);
 
-            // Scale thresholds with screen
+            // Screen-scaled thresholds
             const int w = id(main_display).get_width();
             const int h = id(main_display).get_height();
             const int min_dim = (w < h) ? w : h;
 
-            // Swipe thresholds
             const int MIN_DIST = std::max(16, min_dim / 8);
             const uint32_t MAX_TIME = 1500;
 
-            // Tap guard (strict)
-            const int TAP_MAX_DIST  = std::max(8,  min_dim / 20);
+            // Tap thresholds
+            const int TAP_MAX_DIST   = std::max(8,  min_dim / 20);
             const uint32_t TAP_MAX_TIME = 300;
+            const uint32_t TAP_MIN_TIME = 120;
 
-            // Tap fallback (more forgiving)
-            const int TAP_FB_DIST  = std::max(14, min_dim / 12);
-            const uint32_t TAP_FB_TIME = 700;
+            const int absx = std::abs(dx);
+            const int absy = std::abs(dy);
 
-            const int ndx = -dx;
-            const int ndy = -dy;
+            // Require clear dominance to avoid diagonal jitter
+            const float DOM = 1.30f;
+            const bool swipe_h = (dt <= MAX_TIME) && (absx >= MIN_DIST) && (absx >= int(DOM * absy));
+            const bool swipe_v = (dt <= MAX_TIME) && (absy >= MIN_DIST) && (absy >= int(DOM * absx));
 
-            const int absx = std::abs(ndx);
-            const int absy = std::abs(ndy);
-
-            bool is_left=false, is_right=false, is_up=false, is_down=false;
-
-            // Swipe?
-            if (dt <= MAX_TIME && (absx >= MIN_DIST || absy >= MIN_DIST)) {
-              if (absx >= absy) {
-                if (ndx < 0) is_left = true; else is_right = true;
-              } else {
-                if (ndy < 0) is_up = true; else is_down = true;
-              }
-            }
-
-            // Not a swipe → tap (strict, then forgiving fallback)
-            if (!(is_left || is_right || is_up || is_down)) {
-              if ((absx <= TAP_MAX_DIST && absy <= TAP_MAX_DIST && dt <= TAP_MAX_TIME) ||
-                  (absx <= TAP_FB_DIST  && absy <= TAP_FB_DIST  && dt <= TAP_FB_TIME)) {
+            // Not a swipe → tap (require min press time)
+            if (!(swipe_h || swipe_v)) {
+              if (dt >= TAP_MIN_TIME &&
+                  absx <= TAP_MAX_DIST && absy <= TAP_MAX_DIST &&
+                  dt <= TAP_MAX_TIME) {
                 id(pulse_touch_input).execute();
               }
               return;
             }
 
-            // Always expose to HA via non-blocking pulses
-            if (is_left)  id(pulse_swipe_left).execute();
-            if (is_right) id(pulse_swipe_right).execute();
-            if (is_up)    id(pulse_swipe_up).execute();
-            if (is_down)  id(pulse_swipe_down).execute();
+            // ---- Handle exactly ONE outcome ----
+            if (swipe_h) {
+              // LEFT if dx < 0, RIGHT if dx > 0
+              // Do the style change directly here (single path).
+              static const char* const opts[] = {
+                "7-segment","Flip","Default","Presence","Weather","Small","Analog","Wide","Alarmstyle"
+              };
+              const int N = sizeof(opts)/sizeof(opts[0]);
 
-            // Optional local handling
-            if (id(swipe_local).state) {
-              if (is_left)  id(swipe_left_action).execute();
-              if (is_right) id(swipe_right_action).execute();
-              if (is_up)    id(swipe_up_action).execute();
-              if (is_down)  id(swipe_down_action).execute();
+              // current index
+              std::string cur = id(clock_style).state.c_str();
+              int idx = 0;
+              for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
+
+              int next_idx = idx;
+              if (dx < 0) {
+                // LEFT → next
+                next_idx = (idx + 1) % N;
+              } else {
+                // RIGHT → previous
+                next_idx = (idx - 1 + N) % N;
+              }
+
+              // publish once; your select's on_value will refresh the page if needed
+              id(clock_style).publish_state(opts[next_idx]);
+
+              // no L/R pulses and no local L/R scripts (prevents double path)
+              return;
+            }
+
+            // Vertical: keep your existing behavior (pulses + optional local)
+            if (swipe_v) {
+              if (dy < 0) {
+                // UP
+                id(pulse_swipe_up).execute();
+                if (id(swipe_local).state) id(swipe_up_action).execute();
+              } else {
+                // DOWN
+                id(pulse_swipe_down).execute();
+                if (id(swipe_local).state) id(swipe_down_action).execute();
+              }
             }
 
 # --- BACKLIGHT ----------------------------------------------------------------
@@ -359,11 +393,11 @@ binary_sensor:
           - switch.turn_off: sys_en_hold
           - logger.log: "PWR long-press: power OFF"
 
-# --- DISPLAY DRIVER (MIPI SPI JC3636W518) ------------------------------------
-external_components:
-  - source: github://pr#11226
-    components: [display, mipi, mipi_spi]
-    refresh: 1h
+# --- DISPLAY DRIVER -----------------------------------------------------------
+#external_components:
+#  - source: github://pr#11226
+#    components: [display, mipi, mipi_spi]
+#    refresh: 1h
 
 spi:
   id: display_qspi
