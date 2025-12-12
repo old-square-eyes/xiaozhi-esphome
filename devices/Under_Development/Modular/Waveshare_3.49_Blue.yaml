@@ -11,8 +11,8 @@ substitutions:
   rotate_display: "90"
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
-  clock_background_image: "tron" # (options are: clock, hacker, ha-girl, mission, starrysky, waves, tron)
-  imagemodel: "Gwen" # options are: Alfred, Gwen, Sarah, Jarvis
+  clock_background_image: "waves" # (options are: clock, hacker, ha-girl, mission, starrysky, waves)
+  imagemodel: "Sarah" # options are: Alfred, Gwen, Sarah, Jarvis
 
 ## PRESENCE / MOTION SENSORS ########## IF NOT USING THESE LEAVE THEM ALONE, SCRIPT WILL BREAK WITHOUT ###########################################
 
