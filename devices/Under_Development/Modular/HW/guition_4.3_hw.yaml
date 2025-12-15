@@ -17,7 +17,7 @@ substitutions:
 
 # --- CLOCKS PACKAGE -----------------------------------------------------------
 packages:
-  clocks: !include ../clocks-480x800.yaml
+  clocks: !include ../clocks-standard.yaml
 
 external_components:
   - source: github://pr#12068
