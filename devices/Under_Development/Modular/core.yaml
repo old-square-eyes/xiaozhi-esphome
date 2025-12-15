@@ -1,4 +1,4 @@
-# Core v1.10
+# Core v1.11
 
 substitutions:
   allowed_characters: >-
@@ -12,7 +12,7 @@ substitutions:
   timer_finished_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
   mute_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/mute.png
   playing_illustration_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/playing.png
-  clock_background_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/${imagewidth}x${imageheight}/${clock_background_image}.png
+  clock_background_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/${screenwidth}x${screenheight}/${clock_background_image}.png
   startup_sound_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
   loading_illustration_background_color: "000000"
@@ -77,13 +77,13 @@ online_image:
     url: ${clock_background_file}
     format: PNG
     type: RGB565
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     update_interval: never
   - id: temp_fullscreen
     url: ${clock_background_file}
     format: PNG
     type: RGB565
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     update_interval: never
 
 time:
@@ -1395,47 +1395,47 @@ globals:
 image:
   - file: ${error_illustration_file}
     id: casita_error
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${idle_illustration_file}
     id: casita_idle
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${listening_illustration_file}
     id: casita_listening
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${thinking_illustration_file}
     id: casita_thinking
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${replying_illustration_file}
     id: casita_replying
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${timer_finished_illustration_file}
     id: casita_timer_finished
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${loading_illustration_file}
     id: casita_initializing
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${mute_illustration_file}
     id: casita_muted
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${playing_illustration_file}
     id: casita_playing
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: https://raw.githubusercontent.com/RealDeco/xiaozhi-esphome/main/images/Other/error-no-wifi.png
     id: error_no_wifi
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/error-no-ha.png
     id: error_no_ha
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
 
 font:
