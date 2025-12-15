@@ -8,10 +8,13 @@ substitutions:
 
   display_model: "JC3636W518V2"
   pdm_mic_type: "true"
-  rotate_display: "180"
 
   imagewidth:  "360"
   imageheight: "360"
+
+  screenwidth:  "360"
+  screenheight: "360"
+  rotate_display: "180"
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
   clock_background_image: "tron" # (options are: clock, hacker, ha-girl, mission, starrysky, waves, tron)
