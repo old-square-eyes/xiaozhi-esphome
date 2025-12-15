@@ -46,7 +46,7 @@ select:
           id: clock_background
           url: !lambda |-
             std::string base = "https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/"
-                               "${imagewidth}x${imageheight}/";
+                               "${screenwidth}x${screenheight}/";
             return base + std::string(x) + ".png";
           update: true
       - script.execute: draw_display
