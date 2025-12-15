@@ -8,6 +8,9 @@ substitutions:
 
   imagewidth:  "320"
   imageheight: "480"
+
+  screenwidth:  "320"
+  screenheight: "480"
   rotate_display: "0"
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
