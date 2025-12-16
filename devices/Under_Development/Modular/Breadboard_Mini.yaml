@@ -17,7 +17,7 @@ substitutions:
   clock_background_image: "tron" # options are: clock
   imagemodel: "Eyes" # options are: Eyes, Eyes2
 
-# USE ONLINE OR LOCAL MODEL AND WALLPAPER IMAGES, IMAGES SHOULD BE PLACED IN homeassistant/www/imagas/
+# USE ONLINE OR LOCAL MODEL AND WALLPAPER IMAGES, IMAGES SHOULD BE PLACED IN: homeassistant/www/images/
   imagepath: "https://github.com/RealDeco/xiaozhi-esphome/raw/main/images"
 #  imagepath: "http://homeassistant.local:8123/local/images/"
 
