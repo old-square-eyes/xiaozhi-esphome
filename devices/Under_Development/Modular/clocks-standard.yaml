@@ -14,6 +14,7 @@ select:
       - Weather
       - Small
       - Analog
+      - Wide
       - Alarmstyle
       - Big
     initial_option: Default
@@ -45,7 +46,7 @@ select:
       - online_image.set_url:
           id: clock_background
           url: !lambda |-
-            std::string base = "https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/"
+            std::string base = "${imagepath}/Other/"
                                "${screenwidth}x${screenheight}/";
             return base + std::string(x) + ".png";
           update: true
@@ -68,6 +69,8 @@ script:
             id(main_display).show_page(small_clock);
           } else if (sel == "Analog") {
             id(main_display).show_page(analog_clock);
+          } else if (sel == "Wide") {
+            id(main_display).show_page(wide_clock);
           } else if (sel == "Alarmstyle") {
             id(main_display).show_page(alarmstyle_clock);
           } else if (sel == "Big") {
@@ -81,7 +84,7 @@ script:
     then:
       - lambda: |-
           static const char* const opts[] = {
-            "7-segment","Flip","Default","Presence","Weather","Small","Analog","Alarmstyle","Big"
+            "7-segment","Flip","Default","Presence","Weather","Small","Analog","Wide","Alarmstyle","Big"
           };
           const int N = sizeof(opts)/sizeof(opts[0]);
           std::string cur = id(clock_style).state.c_str();
@@ -95,7 +98,7 @@ script:
     then:
       - lambda: |-
           static const char* const opts[] = {
-            "7-segment","Flip","Default","Presence","Weather","Small","Analog","Alarmstyle","Big"
+            "7-segment","Flip","Default","Presence","Weather","Small","Analog","Wide","Alarmstyle","Big"
           };
           const int N = sizeof(opts)/sizeof(opts[0]);
           std::string cur = id(clock_style).state.c_str();
