@@ -17,6 +17,10 @@ substitutions:
   clock_background_image: "tron" # options are: clock
   imagemodel: "Eyes" # options are: Eyes, Eyes2
 
+# USE ONLINE OR LOCAL MODEL AND WALLPAPER IMAGES, IMAGES SHOULD BE PLACED IN homeassistant/www/imagas/
+  imagepath: "https://github.com/RealDeco/xiaozhi-esphome/raw/main/images"
+#  imagepath: "http://homeassistant.local:8123/local/images/"
+
 ## PRESENCE / MOTION SENSORS ########## IF NOT USING THESE LEAVE THEM ALONE, SCRIPT WILL BREAK WITHOUT ###########################################
 
   sensor1_entity: "binary_sensor.8266_presense_2_presence"
