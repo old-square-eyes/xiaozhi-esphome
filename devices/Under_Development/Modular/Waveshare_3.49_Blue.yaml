@@ -17,6 +17,10 @@ substitutions:
   clock_background_image: "waves" # (options are: clock, hacker, ha-girl, mission, starrysky, waves)
   imagemodel: "Sarah" # options are: Alfred, Gwen, Sarah, Jarvis
 
+# USE ONLINE OR LOCAL MODEL AND WALLPAPER IMAGES, IMAGES SHOULD BE PLACED IN: homeassistant/www/images/
+  imagepath: "https://github.com/RealDeco/xiaozhi-esphome/raw/main/images"
+#  imagepath: "http://homeassistant.local:8123/local/images/"
+
 ## PRESENCE / MOTION SENSORS ########## IF NOT USING THESE LEAVE THEM ALONE, SCRIPT WILL BREAK WITHOUT ###########################################
 
   sensor1_entity: "binary_sensor.8266_presense_2_presence"
