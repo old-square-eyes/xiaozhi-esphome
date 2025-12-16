@@ -30,7 +30,7 @@ select:
       - online_image.set_url:
           id: clock_background
           url: !lambda |-
-            std::string base = "https://github.com/RealDeco/xiaozhi-esphome/raw/main/images/Other/"
+            std::string base = "${imagepath}/Other/"
                                "${imagewidth}x${imageheight}/";
             return base + std::string(x) + ".png";
           update: true
