@@ -63,6 +63,8 @@ Video going through the esphome install of device was removed by youtube and my 
 * Waveshare ESP32-S3-Touch-LCD-3.49
 * Waveshare ESP32-P4-86-Panel-ETH-2RO **NEW**
 * Waveshare Audio Board **NEW**
+* Guition 4.3C **NEW**
+* Freenove 2.8 **NEW**
 
 (New devices appear in the [modular version](devices/Under_Development/Modular)
  first during testing.)
@@ -97,6 +99,13 @@ Waveshare ESP32-S3-Touch-LCD-3.49: https://www.aliexpress.com/item/1005009894437
 
 Waveshare ESP32-P4-86-Panel-ETH-2RO: https://www.aliexpress.com/item/1005009197112179.html
 
+Waveshare Audio Board: https://www.aliexpress.com/item/1005009819735457.html
+
+Guition P4 4.3C: https://www.aliexpress.com/item/1005009673625472.html
+
+Freenove 2.8": https://www.aliexpress.com/item/1005009876628479.html
+
+
 ## Accesories:
 
 Back side case for the 4" (wall mount) nice for desktop use.
@@ -111,6 +120,8 @@ https://makerworld.com/en/models/238543-wireless-charger-holder
 Wireless charger for the Guition JC3636W518 display: https://vi.aliexpress.com/item/1005005066837741.html
 
 Curled audio cable for Guition JC3636W518 display: https://vi.aliexpress.com/item/1005007061609551.html
+
+Case for Freenove 2.8" (remember to pick correct print profile) https://tenor.com/view/funny-yeah-dancing-bird-houla-hop-gif-14042924507234674514
 
 ---EOF
 
