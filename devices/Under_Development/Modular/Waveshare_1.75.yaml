@@ -88,7 +88,7 @@ packages:
 
 #packages: # Local
 #  core: !include localtest/core.yaml
-#  hw:   !include localtest/HW/ball_v2_hw.yaml
+#  hw:   !include localtest/HW/waveshare-1.75_hw.yaml
 
 ## ENABLE / DISABLE WAKE WORDS ## IF LOW ON MEMORY, USE LESS WAKE WORDS ##########################################################################
 
