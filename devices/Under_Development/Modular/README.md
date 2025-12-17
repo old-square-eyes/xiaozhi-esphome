@@ -45,6 +45,15 @@ packages:
 ```
 Changes:
 ---
+### Modular v1.11
+- **Changes**
+  - added more option to main yaml:
+
+    screensize: this is for compability with larger displays, should be the same as imagesize for smaller displays.
+
+    imagepath: either github or local so it's easier to add own images. this path affect both model images and wallpaper.
+
+
 ### Modular v1.10
 - **Changes**
   - added EVENTS for phase id, request text and response text, this makes it easier to play audio on another mediaplayer, or show
