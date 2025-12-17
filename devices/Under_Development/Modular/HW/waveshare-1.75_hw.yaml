@@ -45,14 +45,13 @@ i2s_audio:
 
 audio_dac:
   - platform: es8311
-    i2c_id: bus_a
     id: es8311_dac
     bits_per_sample: 16bit
     sample_rate: 44100
 
 audio_adc:
   - platform: es7210
-    id: adc_bus_a
+    id: es7210_adc
     bits_per_sample: 16bit
     sample_rate: 44100
 
@@ -66,7 +65,7 @@ microphone:
     adc_type: external
     channel: left
     pdm: false
-    sample_rate: 16000
+    sample_rate: 44100
     bits_per_sample: 16bit
 
 speaker:
@@ -76,7 +75,7 @@ speaker:
     i2s_dout_pin: GPIO8
     dac_type: external
     audio_dac: es8311_dac
-    sample_rate: 48000
+    sample_rate: 44100
     channel: mono
 
 switch:
@@ -94,7 +93,7 @@ media_player:
     announcement_pipeline:
       speaker: box_speaker
       format: FLAC
-      sample_rate: 48000
+      sample_rate: 441000
       num_channels: 1
     buffer_size: 250000
     files:
