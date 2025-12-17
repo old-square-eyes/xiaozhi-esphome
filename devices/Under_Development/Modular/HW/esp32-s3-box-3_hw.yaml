@@ -1,5 +1,9 @@
 # ESP32-S3-BOX-3 hardware v1.08
 
+# --- CLOCKS PACKAGE -----------------------------------------------------------
+packages:
+  clocks: !include ../clocks-wide.yaml
+
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
   - id: bus_a
@@ -156,3 +160,4 @@ display:
       number: 48
       inverted: true
     update_interval: never
+    pages: !include ../display_pages.yaml
