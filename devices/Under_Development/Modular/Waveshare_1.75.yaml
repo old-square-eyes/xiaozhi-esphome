@@ -6,11 +6,11 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
-  imagewidth:  "360"
-  imageheight: "360"
+  imagewidth:  "466"
+  imageheight: "466"
 
-  screenwidth:  "360"
-  screenheight: "360"
+  screenwidth:  "466"
+  screenheight: "466"
   rotate_display: "0"
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
@@ -97,7 +97,7 @@ micro_wake_word:
   models:
     - okay_nabu
     - hey_jarvis
-    - alexa
+#    - alexa
 #    - hey_mycroft
 #    - model: https://raw.githubusercontent.com/RealDeco/xiaozhi-esphome/refs/heads/main/MicroWakeWords/models/v2/hey_sarah.json
 #    - model: https://raw.githubusercontent.com/JohnnyPrimus/Custom_V2_MicroWakeWords/refs/heads/main/models/computer/computer.json
