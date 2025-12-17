@@ -146,7 +146,7 @@ sensor:
 # --- DISPLAY DRIVER (ILI9xxx round GC9A01A) ----------------------------------
 display:
   - platform: ili9xxx
-    id: s3_box_lcd
+    id: main_display
     model: S3BOX
     invert_colors: false
     data_rate: 40MHz
