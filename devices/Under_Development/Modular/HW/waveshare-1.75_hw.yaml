@@ -28,20 +28,9 @@ spi:
 
 i2s_audio:
   - id: i2s_audio_bus
-    i2s_lrclk_pin:
-      number: GPIO45
-      allow_other_uses: true
-    i2s_bclk_pin:
-      number: GPIO9
-      allow_other_uses: true
+    i2s_lrclk_pin: GPIO45
+    i2s_bclk_pin: GPIO9
     i2s_mclk_pin: GPIO42
-  - id: i2s_mic_bus
-    i2s_lrclk_pin:
-      number: GPIO45
-      allow_other_uses: true
-    i2s_bclk_pin: 
-      number: GPIO9
-      allow_other_uses: true
 
 audio_dac:
   - platform: es8311
@@ -60,7 +49,7 @@ audio_adc:
 microphone:
   - platform: i2s_audio
     id: box_mic
-    i2s_audio_id: i2s_mic_bus
+    i2s_audio_id: i2s_audio_bus
     i2s_din_pin: GPIO10
     adc_type: external
     channel: left
