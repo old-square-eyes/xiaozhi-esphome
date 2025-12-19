@@ -121,7 +121,7 @@ Wireless charger for the Guition JC3636W518 display: https://vi.aliexpress.com/i
 
 Curled audio cable for Guition JC3636W518 display: https://vi.aliexpress.com/item/1005007061609551.html
 
-Case for Freenove 2.8" (remember to pick correct print profile) https://tenor.com/view/funny-yeah-dancing-bird-houla-hop-gif-14042924507234674514
+Case for Freenove 2.8" (remember to pick correct print profile) https://makerworld.com/en/models/1382304-aura-smart-weather-forecast-display
 
 ---EOF
 
