@@ -6,8 +6,8 @@ Welcome! Here you'll find my **work-in-progress code** for all devices i current
 * **`Modular`**
   Modular yaml for almost all devices.
 
-* **`Older_Versions`**
-  Older versione left for those that want to revert
+* **`testing`**
+  Test files and basic examples
 
 ---
 
