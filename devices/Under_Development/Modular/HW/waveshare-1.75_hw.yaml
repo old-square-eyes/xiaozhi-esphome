@@ -292,6 +292,8 @@ display:
     dimensions:
       height: ${imageheight}
       width: ${imagewidth}
+      offset_width: ${offset_w}
+      offset_height: ${offset_h}
     rotation: ${rotate_display}
     update_interval: never
     pages: !include ../display_pages.yaml
