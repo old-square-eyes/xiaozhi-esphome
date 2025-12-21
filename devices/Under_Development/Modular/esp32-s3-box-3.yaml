@@ -12,9 +12,6 @@ substitutions:
   screenwidth:  "240"
   screenheight: "240"
   rotate_display: "0"
-
-  offset_w: "6"
-  offset_h: "0"
   
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
   clock_background_image: "tron" # (options are: clock, hacker, ha-girl, mission, starrysky, waves, tron)
