@@ -50,7 +50,7 @@ select:
                                "${screenwidth}x${screenheight}/";
             return base + std::string(x) + ".png";
           update: true
-      - script.execute: draw_display
+      - component.update: main_display
 
 script:
   - id: show_clock_page
@@ -92,7 +92,6 @@ script:
           for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
           int next = (idx + 1) % N;
           id(clock_style).publish_state(opts[next]);
-      - script.execute: show_clock_page
 
   - id: swipe_right_action  # previous clock style
     then:
@@ -106,7 +105,6 @@ script:
           for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
           int prev = (idx - 1 + N) % N;
           id(clock_style).publish_state(opts[prev]);
-      - script.execute: show_clock_page
 
   - id: swipe_up_action     # next wallpaper (cycle)
     then:
@@ -118,9 +116,8 @@ script:
           for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
           int next = (idx + 1) % N;
           id(clock_wallpaper_image).publish_state(opts[next]);
-      - script.execute: draw_display
 
   - id: swipe_down_action   # toggle battery widget
     then:
       - switch.toggle: show_battery_status
-      - script.execute: draw_display
+      - component.update: main_display
