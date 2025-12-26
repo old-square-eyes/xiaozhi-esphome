@@ -1,5 +1,5 @@
 
-# Guition 7.0 p4 (JC1060P470C_I_W_Y) hardware pack v1.00
+# Guition 7.0 p4 (JC1060P470C_I_W_Y) hardware pack v1.01
 
 # --- CLOCKS PACKAGE -----------------------------------------------------------
 packages:
@@ -24,20 +24,14 @@ audio_dac:
     id: es8311_dac
     i2c_id: bus_a
 
-audio_adc:
-  - platform: es7210
-    id: es7210_adc
-    i2c_id: bus_a
-    address: 0x36
-
 # --- TOUCHSCREEN --------------------------------------------------------------
 touchscreen:
   - platform: gt911
     id: my_touchscreen
     display: main_display
     i2c_id: bus_a
-#    interrupt_pin: GPIO21
-#    reset_pin: GPIO22
+    interrupt_pin: GPIO21
+    reset_pin: GPIO22
 
     on_touch:
       then:
@@ -244,20 +238,26 @@ media_player:
       - id: ready_sound
         file: ${startup_sound_file}
 
-# --- BATTERY (FAKE SOURCE TO KEEP WIDGET HAPPY) -------------------------------
+# --- BATTERY -----------------------------------------------------------------
 sensor:
-  - platform: template
-    id: battery_voltage
+  - platform: adc
+    pin: GPIO53
     name: "Battery Voltage"
-    lambda: |-
-      return 4.20;   // fake constant voltage
+    id: battery_voltage
+    attenuation: 12db
+    accuracy_decimals: 2
+    update_interval: 10s
     unit_of_measurement: "V"
-    device_class: voltage
-    state_class: measurement
-    update_interval: 24h
+    icon: mdi:battery-medium
+    filters:
+      - multiply: 2.0
+      - median:
+          window_size: 7
+          send_every: 7
+          send_first_at: 1
+      - throttle: 1min
     on_value:
       then:
-        # Feed the shared battery_percentage template sensor
         - sensor.template.publish:
             id: battery_percentage
             state: !lambda 'return x;'
