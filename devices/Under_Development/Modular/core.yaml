@@ -1,4 +1,4 @@
-# Core v1.11
+# Core v1.12
 
 substitutions:
   allowed_characters: >-
@@ -89,6 +89,14 @@ online_image:
 time:
   - platform: homeassistant
     id: homeassistant_time
+    on_time:
+      - seconds: 0
+        then:
+          - if:
+              condition:
+                lambda: return id(show_clock) && !id(clock_show_seconds).state;
+              then:
+                - component.update: main_display
 
 api:
   on_client_connected:
@@ -318,7 +326,7 @@ binary_sensor:
           - ON for at least 1s
         then:
           - switch.toggle: show_battery_status
-          - script.execute: draw_display
+          - component.update: main_display
 
   - platform: template
     name: "Timer Ringing Active"
@@ -588,13 +596,13 @@ voice_assistant:
     - script.execute: draw_display
 
   on_timer_cancelled:
-    - script.execute: draw_display
+    - component.update: main_display
 
   on_timer_updated:
-    - script.execute: draw_display
+    - component.update: main_display
 
   on_timer_tick:
-    - script.execute: draw_display
+    - component.update: main_display
 
   on_timer_finished:
     - switch.turn_on: timer_ringing
@@ -632,7 +640,7 @@ interval:
           }
       - if:
           condition:
-            lambda: return id(show_clock);
+            lambda: return id(show_clock) && id(clock_show_seconds).state;
           then:
             - component.update: main_display
 
@@ -1191,9 +1199,9 @@ switch:
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
     on_turn_on:
-      - script.execute: draw_display
+      - component.update: main_display
     on_turn_off:
-      - script.execute: draw_display
+      - component.update: main_display
 
   - platform: template
     id: clock_enabled
@@ -1216,6 +1224,10 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - component.update: main_display
+    on_turn_off:
+      - component.update: main_display
 
   - platform: template
     id: clock_show_time
@@ -1224,6 +1236,10 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - component.update: main_display
+    on_turn_off:
+      - component.update: main_display
 
   - platform: template
     id: clock_show_seconds
@@ -1232,6 +1248,10 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - component.update: main_display
+    on_turn_off:
+      - component.update: main_display
 
   - platform: template
     id: clock_show_date
@@ -1240,6 +1260,10 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - component.update: main_display
+    on_turn_off:
+      - component.update: main_display
 
   - platform: template
     id: clock_show_dots
@@ -1248,6 +1272,10 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - component.update: main_display
+    on_turn_off:
+      - component.update: main_display
 
   - platform: template
     id: clock_show_wallpaper
