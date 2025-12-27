@@ -1,3 +1,4 @@
+
 substitutions:
   name: guition443
   friendly_name: Guition-P4-4.3
@@ -28,7 +29,7 @@ substitutions:
   sensor1_label: "Tech Room"
 
   sensor2_entity: "binary_sensor.esp32s3_1_presence"
-  light2_entity: "group.kitchen_lights"
+  light2_entity: "light.kitchen_lights"
   sensor2_label: "Kitchen"
 
   sensor3_entity: "binary_sensor.esphome_web_1911bf_presence"
@@ -54,14 +55,13 @@ substitutions:
 esp32:
   board: esp32-p4-evboard
   flash_size: 16Mb
-  cpu_frequency: 400MHz
+  cpu_frequency: 360MHz
   framework:
     type: esp-idf
     advanced:
       enable_idf_experimental_features: yes
     sdkconfig_options:
-      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: y
-      CONFIG_SPIRAM_RODATA: y
+      CONFIG_SPIRAM_XIP_FROM_PSRAM: y
 
 psram:
   speed: 200MHz
