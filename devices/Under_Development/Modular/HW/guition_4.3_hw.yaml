@@ -1,5 +1,5 @@
 
-# Guition 4.3 p4 eth (JC4880P443C-I-W-Y) hardware pack v1.01
+# Guition 4.3 p4 (JC4880P443C-I-W-Y) hardware pack v1.02
 
 # --- SUNSTITUTIONS NEEDED -----------------------------------------------------
 substitutions:
@@ -18,11 +18,6 @@ substitutions:
 # --- CLOCKS PACKAGE -----------------------------------------------------------
 packages:
   clocks: !include ../clocks-standard.yaml
-
-external_components:
-  - source: github://pr#12068
-    components: [mipi_dsi]
-    refresh: 1h
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
@@ -55,8 +50,11 @@ touchscreen:
   - platform: gt911
     id: my_touchscreen
     display: main_display
-#    i2c_id: bus_a
-#    address: 0x14
+    transform:
+      swap_xy: false
+      mirror_x: true
+      mirror_y: true
+
     on_touch:
       then:
         - lambda: |-
