@@ -3,7 +3,7 @@ substitutions:
   name: guition443
   friendly_name: Guition-P4-4.3
 
-## Modular version Main P4
+## Modular Horizontal version Main P4
 
 ## SETTINGS ######################################################################################################################################
 
@@ -16,7 +16,7 @@ substitutions:
 
   startup_sound: "Home_Connected" # options are: available, Home_Connected, Home_Connected_Male, Computer_Ready
   clock_background_image: "chip" # options are: clock, hacker, mission, starrysky, waves, tron, chip
-  imagemodel: "Luffy" # options are: AlbertQuackmore, Alfred, Alita, Buzz, Cybergirl, Eve, Qwen, HA-character, Luffy, Dory, Prime, Salem
+  imagemodel: "Luffy" # options are: Gwen, Luffy
 
 # USE ONLINE OR LOCAL MODEL AND WALLPAPER IMAGES, IMAGES SHOULD BE PLACED IN: homeassistant/www/images/
   imagepath: "https://github.com/RealDeco/xiaozhi-esphome/raw/main/images"
@@ -53,7 +53,7 @@ substitutions:
   font_family: Figtree
 
 esp32:
-  board: esp32-p4-evboard
+  variant: ESP32P4
   flash_size: 16Mb
   cpu_frequency: 360MHz
   framework:
@@ -122,4 +122,7 @@ micro_wake_word:
 #    - model: https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/hey_peppa_pig.json
 #    - model: https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/okay_computer.json
 
+#Enabled for debug log ############################################################################################################################
+#logger:
+#  level: DEBUG
 ##################################################################################################################################################
