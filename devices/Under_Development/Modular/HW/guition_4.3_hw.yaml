@@ -8,12 +8,6 @@ substitutions:
   listening_illustration_file: ${imagepath}/${imagemodel}/${screenwidth}x${screenheight}/listening.png
   thinking_illustration_file: ${imagepath}/${imagemodel}/${screenwidth}x${screenheight}/thinking.png
   replying_illustration_file: ${imagepath}/${imagemodel}/${screenwidth}x${screenheight}/replying.png
-  error_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/error.png
-  timer_finished_illustration_file: ${imagepath}/${imagemodel}/${screenwidth}x${screenheight}/timer_finished.png
-  mute_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/mute.png
-  playing_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/playing.png
-  clock_background_file: ${imagepath}/Other/${screenwidth}x${screenheight}/${clock_background_image}.png
-  startup_sound_file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
 # --- CLOCKS PACKAGE -----------------------------------------------------------
 packages:
