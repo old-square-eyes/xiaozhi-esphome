@@ -11,3 +11,8 @@ Guition P4 7.0" (JC1060P470C-I-W-Y)
 
 Guition P4 4.3" and 7.0"
 ![20260101_112649](https://github.com/user-attachments/assets/f6e30a6a-aa5a-49f1-9cd1-fe4f38d402d7)
+
+Little Purple Board:
+
+![20260101_210309](https://github.com/user-attachments/assets/3afb67b3-daec-42ab-acaf-eec1e2b43cdb)
+![20260101_210359](https://github.com/user-attachments/assets/5a5d8b51-950a-4a9d-ad33-d8133be62137)
