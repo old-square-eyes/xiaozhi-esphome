@@ -16,3 +16,7 @@ Little Purple Board:
 
 ![20260101_210309](https://github.com/user-attachments/assets/3afb67b3-daec-42ab-acaf-eec1e2b43cdb)
 ![20260101_210359](https://github.com/user-attachments/assets/5a5d8b51-950a-4a9d-ad33-d8133be62137)
+
+A.O. Mini speaker:
+
+![20260106_175334](https://github.com/user-attachments/assets/30aa79f9-f40d-4af1-abc5-0709c1cde740)
