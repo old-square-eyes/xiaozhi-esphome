@@ -9,7 +9,7 @@ substitutions:
   imagewidth:  "240"
   imageheight: "240"
 
-  screenwidth:  "240"
+  screenwidth:  "320"
   screenheight: "240"
   rotate_display: "0"
   
