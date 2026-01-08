@@ -68,7 +68,10 @@ Video going through the esphome install of device was removed by youtube and my 
 * Waveshare ESP32-P4-86-Panel-ETH-2RO **NEW**
 * Waveshare Audio Board **NEW**
 * Guition 4.3C **NEW**
+* Guition 7.0 **NEW**
 * Freenove 2.8 **NEW**
+* Waveshare amoled 1.75 **NEW**
+* Xingzhi Cube 1.83 2-Mic **NEW**
 
 (New devices appear in the [modular version](devices/Under_Development/Modular)
  first during testing.)
