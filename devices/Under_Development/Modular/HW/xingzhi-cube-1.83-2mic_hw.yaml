@@ -293,7 +293,7 @@ display:
     dimensions:
       height: ${imageheight}
       width: ${imagewidth}
-      offset_width: ${imageoffset}
+      offset_width: 36
       offset_height: 0
 
     transform:
