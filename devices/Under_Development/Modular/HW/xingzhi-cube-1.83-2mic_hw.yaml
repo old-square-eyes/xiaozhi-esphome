@@ -276,7 +276,7 @@ sensor:
 # --- DISPLAY DRIVER (SPI GC9A01A, 240x240 round) ------------------------------
 display:
   - platform: mipi_spi
-    id: s3_box_lcd
+    id: main_display
     spi_id: spi_bus
     model: CUSTOM
 
