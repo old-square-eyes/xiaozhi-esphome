@@ -284,6 +284,8 @@ media_player:
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/wake_word_triggered.flac
       - id: ready_sound
         file: ${startup_sound_file}
+    volume_min: 0.5
+    volume_max: 0.7 # don't go higher than 0.8
     on_announcement:
       # Stop the wake word (mWW or VA) if the mic is capturing
       - if:
