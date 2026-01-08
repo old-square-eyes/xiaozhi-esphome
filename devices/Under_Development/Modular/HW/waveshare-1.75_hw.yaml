@@ -85,6 +85,8 @@ media_player:
       sample_rate: 48000
       num_channels: 1
     buffer_size: 250000
+    volume_min: 0.5
+    volume_max: 0.7 # don't go higher than 0.8
     files:
       - id: timer_finished_sound
         file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/timer_finished.flac
