@@ -5,7 +5,7 @@
 **Use your Xiaozhi AI devices in ESPHome as voice assistant satellites for Home Assistant.**
 
 <img width="400" src="https://github.com/user-attachments/assets/c26e9291-bd02-4570-8e08-0bee412e07c3" />
-<img width="400" src="https://github.com/user-attachments/assets/bf6d0df3-dc80-4f4b-80d7-0bc27249d4a3" />
+<img width="400" src="https://github.com/user-attachments/assets/0c159139-1c2e-45fe-99f2-6b4a258c1dbe" />
 
 
 <img width="300" height="972" alt="Screenshot 2025-09-14 at 13 38 39" src="https://github.com/user-attachments/assets/30aff335-13c8-4fc3-9cef-22a0d819d069" />
@@ -15,7 +15,7 @@
 <div align="center">
  
 <img width="300" height="500" alt="4inch500x500" src="https://github.com/user-attachments/assets/fe149570-bc99-4d8c-b8fc-365cf61f82e7" />
-<img width="300" height="500" alt="4inch500x500" src="https://github.com/user-attachments/assets/bc1a5d50-cb79-46c4-a554-60a62a138d1c" />
+<img width="300" height="500" alt="4inch500x500" src="https://github.com/user-attachments/assets/5cf1fd2d-3094-418d-a7cf-882b723aad3d" />
 
 <img width="600" src="https://github.com/user-attachments/assets/b66981ab-cdde-4507-821a-26e8d3c57ad6" />
 
