@@ -136,6 +136,8 @@ media_player:
       num_channels: 1      
       sample_rate: 48000
     buffer_size: 250000
+    volume_min: 0.5
+    volume_max: 0.7 # don't go higher than 0.8
 
     on_announcement:
       - if:
