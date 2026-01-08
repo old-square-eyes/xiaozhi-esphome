@@ -60,6 +60,13 @@ i2s_audio:
     i2s_mclk_pin: 5
 
 # --- AUDIO DEVICES ------------------------------------------------------------
+switch:
+  - platform: gpio
+    name: Speaker Enable
+    icon: "mdi:speaker"
+    entity_category: config
+    pin: GPIO4
+    restore_mode: RESTORE_DEFAULT_ON
 
 audio_adc:
   - platform: es7210
