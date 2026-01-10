@@ -110,8 +110,13 @@ Waveshare Audio Board: https://www.aliexpress.com/item/1005009819735457.html
 
 Guition P4 4.3C: https://www.aliexpress.com/item/1005009673625472.html
 
+Guition P4 7.0: https://www.aliexpress.com/item/1005010022828767.html
+
 Freenove 2.8": https://www.aliexpress.com/item/1005009876628479.html
 
+Xingzhi Cube 1.83 2-mic: https://www.aliexpress.com/item/1005010442374066.html
+
+Waveshare amoled 1.75: https://www.aliexpress.com/item/1005008989323572.html
 
 ## Accesories:
 
