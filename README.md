@@ -135,5 +135,7 @@ Curled audio cable for Guition JC3636W518 display: https://vi.aliexpress.com/ite
 
 Case for Freenove 2.8" (remember to pick correct print profile) https://makerworld.com/en/models/1382304-aura-smart-weather-forecast-display
 
+Other 3D files here: https://github.com/RealDeco/xiaozhi-esphome/tree/main/3D_Files
+
 ---EOF
 
