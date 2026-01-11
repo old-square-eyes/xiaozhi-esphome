@@ -20,3 +20,11 @@ Little Purple Board:
 A.O. Mini speaker:
 
 ![20260106_175334](https://github.com/user-attachments/assets/30aa79f9-f40d-4af1-abc5-0709c1cde740)
+
+Waveshare amoled 1.75" + 3" speaker:
+
+<img width="1536" height="1024" alt="1df1ad90-b687-48d1-a96e-bf85aa88deb7" src="https://github.com/user-attachments/assets/5f7e77ff-dd54-4d96-91ee-bd7239fdbd83" />
+
+Guition 4.3" + 3" speaker stand:
+
+<img width="1024" height="1536" alt="5365a814-afbf-4317-97f9-2e8e7f9887b7" src="https://github.com/user-attachments/assets/6dad4c45-f7dd-4c79-bff2-3ffadab2d9e3" />
