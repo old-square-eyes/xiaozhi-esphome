@@ -5,14 +5,13 @@ substitutions:
   imagemodel: "HA-character" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,Eyes2,GLaDOS,Girl1,Guy1,Guy2,Gwen,HA-character,Harley,Jarvis,Luffy,Mario,Max,Prime,Robochibi,Robocop,Robot,Robotgirl,Shaun)
   startup_sound: "Home_Connected" # (options are: available,Home_Connected,Computer_Ready)
 
-  imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
-  imageheight: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
-  displaymodel: "ST7789V" # GC9A01A (Ball v2 & Puck) or ST7789V (Muma)
-  invertcolors: "true" # GC9A01A/ST7789V (Ball v2 & Muma & Puck) "true"
+  imagewidth: "240"
+  imageheight: "240"
+  displaymodel: "ST7789V"
+  invertcolors: "true"
 
 ##################################################################################################################################################
 
-  # Hardware v2 pin mappings
   sda_pin_bus_a: "2"         # I2C Bus A SDA
   scl_pin_bus_a: "1"         # I2C BUS A SCL
 
@@ -23,8 +22,6 @@ substitutions:
   i2s_dout_pin: "5"          # I2S Data Out (Speaker)
 
   speaker_enable_pin: "9"   # Speaker Enable
-#  touch_input_pin: "12"      # Touch interrupt
-#  touch_reset_pin: "6"       # Touch Reset
 
   backlight_output_pin: "13" # Display Backlight
   lcd_cs_pin: "21"            # Display CS (Chip Select)
@@ -535,46 +532,46 @@ script:
                         - lambda: |
                             switch(id(voice_assistant_phase)) {
                               case ${voice_assist_listening_phase_id}:
-                                id(s3_box_lcd).show_page(listening_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(listening_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_thinking_phase_id}:
-                                id(s3_box_lcd).show_page(thinking_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(thinking_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_replying_phase_id}:
-                                id(s3_box_lcd).show_page(replying_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(replying_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_error_phase_id}:
-                                id(s3_box_lcd).show_page(error_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(error_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_muted_phase_id}:
-                                id(s3_box_lcd).show_page(muted_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(muted_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_not_ready_phase_id}:
-                                id(s3_box_lcd).show_page(no_ha_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(no_ha_page);
+                                id(main_display).update();
                                 break;
                               case ${voice_assist_timer_finished_phase_id}:
-                                id(s3_box_lcd).show_page(timer_finished_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(timer_finished_page);
+                                id(main_display).update();
                                 break;
                               default:
-                                id(s3_box_lcd).show_page(idle_page);
-                                id(s3_box_lcd).update();
+                                id(main_display).show_page(idle_page);
+                                id(main_display).update();
                             }
                       else:
                         - display.page.show: no_ha_page
-                        - component.update: s3_box_lcd
+                        - component.update: main_display
                 else:
                   - display.page.show: no_wifi_page
-                  - component.update: s3_box_lcd
+                  - component.update: main_display
           else:
             - display.page.show: initializing_page
-            - component.update: s3_box_lcd
+            - component.update: main_display
 
   - id: fetch_first_active_timer
     then:
@@ -630,15 +627,15 @@ script:
             id(fetch_first_active_timer).execute();
             int active_pixels = round( 320 * id(global_first_active_timer).seconds_left / max(id(global_first_active_timer).total_seconds , static_cast<uint32_t>(1)) );
             if (active_pixels > 0){
-              id(s3_box_lcd).filled_rectangle(0 , 225 , 240 , 15 , Color::WHITE );
-              id(s3_box_lcd).filled_rectangle(0 , 226 , active_pixels , 13 , id(active_timer_color) );
+              id(main_display).filled_rectangle(0 , 225 , 240 , 15 , Color::WHITE );
+              id(main_display).filled_rectangle(0 , 226 , active_pixels , 13 , id(active_timer_color) );
             }
           } else if (id(global_is_timer)){
             id(fetch_first_timer).execute();
             int active_pixels = round( 320 * id(global_first_timer).seconds_left / max(id(global_first_timer).total_seconds , static_cast<uint32_t>(1)));
             if (active_pixels > 0){
-              id(s3_box_lcd).filled_rectangle(0 , 225 , 240 , 15 , Color::WHITE );
-              id(s3_box_lcd).filled_rectangle(0 , 226 , active_pixels , 13 , id(paused_timer_color) );
+              id(main_display).filled_rectangle(0 , 225 , 240 , 15 , Color::WHITE );
+              id(main_display).filled_rectangle(0 , 226 , active_pixels , 13 , id(paused_timer_color) );
             }
           }
   - id: draw_active_timer_widget
@@ -646,8 +643,8 @@ script:
       - lambda: |
           id(check_if_timers_active).execute();
           if (id(global_is_timer_active)){
-            id(s3_box_lcd).filled_rectangle(80 , 40 , 160 , 50 , Color::WHITE );
-            id(s3_box_lcd).rectangle(80 , 40 , 160 , 50 , Color::BLACK );
+            id(main_display).filled_rectangle(80 , 40 , 160 , 50 , Color::WHITE );
+            id(main_display).rectangle(80 , 40 , 160 , 50 , Color::BLACK );
 
             id(fetch_first_active_timer).execute();
             int hours_left = floor(id(global_first_active_timer).seconds_left / 3600);
@@ -663,7 +660,7 @@ script:
             } else {
               display_string = display_minute + ":" + display_seconds;
             }
-            id(s3_box_lcd).printf(120, 47, id(font_timer), Color::BLACK, "%s", display_string.c_str());
+            id(main_display).printf(120, 47, id(font_timer), Color::BLACK, "%s", display_string.c_str());
           }
   - id: start_wake_word
     then:
@@ -1026,20 +1023,17 @@ spi:
     mosi_pin: GPIO${spi_mosi_pin}
 
 display:
-  - platform: ili9xxx
-    id: s3_box_lcd
+  - platform: mipi_spi
+    id: main_display
     model: ${displaymodel}
     invert_colors: ${invertcolors}
-    data_rate: 40MHz
     cs_pin: GPIO${lcd_cs_pin}
     dc_pin: GPIO${lcd_dc_pin}
-    reset_pin:
-      number: GPIO${lcd_reset_pin}
-#      inverted: false
+    reset_pin: GPIO${lcd_reset_pin}
     update_interval: never
     dimensions:
-        height: ${imageheight}
-        width: ${imagewidth}
+      height: ${imageheight}
+      width: ${imagewidth}
     pages:
       - id: idle_page
         lambda: |-
