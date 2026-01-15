@@ -9,7 +9,7 @@ substitutions:
   imageheight: "240"
   displaymodel: "ST7789V"
   invertcolors: "false"
-  rotate_display: "90"
+  rotate_display: "180"
 
 ##################################################################################################################################################
 
