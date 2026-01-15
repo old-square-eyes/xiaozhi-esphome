@@ -8,7 +8,8 @@ substitutions:
   imagewidth: "240"
   imageheight: "240"
   displaymodel: "ST7789V"
-  invertcolors: "true"
+  invertcolors: "false"
+  rotate_display: "90"
 
 ##################################################################################################################################################
 
@@ -1026,6 +1027,7 @@ display:
   - platform: mipi_spi
     id: main_display
     model: ${displaymodel}
+    rotation: ${rotate_display}
     invert_colors: ${invertcolors}
     cs_pin: GPIO${lcd_cs_pin}
     dc_pin: GPIO${lcd_dc_pin}
