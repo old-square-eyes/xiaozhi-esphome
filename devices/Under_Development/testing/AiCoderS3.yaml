@@ -2,11 +2,12 @@ substitutions:
   name: esphome-web-e4f6b4
   friendly_name: AiCoder S3
 
-  imagemodel: "HA-character" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,Eyes2,GLaDOS,Girl1,Guy1,Guy2,Gwen,HA-character,Harley,Jarvis,Luffy,Mario,Max,Prime,Robochibi,Robocop,Robot,Robotgirl,Shaun)
+  imagemodel: "Gwen" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,Eyes2,GLaDOS,Girl1,Guy1,Guy2,Gwen,HA-character,Harley,Jarvis,Luffy,Mario,Max,Prime,Robochibi,Robocop,Robot,Robotgirl,Shaun)
+  # Notice: only "Gwen" in 240x296, all models in 240x240
   startup_sound: "Home_Connected" # (options are: available,Home_Connected,Computer_Ready)
 
   imagewidth: "240"
-  imageheight: "240"
+  imageheight: "296"
   displaymodel: "ST7789V"
   invertcolors: "false"
   rotate_display: "180"
