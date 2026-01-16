@@ -1030,6 +1030,10 @@ display:
     model: ${displaymodel}
     rotation: ${rotate_display}
     invert_colors: ${invertcolors}
+    transform:
+      mirror_x: true
+      mirror_y: false
+      swap_xy: false
     cs_pin: GPIO${lcd_cs_pin}
     dc_pin: GPIO${lcd_dc_pin}
     reset_pin: GPIO${lcd_reset_pin}
