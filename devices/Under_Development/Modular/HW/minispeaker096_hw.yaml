@@ -181,4 +181,5 @@ display:
     update_interval: never
     contrast: 60%
     auto_clear_enabled: true
+    rotation: ${rotate_display}
     pages: !include ../display_pages.yaml
