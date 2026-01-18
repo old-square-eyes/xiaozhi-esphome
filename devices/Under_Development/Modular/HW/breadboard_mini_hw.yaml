@@ -176,7 +176,7 @@ sensor:
 display:
   - platform: ssd1306_i2c
     id: main_display
-    model: "SH1106 128x64"
+    model: "SSD1306 128x64"
     address: 0x3C
     update_interval: never
     contrast: 60%
