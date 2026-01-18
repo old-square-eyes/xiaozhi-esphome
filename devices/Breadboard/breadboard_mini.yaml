@@ -994,7 +994,7 @@ i2c:
 display:
   - platform: ssd1306_i2c
     id: s3_box_lcd
-    model: "SH1106 128x64"
+    model: "SSD1306 128x64"
     address: 0x3C
     update_interval: 5s
     contrast: 60%
