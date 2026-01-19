@@ -155,7 +155,7 @@ output:
     id: backlight_output
     pin: GPIO23
     frequency: 100Hz
-    inverted: true
+    inverted: false
     min_power: 0.0
     max_power: 0.8
 
