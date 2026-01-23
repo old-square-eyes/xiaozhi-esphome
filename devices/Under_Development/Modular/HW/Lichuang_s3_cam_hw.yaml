@@ -327,6 +327,7 @@ display:
   - platform: mipi_spi
     id: main_display
     model: ST7789V
+    data_rate: 80MHz
     dc_pin: GPIO39
     invert_colors: true
     update_interval: never
