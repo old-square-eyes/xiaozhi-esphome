@@ -1,53 +1,59 @@
+
 # Ball v2 hardware v1.10
 
 # --- CLOCKS PACKAGE -----------------------------------------------------------
 packages:
   clocks: !include ../clocks-standard.yaml
 
+# --- SENDSPIN -----------------------------------------------------------------
 external_components:
-  - source:
-      # https://github.com/esphome/esphome/pull/12253
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: 7f34908569650e5a8b8c83e6bf89fea561218880
-    components: [mixer]
-  - source:
-      # https://github.com/esphome/esphome/pull/12254
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: 6006b896a691ad38d8045ac67564c168973d1a1d
-    components: [resampler]
-  - source:
-      # https://github.com/esphome/esphome/pull/12256
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: 9148832ea4e54907bad71a24d4ced1ce6c862433
-    components: [audio]
-  - source:
-      # https://github.com/esphome/esphome/pull/12258
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: bff22983a390352360796f8e1363127e0cd1f898
-    components: [media_player]
-  - source:
-      # https://github.com/esphome/esphome/pull/12284
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: a6c0a861a014e64c67d46115eba8e5370777b80a
-    components: [mdns, sendspin]
-  - source:
-      # https://github.com/esphome/esphome/pull/12429
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: 928204066ce0082404573ea1c6a0b58aeebbd7c6
+  - source: github://pr#12284
+    components: [generic_image, mdns, sendspin]
     refresh: 0s
-    components: [file, http_request, media_source, speaker_source]
+  - source: github://pr#12253
+    components: [ mixer ]
+  - source: github://pr#12254
+    components: [ resampler ]
+  - source: github://pr#12256
+    components: [ audio ]
+  - source: github://pr#12258
+    components: [ media_player ]
+  - source: github://pr#10212
+    components: [runtime_image, online_image]
+    refresh: 0s
+  - source: github://pr#12429
+    components: [file, media_source, http_request, speaker_source]
+    refresh: 0s
+
   - source:
       type: git
       url: https://github.com/kahrendt/esphome
       ref: wifi-power-save-wake-loop
     refresh: 0s
     components: [wifi]
+
+generic_image:
+  - platform: sendspin
+    id: sendspin_album_art
+    format: jpg
+    type: RGB565
+    resize: 180x180
+    image_source: ALBUM
+    on_image_decoded:
+      - component.update: main_display
+
+text_sensor:
+  - platform: sendspin
+    id: sendspin_title
+    type: title
+    on_value:
+      - component.update: main_display
+
+  - platform: sendspin
+    id: sendspin_artist
+    type: artist
+    on_value:
+      - component.update: main_display
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
 i2c:
@@ -427,4 +433,4 @@ display:
     dc_pin: GPIO47
     reset_pin: GPIO38
     update_interval: never
-    pages: !include ../display_pages.yaml
+    pages: !include ../display_pages-sendspin.yaml
