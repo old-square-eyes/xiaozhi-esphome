@@ -1,4 +1,4 @@
-# Taichi Pi v1 hardware v1.10
+# Taichi Pi v1 hardware v1.12
 
 # --- CLOCKS PACKAGE -----------------------------------------------------------
 packages:
@@ -31,6 +31,12 @@ external_components:
     refresh: 0s
     components: [wifi]
 
+globals:
+  - id: sendspin_album_art_valid
+    type: bool
+    restore_value: no
+    initial_value: "false"
+
 generic_image:
   - platform: sendspin
     id: sendspin_album_art
@@ -39,6 +45,12 @@ generic_image:
     resize: 300x300
     image_source: ALBUM
     on_image_decoded:
+      - lambda: |-
+          id(sendspin_album_art_valid) = true;
+      - component.update: main_display
+    on_image_error:
+      - lambda: |-
+          id(sendspin_album_art_valid) = false;
       - component.update: main_display
 
 text_sensor:
@@ -46,12 +58,16 @@ text_sensor:
     id: sendspin_title
     type: title
     on_value:
+      - lambda: |-
+          id(sendspin_album_art_valid) = false;
       - component.update: main_display
 
   - platform: sendspin
     id: sendspin_artist
     type: artist
     on_value:
+      - lambda: |-
+          id(sendspin_album_art_valid) = false;
       - component.update: main_display
 
 # --- BUSES / PERIPHERALS ------------------------------------------------------
