@@ -45,6 +45,23 @@ packages:
 ```
 Changes:
 ---
+
+### Modular v1.12
+
+* **Changes**
+
+  * Integrated the new **SENDSPIN** protocol for a limited number of devices for those who want to test it.
+    Currently supported:
+
+    * Guitions 1.80" Taichi Pi (V1 and V2)
+    * Spotpear Ball V2
+
+  * These devices were selected due to the popularity of the *Ball* and the usability of the Guitions boards (stereo jack output).
+
+  * If you have a specific device from the project that you’d like to test, feel free to ask.
+
+  * Supports multi-room syncing, album cover art, artist name, and track title display.
+
 ### Modular v1.11
 - **Changes**
   - added more option to main yaml:
