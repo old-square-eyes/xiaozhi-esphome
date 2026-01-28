@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-0bac48
   friendly_name: "Xiaozhi Ball V2"
 
-## Modular version Main *SENDSPIN VERSION*
+## Modular version Main SENDSPIN edition
 
 ## SETTINGS ######################################################################################################################################
 
@@ -31,7 +31,7 @@ substitutions:
   sensor1_label: "Tech Room"
 
   sensor2_entity: "binary_sensor.esp32s3_1_presence"
-  light2_entity: "light.kitchen_lights"
+  light2_entity: "light.kitchen_light"
   sensor2_label: "Kitchen"
 
   sensor3_entity: "binary_sensor.esphome_web_1911bf_presence"
@@ -54,7 +54,7 @@ substitutions:
   font_family: Figtree
 
 esp32:
-  board: esp32-s3-devkitc-1
+  variant: ESP32S3
   flash_size: 16MB
   cpu_frequency: 240MHz
   framework:
@@ -90,16 +90,8 @@ packages:
 #  core: !include localtest/core-sendspin.yaml
 #  hw:   !include localtest/HW/ball_v2-sendspin_hw.yaml
 
-logger:
-  level: DEBUG
-button:
-  - platform: template
-    name: "Test Sound"
-    on_press:
-      - script.execute:
-          id: play_sound
-          priority: true
-          sound_file: "ready_sound"
+#logger:
+#  level: DEBUG
 
 ## ENABLE / DISABLE WAKE WORDS ## IF LOW ON MEMORY, USE LESS WAKE WORDS ##########################################################################
 
