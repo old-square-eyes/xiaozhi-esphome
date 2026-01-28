@@ -2,7 +2,7 @@ substitutions:
   name: esphome-web-e9f624
   friendly_name: Xiaozhi Taichi Pi v1
 
-## Modular version Main v1.08
+## Modular version Main SENDSPIN edition
 
 ## SETTINGS ######################################################################################################################################
 
@@ -57,7 +57,7 @@ substitutions:
   font_family: Figtree
 
 esp32:
-  board: esp32-s3-devkitc-1
+  variant: ESP32S3
   flash_size: 16MB
   cpu_frequency: 240MHz
   framework:
@@ -93,17 +93,8 @@ packages:
 #  core: !include localtest/core-sendspin.yaml
 #  hw:   !include localtest/HW/guition_180v1-sendspin_hw.yaml
 
-logger:
-  level: debug
-
-button:
-  - platform: template
-    name: "Test Sound"
-    on_press:
-      - script.execute:
-          id: play_sound
-          priority: true
-          sound_file: "ready_sound"
+#logger:
+#  level: debug
 
 ## ENABLE / DISABLE WAKE WORDS ## IF LOW ON MEMORY, USE LESS WAKE WORDS ##########################################################################
 
