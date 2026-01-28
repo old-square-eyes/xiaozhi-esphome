@@ -1,4 +1,4 @@
-# display_pages v1.12 SENDSPIN EDITION
+# display_pages SENDSPIN edition
 
       - id: idle_page
         lambda: |-
@@ -132,6 +132,7 @@
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_muted), ImageAlign::CENTER);
           id(draw_timer_timeline).execute();
           id(draw_active_timer_widget).execute();
+
       - id: now_playing_page
         lambda: |-
           it.fill(Color::BLACK);
@@ -141,7 +142,6 @@
           const int cx = W / 2;
           const int cy = H / 2;
 
-          // Text
           std::string artist = id(sendspin_artist).has_state() ? id(sendspin_artist).state : "";
           std::string title  = id(sendspin_title).has_state()  ? id(sendspin_title).state  : "";
 
@@ -151,52 +151,49 @@
             return s.substr(0, max_chars - 3) + "...";
           };
 
-          // Rough char limits by width (works well enough across many sizes)
           artist = trunc(artist, (size_t) std::max(14, W / 14));
           title  = trunc(title,  (size_t) std::max(16, W / 12));
 
           const bool has_text  = (!artist.empty() || !title.empty());
-          const bool has_image = id(sendspin_album_art).is_ready();
+          const bool has_image = id(sendspin_album_art_valid);
 
-          // Always keep image centered if available
+          // ─────────────────────────────
+          // IMAGE (album art OR fallback)
+          // ─────────────────────────────
           if (has_image) {
             it.image(cx, cy, id(sendspin_album_art), ImageAlign::CENTER);
-
-            // Subtitle band near bottom of the image (black band with white text)
-            // Band height scales with screen size
-            const int band_h = std::max(48, H / 5);     // ~48 on 240, ~72 on 360, ~96 on 480
-            const int band_y = H - band_h;
-
-            it.filled_rectangle(0, band_y, W, band_h, Color::BLACK);
-
-            // Two centered lines inside the band
-            int y = band_y + std::max(6, band_h / 10);
-
-            if (!artist.empty()) {
-              it.printf(cx, y, id(font_big_date), Color::WHITE, TextAlign::TOP_CENTER, "%s", artist.c_str());
-              y += std::max(18, band_h / 2 - 4);
-            }
-            if (!title.empty()) {
-              it.printf(cx, y, id(font_request_response), Color::WHITE, TextAlign::TOP_CENTER, "%s", title.c_str());
-            }
           } else {
-            // No image: center the text block on screen
-            if (has_text) {
-              const int gap = std::max(4, std::min(W, H) / 80);
+            it.image(cx, cy, id(casita_playing), ImageAlign::CENTER);
+          }
 
-              // Approximate line heights (adjust if your fonts differ a lot)
-              const int artist_h = std::max(18, H / 18);
-              const int title_h  = std::max(16, H / 20);
+          // ─────────────────────────────
+          // TEXT
+          // ─────────────────────────────
+          if (has_text) {
+            if (has_image) {
+              // Subtitle band when image is present
+              const int band_h = std::max(48, H / 5);
+              const int band_y = H - band_h;
 
-              int block_h = 0;
-              if (!artist.empty()) block_h += artist_h;
-              if (!title.empty())  block_h += (block_h ? gap : 0) + title_h;
+              it.filled_rectangle(0, band_y, W, band_h, Color::BLACK);
 
-              int y = cy - (block_h / 2);
+              int y = band_y + std::max(6, band_h / 10);
 
               if (!artist.empty()) {
                 it.printf(cx, y, id(font_big_date), Color::WHITE, TextAlign::TOP_CENTER, "%s", artist.c_str());
-                y += artist_h + gap;
+                y += std::max(18, band_h / 2 - 4);
+              }
+              if (!title.empty()) {
+                it.printf(cx, y, id(font_request_response), Color::WHITE, TextAlign::TOP_CENTER, "%s", title.c_str());
+              }
+            } else {
+              // No album art → center text vertically (icon already centered)
+              const int gap = std::max(4, std::min(W, H) / 80);
+              int y = cy + std::max(20, H / 8);
+
+              if (!artist.empty()) {
+                it.printf(cx, y, id(font_big_date), Color::WHITE, TextAlign::TOP_CENTER, "%s", artist.c_str());
+                y += gap + 20;
               }
               if (!title.empty()) {
                 it.printf(cx, y, id(font_request_response), Color::WHITE, TextAlign::TOP_CENTER, "%s", title.c_str());
@@ -204,9 +201,7 @@
             }
           }
 
-          // Optional: show timer progress while playing
           id(draw_timer_timeline).execute();
-
 
 
       - id: default_clock
