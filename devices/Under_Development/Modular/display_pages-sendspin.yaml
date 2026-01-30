@@ -137,11 +137,12 @@
         lambda: |-
           it.fill(Color::BLACK);
 
-          const int W = it.get_width();
-          const int H = it.get_height();
+          const int W  = it.get_width();
+          const int H  = it.get_height();
           const int cx = W / 2;
           const int cy = H / 2;
 
+          // Text
           std::string artist = id(sendspin_artist).has_state() ? id(sendspin_artist).state : "";
           std::string title  = id(sendspin_title).has_state()  ? id(sendspin_title).state  : "";
 
@@ -155,53 +156,36 @@
           title  = trunc(title,  (size_t) std::max(16, W / 12));
 
           const bool has_text  = (!artist.empty() || !title.empty());
-          const bool has_image = id(sendspin_album_art_valid);
+          const bool has_album = id(sendspin_album_art_valid);  // use your validity flag
 
-          // ─────────────────────────────
-          // IMAGE (album art OR fallback)
-          // ─────────────────────────────
-          if (has_image) {
+          // Draw centered image: album art if valid, otherwise fallback
+          if (has_album) {
             it.image(cx, cy, id(sendspin_album_art), ImageAlign::CENTER);
           } else {
             it.image(cx, cy, id(casita_playing), ImageAlign::CENTER);
           }
 
-          // ─────────────────────────────
-          // TEXT
-          // ─────────────────────────────
+          // Subtitle band at bottom (same for album art + fallback)
           if (has_text) {
-            if (has_image) {
-              // Subtitle band when image is present
-              const int band_h = std::max(48, H / 5);
-              const int band_y = H - band_h;
+            const int band_h = std::max(48, H / 5);
+            const int band_y = H - band_h;
 
-              it.filled_rectangle(0, band_y, W, band_h, Color::BLACK);
+            it.filled_rectangle(0, band_y, W, band_h, Color::BLACK);
 
-              int y = band_y + std::max(6, band_h / 10);
+            int y = band_y + std::max(6, band_h / 10);
 
-              if (!artist.empty()) {
-                it.printf(cx, y, id(font_big_date), Color::WHITE, TextAlign::TOP_CENTER, "%s", artist.c_str());
-                y += std::max(18, band_h / 2 - 4);
-              }
-              if (!title.empty()) {
-                it.printf(cx, y, id(font_request_response), Color::WHITE, TextAlign::TOP_CENTER, "%s", title.c_str());
-              }
-            } else {
-              // No album art → center text vertically (icon already centered)
-              const int gap = std::max(4, std::min(W, H) / 80);
-              int y = cy + std::max(20, H / 8);
-
-              if (!artist.empty()) {
-                it.printf(cx, y, id(font_big_date), Color::WHITE, TextAlign::TOP_CENTER, "%s", artist.c_str());
-                y += gap + 20;
-              }
-              if (!title.empty()) {
-                it.printf(cx, y, id(font_request_response), Color::WHITE, TextAlign::TOP_CENTER, "%s", title.c_str());
-              }
+            if (!artist.empty()) {
+              it.printf(cx, y, id(font_big_date), Color::WHITE, TextAlign::TOP_CENTER, "%s", artist.c_str());
+              y += std::max(18, band_h / 2 - 4);
+            }
+            if (!title.empty()) {
+              it.printf(cx, y, id(font_request_response), Color::WHITE, TextAlign::TOP_CENTER, "%s", title.c_str());
             }
           }
 
+          // Optional: show timer progress while playing
           id(draw_timer_timeline).execute();
+
 
 
       - id: default_clock
