@@ -1,4 +1,4 @@
-# Taichi Pi v1 hardware v1.12
+# Taichi Pi v1 hardware SENDSPIN edition v1.12
 
 # --- CLOCKS PACKAGE -----------------------------------------------------------
 packages:
@@ -36,6 +36,12 @@ globals:
     type: bool
     restore_value: no
     initial_value: "false"
+
+image:
+  - file: ${playing_illustration_file}
+    id: !extend casita_playing
+    resize: ${screenwidth}x${screenheight}
+    type: RGB565
 
 generic_image:
   - platform: sendspin
@@ -322,7 +328,7 @@ media_player:
             - script.execute: stop_wake_word
             - if:
                 condition:
-                  - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+                  - lambda: return id(wake_word_engine_location).current_option() == "In Home Assistant";
                 then:
                   - wait_until:
                       condition:
@@ -347,7 +353,7 @@ media_player:
             - script.execute: stop_wake_word
             - if:
                 condition:
-                  - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+                  - lambda: return id(wake_word_engine_location).current_option() == "In Home Assistant";
                 then:
                   - wait_until:
                       condition:
