@@ -31,16 +31,16 @@ select:
           id: clock_background
           url: !lambda |-
             std::string base = "${imagepath}/Other/"
-                               "${imagewidth}x${imageheight}/";
+                               "${screenwidth}x${screenheight}/";
             return base + std::string(x) + ".png";
           update: true
-      - script.execute: draw_display
+      - component.update: main_display
 
 script:
   - id: show_clock_page
     then:
       - lambda: |-
-          const std::string sel = id(clock_style).state;
+          const std::string sel = id(clock_style).current_option();
           if (sel == "Small") {
             id(main_display).show_page(small_clock);
           } else {
@@ -55,12 +55,11 @@ script:
             "Small"
           };
           const int N = sizeof(opts)/sizeof(opts[0]);
-          std::string cur = id(clock_style).state.c_str();
+          std::string cur = id(clock_style).current_option();
           int idx = 0;
           for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
           int next = (idx + 1) % N;
           id(clock_style).publish_state(opts[next]);
-      - script.execute: show_clock_page
 
   - id: swipe_right_action  # previous clock style
     then:
@@ -69,26 +68,24 @@ script:
             "Small"
           };
           const int N = sizeof(opts)/sizeof(opts[0]);
-          std::string cur = id(clock_style).state.c_str();
+          std::string cur = id(clock_style).current_option();
           int idx = 0;
           for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
           int prev = (idx - 1 + N) % N;
           id(clock_style).publish_state(opts[prev]);
-      - script.execute: show_clock_page
 
   - id: swipe_up_action     # next wallpaper (cycle)
     then:
       - lambda: |-
           static const char* const opts[] = { "clock" };
           const int N = sizeof(opts)/sizeof(opts[0]);
-          std::string cur = id(clock_wallpaper_image).state.c_str();
+          std::string cur = id(clock_wallpaper_image).current_option();
           int idx = 0;
           for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
           int next = (idx + 1) % N;
           id(clock_wallpaper_image).publish_state(opts[next]);
-      - script.execute: draw_display
 
   - id: swipe_down_action   # toggle battery widget
     then:
       - switch.toggle: show_battery_status
-      - script.execute: draw_display
+      - component.update: main_display
