@@ -53,10 +53,12 @@ Changes:
   * Integrated the new **SENDSPIN** protocol for a limited number of devices for those who want to test it.
     Currently supported:
 
-    * Guitions 1.80" Taichi Pi (V1 and V2)
+    * Guitions 1.80" Taichi Pi (V1)
+    * Guitions 1.80" Taichi Pi (V2)
     * Spotpear Ball V2
+    * Breadboard Mini aka. "little purple"
 
-  * These devices were selected due to the popularity of the *Ball* and the usability of the Guitions boards (stereo jack output).
+  * These devices were selected due to the popularity of the *Ball* and the usability of the Guitions boards (stereo jack output), and breadboard mini because it's so cheap everyone can play along.
 
   * If you have a specific device from the project that you’d like to test, feel free to ask.
 
