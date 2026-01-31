@@ -142,6 +142,9 @@
           const int cx = W / 2;
           const int cy = H / 2;
 
+          // Treat 128x64 (and smaller) as "tiny OLED" layout
+          const bool TINY = (W <= 128 && H <= 64);
+
           // Text
           std::string artist = id(sendspin_artist).has_state() ? id(sendspin_artist).state : "";
           std::string title  = id(sendspin_title).has_state()  ? id(sendspin_title).state  : "";
@@ -152,11 +155,50 @@
             return s.substr(0, max_chars - 3) + "...";
           };
 
-          artist = trunc(artist, (size_t) std::max(14, W / 14));
-          title  = trunc(title,  (size_t) std::max(16, W / 12));
+          // Conservative truncation for tiny screens (avoid wrapping/overrun)
+          if (TINY) {
+            artist = trunc(artist, (size_t) 14);
+            title  = trunc(title,  (size_t) 16);
+          } else {
+            artist = trunc(artist, (size_t) std::max(14, W / 14));
+            title  = trunc(title,  (size_t) std::max(16, W / 12));
+          }
 
           const bool has_text  = (!artist.empty() || !title.empty());
-          const bool has_album = id(sendspin_album_art_valid);  // use your validity flag
+          const bool has_album = id(sendspin_album_art_valid);  // your validity flag
+
+          if (TINY) {
+            // ------------------------------------------------------------------
+            // TINY OLED (128x64): TEXT ONLY (no album art, no fallback image)
+            // ------------------------------------------------------------------
+            if (has_text) {
+              // Vertical layout: artist on top, title below, both centered
+              // Use fonts you already have; sizes should fit 64px height.
+              int y = 6;
+
+              if (!artist.empty()) {
+                it.printf(cx, y, id(font_request_response), Color::WHITE, TextAlign::TOP_CENTER, "%s", artist.c_str());
+                y += 22;
+              }
+
+              if (!title.empty()) {
+                it.printf(cx, y, id(font_request_response), Color::WHITE, TextAlign::TOP_CENTER, "%s", title.c_str());
+              }
+            } else {
+              // If no metadata yet, show a simple placeholder
+              it.printf(cx, cy, id(font_request_response), Color::WHITE, TextAlign::CENTER, "Playing...");
+            }
+
+            // Optional: if you want the tiny timeline here too, keep it.
+            // But on 128x64 it can get cramped; enable if you like:
+            // id(draw_timer_timeline).execute();
+
+            return;
+          }
+
+          // --------------------------------------------------------------------
+          // NORMAL DISPLAYS: your existing album-art/fallback + bottom band
+          // --------------------------------------------------------------------
 
           // Draw centered image: album art if valid, otherwise fallback
           if (has_album) {
@@ -185,6 +227,7 @@
 
           // Optional: show timer progress while playing
           id(draw_timer_timeline).execute();
+
 
 
 
