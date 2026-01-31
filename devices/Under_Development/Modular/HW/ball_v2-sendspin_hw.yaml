@@ -241,6 +241,9 @@ media_player:
             - lambda: 'id(playing_internal_sound) = false;'
           else:
 #            - script.execute: reset_screensaver
+            - script.execute:
+                id: set_phase
+                phase: ${voice_assist_playing_phase_id}
             - display.page.show: now_playing_page
             - component.update: main_display
 
