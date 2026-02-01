@@ -57,6 +57,7 @@ Changes:
     * Guitions 1.80" Taichi Pi (V2)
     * Spotpear Ball V2
     * Breadboard Mini aka. "little purple"
+    * Waveshare 1.85C (V1)
 
   * These devices were selected due to the popularity of the *Ball* and the usability of the Guitions boards (stereo jack output), and breadboard mini because it's so cheap everyone can play along.
 
