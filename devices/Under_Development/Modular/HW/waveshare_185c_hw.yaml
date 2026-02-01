@@ -190,7 +190,8 @@ touchscreen:
               case 270: ndx = -dy;  ndy =  dx; break;
               default: break;
             }
-
+            ndx = -ndx;
+            ndy = -ndy;
             const int absx = std::abs(ndx);
             const int absy = std::abs(ndy);
 
