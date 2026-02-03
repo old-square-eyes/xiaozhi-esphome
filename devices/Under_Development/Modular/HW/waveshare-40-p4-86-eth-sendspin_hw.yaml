@@ -48,6 +48,11 @@ external_components:
   - source: github://pr#10212
       # https://github.com/esphome/esphome/pull/10212
     components: [runtime_image, online_image]
+  - source: github://pr#13520
+      # https://github.com/esphome/esphome/pull/13520
+    components: [esp32_hosted, wifi]
+    refresh: 0s
+
 #  - source:
 #      type: git
 #      url: https://github.com/kahrendt/esphome
@@ -319,7 +324,7 @@ media_source:
       - id: timer_finished_sound
         file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/timer_finished.flac
       - id: wake_word_triggered_sound
-        file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/wake_word_triggered.flac
+        file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/popup.flac
       - id: ready_sound
         file: ${startup_sound_file}
 
@@ -340,7 +345,7 @@ media_player:
       sample_rate: 48000
     media_pipeline:
       format: FLAC
-      num_channels: 2      
+      num_channels: 2
       sample_rate: 48000
 
     volume_increment: 0.05
