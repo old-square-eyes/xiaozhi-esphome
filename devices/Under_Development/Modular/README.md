@@ -60,6 +60,7 @@ Changes:
     * Waveshare 1.85C (V1)
     * Guition P4 4.3
     * Waveshare P4 4.0 86-ETH
+    * Waveshare 1.75 Amoled
 
   * These devices were selected due to the popularity of the *Ball* and the usability of the Guitions boards (stereo jack output), and breadboard mini because it's so cheap everyone can play along.
 
