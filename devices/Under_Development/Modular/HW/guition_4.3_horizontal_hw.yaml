@@ -3,7 +3,6 @@
 
 # --- SUNSTITUTIONS NEEDED -----------------------------------------------------
 substitutions:
-  loading_illustration_file: ${imagepath}/${imagemodel}/${screenwidth}x${screenheight}/loading.png
   idle_illustration_file: ${imagepath}/${imagemodel}/${screenwidth}x${screenheight}/idle.png
   listening_illustration_file: ${imagepath}/${imagemodel}/${screenwidth}x${screenheight}/listening.png
 
