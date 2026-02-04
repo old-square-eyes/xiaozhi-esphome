@@ -48,12 +48,10 @@ external_components:
   - source: github://pr#10212
       # https://github.com/esphome/esphome/pull/10212
     components: [runtime_image, online_image]
-  - source:
-      type: git
-      url: https://github.com/kahrendt/esphome
-      ref: wifi-power-save-wake-loop
+  - source: github://pr#13520
+      # https://github.com/esphome/esphome/pull/13520
+    components: [esp32_hosted, wifi]
     refresh: 0s
-    components: [wifi]
 
 globals:
   - id: sendspin_album_art_valid
@@ -61,12 +59,18 @@ globals:
     restore_value: no
     initial_value: "false"
 
+image:
+  - file: ${playing_illustration_file}
+    id: !extend casita_playing
+    resize: 466x466
+    type: RGB565
+
 generic_image:
   - platform: sendspin
     id: sendspin_album_art
     format: jpg
     type: RGB565
-    resize: 180x180
+    resize: 466x466
     image_source: ALBUM
     on_image_decoded:
       - lambda: |-
@@ -188,26 +192,28 @@ media_source:
       - id: timer_finished_sound
         file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/timer_finished.flac
       - id: wake_word_triggered_sound
-        file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/wake_word_triggered.flac
+        file: https://github.com/RealDeco/xiaozhi-esphome/raw/main/sounds/popup.flac
       - id: ready_sound
         file: ${startup_sound_file}
 
 media_player:
   - platform: sendspin
-    id: sendspin_group_media_player
+    id: sendspin_media
+    name: Sendspin Group Media Player
+
   - platform: speaker_source
-    name: none
+    name: Sendspin Media Player
     id: external_media_player
     announcement_speaker: announcement_resampling_input
     media_speaker: media_resampling_input
-    
+
     announcement_pipeline:
       format: FLAC
       num_channels: 1
       sample_rate: 48000
     media_pipeline:
       format: FLAC
-      num_channels: 2      
+      num_channels: 2
       sample_rate: 48000
 
     volume_increment: 0.05
@@ -232,6 +238,7 @@ media_player:
                       condition:
                         - not:
                             voice_assistant.is_running:
+
       - if:
           condition:
             lambda: 'return id(playing_internal_sound);'
