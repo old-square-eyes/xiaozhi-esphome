@@ -102,7 +102,7 @@ api:
   on_client_connected:
     - script.execute: draw_display
     - script.execute: stop_wake_word
-    - delay: 250ms
+    - delay: 5000ms
     - lambda: |-
         if (!id(boot_sound_played)) {
           id(boot_sound_played) = true;
