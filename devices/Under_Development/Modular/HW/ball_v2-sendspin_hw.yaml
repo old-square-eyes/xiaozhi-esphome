@@ -48,10 +48,6 @@ external_components:
   - source: github://pr#10212
       # https://github.com/esphome/esphome/pull/10212
     components: [runtime_image, online_image]
-  - source: github://pr#13520
-      # https://github.com/esphome/esphome/pull/13520
-    components: [esp32_hosted, wifi]
-    refresh: 0s
 
 globals:
   - id: sendspin_album_art_valid
@@ -59,18 +55,12 @@ globals:
     restore_value: no
     initial_value: "false"
 
-image:
-  - file: ${playing_illustration_file}
-    id: !extend casita_playing
-    resize: 466x466
-    type: RGB565
-
 generic_image:
   - platform: sendspin
     id: sendspin_album_art
     format: jpg
     type: RGB565
-    resize: 466x466
+    resize: 240x240
     image_source: ALBUM
     on_image_decoded:
       - lambda: |-
