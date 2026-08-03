@@ -33,8 +33,8 @@ substitutions:
   voice_assist_playing_phase_id: "13"
   voice_assist_timer_finished_phase_id: "20"
 
-  ha_domain: ""
-  ha_internal_ip: ""
+  ha_domain: !secret ha_domain
+  ha_internal_ip: !secret ha_internal_ip
 
 esphome:
   name: ${name}
