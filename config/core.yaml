@@ -35,6 +35,7 @@ substitutions:
 
   ha_domain: !secret ha_domain
   ha_internal_ip: !secret ha_internal_ip
+  ha_internal_scheme: "https"
 
 esphome:
   name: ${name}
@@ -121,9 +122,10 @@ api:
                     std::string u = url;
                     std::string domain = "${ha_domain}";
                     std::string internal_ip = "${ha_internal_ip}";
+                    std::string scheme = "${ha_internal_scheme}";
                     if (!domain.empty() && !internal_ip.empty()) {
                       std::string search = "https://" + domain + "/";
-                      std::string replace = "http://" + internal_ip + "/";
+                      std::string replace = scheme + "://" + internal_ip + "/";
                       size_t pos = u.find(search);
                       if (pos != std::string::npos) {
                         u.replace(pos, search.length(), replace);
@@ -518,6 +520,7 @@ voice_assistant:
         ESP_LOGI("tts_rewrite", "Received TTS URL: %s", url.c_str());
         std::string domain = "${ha_domain}";
         std::string internal_ip = "${ha_internal_ip}";
+        std::string scheme = "${ha_internal_scheme}";
         if (!domain.empty() && !internal_ip.empty()) {
           size_t pos = url.find(domain);
           if (pos != std::string::npos) {
@@ -525,7 +528,7 @@ voice_assistant:
             std::string prefix_https = "https://" + domain + "/";
             std::string prefix_http_port = "http://" + domain + ":8123/";
             std::string prefix_http = "http://" + domain + "/";
-            std::string replacement = "http://" + internal_ip + ":8123/";
+            std::string replacement = scheme + "://" + internal_ip + ":8123/";
 
             if (url.find(prefix_https_port) == 0) url.replace(0, prefix_https_port.length(), replacement);
             else if (url.find(prefix_https) == 0) url.replace(0, prefix_https.length(), replacement);
