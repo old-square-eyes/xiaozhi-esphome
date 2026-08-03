@@ -18,10 +18,14 @@ select:
       - Alarmstyle
       - Big
       - Xiaozhi
-      - Cyberpunk
-      - Minimal
-      - Retro Matrix
-      - Dashboard
+      - _new_Cyberpunk
+      - _new_Minimal
+      - _new_Retro Matrix
+      - _new_Dashboard
+      - _new_Casio Vintage
+      - _new_Casio Retro
+      - _new_Synthwave Grid
+      - _new_Synthwave Sunset
     initial_option: Default
     on_value:
       - if:
@@ -83,14 +87,22 @@ script:
             id(main_display).show_page(big_clock);
           } else if (sel == "Xiaozhi") {
             id(main_display).show_page(xiaozhi_clock);
-          } else if (sel == "Cyberpunk") {
-            id(main_display).show_page(cyberpunk_clock);
-          } else if (sel == "Minimal") {
-            id(main_display).show_page(minimal_clock);
-          } else if (sel == "Retro Matrix") {
-            id(main_display).show_page(matrix_clock);
-          } else if (sel == "Dashboard") {
-            id(main_display).show_page(dashboard_clock);
+          } else if (sel == "_new_Cyberpunk" || sel == "Cyberpunk") {
+            id(main_display).show_page(_new_cyberpunk_clock);
+          } else if (sel == "_new_Minimal" || sel == "Minimal") {
+            id(main_display).show_page(_new_minimal_clock);
+          } else if (sel == "_new_Retro Matrix" || sel == "Retro Matrix") {
+            id(main_display).show_page(_new_matrix_clock);
+          } else if (sel == "_new_Dashboard" || sel == "Dashboard") {
+            id(main_display).show_page(_new_dashboard_clock);
+          } else if (sel == "_new_Casio Vintage") {
+            id(main_display).show_page(_new_casio_vintage_clock);
+          } else if (sel == "_new_Casio Retro") {
+            id(main_display).show_page(_new_casio_retro_clock);
+          } else if (sel == "_new_Synthwave Grid") {
+            id(main_display).show_page(_new_synthwave_grid_clock);
+          } else if (sel == "_new_Synthwave Sunset") {
+            id(main_display).show_page(_new_synthwave_sunset_clock);
           } else {
             id(main_display).show_page(clock_7segment);
           }
@@ -100,7 +112,9 @@ script:
     then:
       - lambda: |-
           static const char* const opts[] = {
-            "7-segment","Flip","Default","Presence","Weather","Small","Analog","Wide","Alarmstyle","Big","Xiaozhi","Cyberpunk","Minimal","Retro Matrix","Dashboard"
+            "7-segment","Flip","Default","Presence","Weather","Small","Analog","Wide","Alarmstyle","Big","Xiaozhi",
+            "_new_Cyberpunk","_new_Minimal","_new_Retro Matrix","_new_Dashboard",
+            "_new_Casio Vintage","_new_Casio Retro","_new_Synthwave Grid","_new_Synthwave Sunset"
           };
           const int N = sizeof(opts)/sizeof(opts[0]);
           std::string cur = id(clock_style).current_option();
@@ -114,7 +128,9 @@ script:
     then:
       - lambda: |-
           static const char* const opts[] = {
-            "7-segment","Flip","Default","Presence","Weather","Small","Analog","Wide","Alarmstyle","Big","Xiaozhi","Cyberpunk","Minimal","Retro Matrix","Dashboard"
+            "7-segment","Flip","Default","Presence","Weather","Small","Analog","Wide","Alarmstyle","Big","Xiaozhi",
+            "_new_Cyberpunk","_new_Minimal","_new_Retro Matrix","_new_Dashboard",
+            "_new_Casio Vintage","_new_Casio Retro","_new_Synthwave Grid","_new_Synthwave Sunset"
           };
           const int N = sizeof(opts)/sizeof(opts[0]);
           std::string cur = id(clock_style).current_option();
