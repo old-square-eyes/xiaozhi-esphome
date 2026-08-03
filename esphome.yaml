@@ -65,26 +65,25 @@ psram:
   mode: octal
   speed: 80MHz
 
-### USE LOCAL MODULES ############################################################################################################################
-
+### USE MODULES FROM GITHUB (Default) ############################################################################################################
 packages:
-  core: !include config/core.yaml
-  hw:   !include config/hw/waveshare_349_hw.yaml
+  core:
+    url: https://github.com/old-square-eyes/xiaozhi-esphome.git
+    ref: main
+    refresh: 0s
+    files:
+      - config/core.yaml
+  hw:
+    url: https://github.com/old-square-eyes/xiaozhi-esphome.git
+    ref: main
+    refresh: 0s
+    files:
+      - config/hw/waveshare_349_hw.yaml
 
-### USE MODULES FROM GITHUB ######################################################################################################################
+### USE LOCAL MODULES (Requires copying config/ folder to /config/esphome/ on HAOS) #############################################################
 #packages:
-#  core:
-#    url: https://github.com/old-square-eyes/xiaozhi-esphome.git
-#    ref: main
-#    refresh: 0s
-#    files:
-#      - config/core.yaml
-#  hw:
-#    url: https://github.com/old-square-eyes/xiaozhi-esphome.git
-#    ref: main
-#    refresh: 0s
-#    files:
-#      - config/hw/waveshare_349_hw.yaml
+#  core: !include config/core.yaml
+#  hw:   !include config/hw/waveshare_349_hw.yaml
 
 ## ENABLE / DISABLE WAKE WORDS ## IF LOW ON MEMORY, USE LESS WAKE WORDS ##########################################################################
 
