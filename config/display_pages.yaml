@@ -3326,7 +3326,7 @@
           it.printf(cx, cy, id(font_big_clock_mono), CYAN, TextAlign::CENTER, "%s", time_str);
 
           char date_str[36];
-          it.strftime(date_str, sizeof(date_str), "SYS.DATE > %Y.%m.%d [%a]", now);
+          now.strftime(date_str, sizeof(date_str), "SYS.DATE > %Y.%m.%d [%a]");
           it.printf(cx, H - 28, id(font_battery), YELLOW, TextAlign::CENTER, "%s", date_str);
 
           const int bar_w = W - 32;
@@ -3365,7 +3365,7 @@
           const int sec    = now.second;
 
           char datebuf[40];
-          it.strftime(datebuf, sizeof(datebuf), "%A • %d %B", now);
+          now.strftime(datebuf, sizeof(datebuf), "%A • %d %B");
           it.printf(W / 2, 10, id(font_battery), DIM_GRAY, TextAlign::TOP_CENTER, "%s", datebuf);
 
           char time_str[16];
@@ -3414,7 +3414,7 @@
           if (id(clock_show_dots).state) {
             for (int x = 8; x < W; x += 16) {
               for (int y = 8; y < H; y += 16) {
-                it.draw_pixel(x, y, DARK_GREEN);
+                it.draw_pixel_at(x, y, DARK_GREEN);
               }
             }
           }
@@ -3456,7 +3456,7 @@
           }
 
           char datebuf[40];
-          it.strftime(datebuf, sizeof(datebuf), ">_ DATE: %Y-%m-%d | %A", now);
+          now.strftime(datebuf, sizeof(datebuf), ">_ DATE: %Y-%m-%d | %A");
           it.printf(cx, H - 26, id(font_battery), BRIGHT_WHITE_GREEN, TextAlign::CENTER, "%s", datebuf);
 
       - id: dashboard_clock
@@ -3511,7 +3511,7 @@
           }
 
           char datebuf[36];
-          it.strftime(datebuf, sizeof(datebuf), "%A, %b %d", now);
+          now.strftime(datebuf, sizeof(datebuf), "%A, %b %d");
           it.printf(left_cx, time_y + 24, id(font_big_date), WHITE, TextAlign::CENTER, "%s", datebuf);
 
           const int right_cx = split_x + (W - split_x) / 2;
