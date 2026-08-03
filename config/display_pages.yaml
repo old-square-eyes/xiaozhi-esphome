@@ -3269,7 +3269,7 @@
             it.printf(CX, y_cursor, wind_font, BLUE, TextAlign::TOP_CENTER, "%s", line);
           }
 
-      - id: cyberpunk_clock
+      - id: _new_cyberpunk_clock
         lambda: |-
           const int W = it.get_width();
           const int H = it.get_height();
@@ -3339,7 +3339,7 @@
             it.filled_rectangle(bar_x, bar_y, fill_w, bar_h, CYAN);
           }
 
-      - id: minimal_clock
+      - id: _new_minimal_clock
         lambda: |-
           const int W = it.get_width();
           const int H = it.get_height();
@@ -3399,7 +3399,7 @@
             it.printf(W - 12, 10, id(font_battery), DIM_GRAY, TextAlign::TOP_RIGHT, "%s", bat_txt);
           }
 
-      - id: matrix_clock
+      - id: _new_matrix_clock
         lambda: |-
           const int W = it.get_width();
           const int H = it.get_height();
@@ -3459,7 +3459,7 @@
           now.strftime(datebuf, sizeof(datebuf), ">_ DATE: %Y-%m-%d | %A");
           it.printf(cx, H - 26, id(font_battery), BRIGHT_WHITE_GREEN, TextAlign::CENTER, "%s", datebuf);
 
-      - id: dashboard_clock
+      - id: _new_dashboard_clock
         lambda: |-
           const int W = it.get_width();
           const int H = it.get_height();
@@ -3549,4 +3549,256 @@
             char hum_str[20];
             snprintf(hum_str, sizeof(hum_str), "Humidity: %.0f%%", h_val);
             it.printf(right_cx, y_cursor, id(font_battery), LIGHT_GRAY, TextAlign::CENTER, "%s", hum_str);
+          }
+
+      - id: _new_casio_vintage_clock
+        lambda: |-
+          const int W = it.get_width();
+          const int H = it.get_height();
+
+          it.fill(Color(22, 26, 32));
+
+          const Color GOLD_ACCENT(212, 160, 23);
+          const Color BLUE_ACCENT(30, 144, 255);
+          it.line(10, 8, W - 10, 8, BLUE_ACCENT);
+          it.line(10, H - 8, W - 10, H - 8, GOLD_ACCENT);
+
+          const int win_x = 24;
+          const int win_y = 14;
+          const int win_w = W - 48;
+          const int win_h = H - 28;
+          it.rectangle(win_x, win_y, win_w, win_h, Color(70, 80, 95));
+          it.rectangle(win_x + 1, win_y + 1, win_w - 2, win_h - 2, Color(40, 48, 60));
+
+          const Color LCD_BG(185, 196, 168);
+          const Color LCD_INK(15, 24, 18);
+          const Color LCD_DIM(150, 162, 134);
+          it.filled_rectangle(win_x + 2, win_y + 2, win_w - 4, win_h - 4, LCD_BG);
+
+          it.printf(win_x + 12, win_y + 6, id(font_battery), LCD_INK, TextAlign::TOP_LEFT, "CASIO  WR50M");
+
+          auto now = id(homeassistant_time).now();
+          int hour = now.hour;
+          bool is_pm = (hour >= 12);
+          if (!id(clock_24h).state) { hour %= 12; if (hour == 0) hour = 12; }
+          const int minute = now.minute;
+          const int sec    = now.second;
+
+          static const char* days[] = {"SU", "MO", "TU", "WE", "TH", "FR", "SA"};
+          int day_idx = now.day_of_week - 1;
+          if (day_idx < 0 || day_idx > 6) day_idx = 0;
+
+          int day_x_start = win_x + win_w - 180;
+          for (int d = 0; d < 7; d++) {
+            int dx = day_x_start + (d * 24);
+            if (d == day_idx) {
+              it.filled_rectangle(dx - 2, win_y + 5, 20, 14, LCD_INK);
+              it.printf(dx + 8, win_y + 6, id(font_battery), LCD_BG, TextAlign::TOP_CENTER, "%s", days[d]);
+            } else {
+              it.printf(dx + 8, win_y + 6, id(font_battery), LCD_DIM, TextAlign::TOP_CENTER, "%s", days[d]);
+            }
+          }
+
+          char time_str[16];
+          if (id(clock_show_seconds).state) {
+            snprintf(time_str, sizeof(time_str), "%02d:%02d:%02d", hour, minute, sec);
+          } else {
+            snprintf(time_str, sizeof(time_str), "%02d:%02d", hour, minute);
+          }
+
+          const int cx = W / 2;
+          const int cy = H / 2 - 2;
+          it.printf(cx, cy, id(font_big_clock_mono), LCD_INK, TextAlign::CENTER, "%s", time_str);
+
+          if (!id(clock_24h).state) {
+            it.printf(win_x + 12, win_y + win_h - 18, id(font_battery), LCD_INK, TextAlign::TOP_LEFT, "%s", is_pm ? "PM" : "AM");
+          } else {
+            it.printf(win_x + 12, win_y + win_h - 18, id(font_battery), LCD_INK, TextAlign::TOP_LEFT, "24H");
+          }
+
+          char datebuf[32];
+          now.strftime(datebuf, sizeof(datebuf), "%Y - %m - %d");
+          it.printf(win_x + win_w - 12, win_y + win_h - 18, id(font_battery), LCD_INK, TextAlign::TOP_RIGHT, "%s", datebuf);
+
+      - id: _new_casio_retro_clock
+        lambda: |-
+          const int W = it.get_width();
+          const int H = it.get_height();
+
+          it.fill(Color(14, 20, 32));
+
+          const Color CASIO_RED(235, 45, 45);
+          const Color CASIO_BLUE(30, 130, 240);
+          const Color CASIO_GOLD(220, 180, 40);
+
+          it.line(16, 12, W - 16, 12, CASIO_BLUE);
+          it.line(16, 14, W - 16, 14, CASIO_BLUE);
+          it.line(16, H - 14, W - 16, H - 14, CASIO_RED);
+          it.line(16, H - 12, W - 16, H - 12, CASIO_RED);
+
+          it.printf(20, 4, id(font_battery), CASIO_GOLD, TextAlign::TOP_LEFT, "LIGHT");
+          it.printf(W - 20, 4, id(font_battery), CASIO_GOLD, TextAlign::TOP_RIGHT, "ALARM OFF/ON");
+          it.printf(20, H - 11, id(font_battery), CASIO_GOLD, TextAlign::TOP_LEFT, "MODE");
+          it.printf(W - 20, H - 11, id(font_battery), CASIO_GOLD, TextAlign::TOP_RIGHT, "WATER RESIST");
+
+          const int lcd_x = 32;
+          const int lcd_y = 22;
+          const int lcd_w = W - 64;
+          const int lcd_h = H - 44;
+          const Color LCD_BG(175, 188, 155);
+          const Color LCD_INK(12, 18, 12);
+          const Color LCD_SHADOW(145, 158, 125);
+          it.filled_rectangle(lcd_x, lcd_y, lcd_w, lcd_h, LCD_BG);
+          it.rectangle(lcd_x - 1, lcd_y - 1, lcd_w + 2, lcd_h + 2, Color(40, 50, 65));
+
+          auto now = id(homeassistant_time).now();
+          int hour = now.hour;
+          bool is_pm = (hour >= 12);
+          if (!id(clock_24h).state) { hour %= 12; if (hour == 0) hour = 12; }
+          const int minute = now.minute;
+          const int sec    = now.second;
+
+          it.printf(lcd_x + 10, lcd_y + 6, id(font_battery), LCD_INK, TextAlign::TOP_LEFT, "ALARM CHIME");
+
+          char datebuf[24];
+          now.strftime(datebuf, sizeof(datebuf), "%a %b %d");
+          it.printf(lcd_x + lcd_w - 10, lcd_y + 6, id(font_battery), LCD_INK, TextAlign::TOP_RIGHT, "%s", datebuf);
+
+          char time_str[16];
+          if (id(clock_show_seconds).state) {
+            snprintf(time_str, sizeof(time_str), "%02d:%02d:%02d", hour, minute, sec);
+          } else {
+            snprintf(time_str, sizeof(time_str), "%02d:%02d", hour, minute);
+          }
+
+          const int cx = W / 2;
+          const int cy = H / 2 - 2;
+          it.printf(cx + 1, cy + 1, id(font_big_clock_mono), LCD_SHADOW, TextAlign::CENTER, "%s", time_str);
+          it.printf(cx, cy, id(font_big_clock_mono), LCD_INK, TextAlign::CENTER, "%s", time_str);
+
+          if (!id(clock_24h).state) {
+            it.printf(lcd_x + 10, lcd_y + lcd_h - 16, id(font_battery), LCD_INK, TextAlign::TOP_LEFT, "%s", is_pm ? "PM" : "AM");
+          }
+
+          if (id(show_battery_status).state) {
+            float pct = id(battery_percentage).state;
+            if (pct < 0) pct = 0; else if (pct > 100) pct = 100;
+            char bat_str[16];
+            snprintf(bat_str, sizeof(bat_str), "BAT %.0f%%", pct);
+            it.printf(lcd_x + lcd_w - 10, lcd_y + lcd_h - 16, id(font_battery), LCD_INK, TextAlign::TOP_RIGHT, "%s", bat_str);
+          }
+
+      - id: _new_synthwave_grid_clock
+        lambda: |-
+          const int W = it.get_width();
+          const int H = it.get_height();
+
+          it.fill(Color(12, 6, 24));
+
+          const Color NEON_PINK(255, 0, 128);
+          const Color NEON_CYAN(0, 240, 255);
+          const Color NEON_ORANGE(255, 120, 0);
+          const Color NEON_YELLOW(255, 230, 0);
+
+          const int sun_cx = W / 2;
+          const int sun_cy = 90;
+          const int sun_r  = 38;
+          it.filled_circle(sun_cx, sun_cy, sun_r, NEON_ORANGE);
+
+          for (int sy = sun_cy + 4; sy < sun_cy + sun_r; sy += 6) {
+            it.line(sun_cx - sun_r, sy, sun_cx + sun_r, sy, Color(12, 6, 24));
+            it.line(sun_cx - sun_r, sy + 1, sun_cx + sun_r, sy + 1, Color(12, 6, 24));
+          }
+
+          const int horizon_y = 105;
+          it.line(0, horizon_y, W, horizon_y, NEON_CYAN);
+
+          const int van_x = W / 2;
+          for (int x = -W; x <= W * 2; x += 40) {
+            it.line(van_x, horizon_y, x, H, NEON_PINK);
+          }
+
+          int step_y[] = {112, 121, 133, 148, 166};
+          for (int i = 0; i < 5; i++) {
+            it.line(0, step_y[i], W, step_y[i], NEON_CYAN);
+          }
+
+          auto now = id(homeassistant_time).now();
+          int hour = now.hour;
+          if (!id(clock_24h).state) { hour %= 12; if (hour == 0) hour = 12; }
+          const int minute = now.minute;
+          const int sec    = now.second;
+
+          char time_str[16];
+          if (id(clock_show_seconds).state) {
+            snprintf(time_str, sizeof(time_str), "%02d:%02d:%02d", hour, minute, sec);
+          } else {
+            snprintf(time_str, sizeof(time_str), "%02d:%02d", hour, minute);
+          }
+
+          const int cx = W / 2;
+          const int cy = 42;
+
+          it.printf(cx + 2, cy + 2, id(font_big_clock_mono), NEON_PINK, TextAlign::CENTER, "%s", time_str);
+          it.printf(cx - 1, cy - 1, id(font_big_clock_mono), NEON_YELLOW, TextAlign::CENTER, "%s", time_str);
+          it.printf(cx, cy, id(font_big_clock_mono), NEON_CYAN, TextAlign::CENTER, "%s", time_str);
+
+          char datebuf[32];
+          now.strftime(datebuf, sizeof(datebuf), "// %A • %b %d //");
+          it.printf(cx, 85, id(font_battery), NEON_YELLOW, TextAlign::CENTER, "%s", datebuf);
+
+      - id: _new_synthwave_sunset_clock
+        lambda: |-
+          const int W = it.get_width();
+          const int H = it.get_height();
+
+          it.fill(Color(18, 8, 30));
+
+          const Color HOT_PINK(255, 20, 147);
+          const Color VAPOR_CYAN(0, 255, 240);
+          const Color SUNSET_GOLD(255, 180, 0);
+          const Color PURPLE_LINE(70, 20, 90);
+
+          it.line(16, 12, W - 16, 12, VAPOR_CYAN);
+          it.printf(20, 16, id(font_battery), VAPOR_CYAN, TextAlign::TOP_LEFT, "SYNTHWAVE // 1984");
+
+          if (id(show_battery_status).state) {
+            float pct = id(battery_percentage).state;
+            if (pct < 0) pct = 0; else if (pct > 100) pct = 100;
+            char bat_str[16];
+            snprintf(bat_str, sizeof(bat_str), "POWER: %.0f%%", pct);
+            it.printf(W - 20, 16, id(font_battery), SUNSET_GOLD, TextAlign::TOP_RIGHT, "%s", bat_str);
+          }
+
+          auto now = id(homeassistant_time).now();
+          int hour = now.hour;
+          bool is_pm = (hour >= 12);
+          if (!id(clock_24h).state) { hour %= 12; if (hour == 0) hour = 12; }
+          const int minute = now.minute;
+          const int sec    = now.second;
+
+          char time_str[16];
+          if (id(clock_show_seconds).state) {
+            snprintf(time_str, sizeof(time_str), "%02d:%02d:%02d", hour, minute, sec);
+          } else {
+            snprintf(time_str, sizeof(time_str), "%02d:%02d", hour, minute);
+          }
+
+          const int cx = W / 2;
+          const int cy = H / 2 - 2;
+
+          it.printf(cx + 3, cy + 3, id(font_big_clock_mono), PURPLE_LINE, TextAlign::CENTER, "%s", time_str);
+          it.printf(cx + 1, cy + 1, id(font_big_clock_mono), HOT_PINK, TextAlign::CENTER, "%s", time_str);
+          it.printf(cx, cy, id(font_big_clock_mono), VAPOR_CYAN, TextAlign::CENTER, "%s", time_str);
+
+          char datebuf[40];
+          now.strftime(datebuf, sizeof(datebuf), "▶ %A • %d %B %Y ◀");
+          it.printf(cx, H - 32, id(font_battery), SUNSET_GOLD, TextAlign::CENTER, "%s", datebuf);
+
+          const int bar_y = H - 12;
+          it.line(20, bar_y, W - 20, bar_y, PURPLE_LINE);
+          int progress_w = (int)((W - 40) * (sec / 59.0f));
+          if (progress_w > 0) {
+            it.line(20, bar_y, 20 + progress_w, bar_y, HOT_PINK);
+            it.line(20, bar_y + 1, 20 + progress_w, bar_y + 1, VAPOR_CYAN);
           }
