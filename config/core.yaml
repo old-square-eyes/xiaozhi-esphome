@@ -33,6 +33,9 @@ substitutions:
   voice_assist_playing_phase_id: "13"
   voice_assist_timer_finished_phase_id: "20"
 
+  ha_domain: !secret ha_domain
+  ha_internal_ip: !secret ha_internal_ip
+
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
@@ -116,8 +119,8 @@ api:
                   id: temp_fullscreen
                   url: !lambda |-
                     std::string u = url;
-                    std::string search = "https://your-ha-domain.com/";
-                    std::string replace = "http://192.168.1.100/";
+                    std::string search = "https://${ha_domain}/";
+                    std::string replace = "http://${ha_internal_ip}/";
                     size_t pos = u.find(search);
                     if (pos != std::string::npos) {
                       u.replace(pos, search.length(), replace);
@@ -509,12 +512,20 @@ voice_assistant:
     - lambda: |-
         std::string url = x;
         ESP_LOGI("tts_rewrite", "Received TTS URL: %s", url.c_str());
-        size_t pos = url.find("your-ha-domain.com");
+        std::string domain = "${ha_domain}";
+        std::string internal_ip = "${ha_internal_ip}";
+        size_t pos = url.find(domain);
         if (pos != std::string::npos) {
-          if (url.find("https://your-ha-domain.com:8123/") == 0) url.replace(0, 27, "http://192.168.1.100:8123/");
-          else if (url.find("https://your-ha-domain.com/") == 0) url.replace(0, 22, "http://192.168.1.100:8123/");
-          else if (url.find("http://your-ha-domain.com:8123/") == 0) url.replace(0, 26, "http://192.168.1.100:8123/");
-          else if (url.find("http://your-ha-domain.com/") == 0) url.replace(0, 21, "http://192.168.1.100:8123/");
+          std::string prefix_https_port = "https://" + domain + ":8123/";
+          std::string prefix_https = "https://" + domain + "/";
+          std::string prefix_http_port = "http://" + domain + ":8123/";
+          std::string prefix_http = "http://" + domain + "/";
+          std::string replacement = "http://" + internal_ip + ":8123/";
+
+          if (url.find(prefix_https_port) == 0) url.replace(0, prefix_https_port.length(), replacement);
+          else if (url.find(prefix_https) == 0) url.replace(0, prefix_https.length(), replacement);
+          else if (url.find(prefix_http_port) == 0) url.replace(0, prefix_http_port.length(), replacement);
+          else if (url.find(prefix_http) == 0) url.replace(0, prefix_http.length(), replacement);
           ESP_LOGI("tts_rewrite", "--> Rewritten TTS URL: %s", url.c_str());
         }
         id(external_media_player)->make_call().set_media_url(url).set_announcement(true).perform();
