@@ -105,3 +105,18 @@ micro_wake_word:
 #    - model: https://raw.githubusercontent.com/esphome/micro-wake-word-models/refs/heads/main/models/v2/experiments/okay_computer.json
 
 ##################################################################################################################################################
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret esphome_web_c0c120__api_encryption_key_349_blue
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+logger:
+  level: DEBUG
+  logs:
+    esp-idf: DEBUG
+    wifi: DEBUG
