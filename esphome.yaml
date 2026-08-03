@@ -45,8 +45,10 @@ substitutions:
 
   weather_entity: "weather.forecast_home"
 
-  ha_domain: !secret ha_domain
-  ha_internal_ip: !secret ha_internal_ip
+# OPTIONAL URL REWRITING FOR TTS & FULLSCREEN IMAGES #############################################################################################
+# Set these if Home Assistant generates external HTTPS / domain URLs that need rewriting to local HTTP for faster local playback.
+  ha_domain: ""      # e.g. "ha.yourdomain.com" or !secret ha_domain
+  ha_internal_ip: "" # e.g. "192.168.1.100" or !secret ha_internal_ip
 
 ##################################################################################################################################################
 
