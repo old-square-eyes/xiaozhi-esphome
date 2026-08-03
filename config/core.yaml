@@ -517,7 +517,7 @@ voice_assistant:
           else if (url.find("http://your-ha-domain.com/") == 0) url.replace(0, 21, "http://192.168.1.100:8123/");
           ESP_LOGI("tts_rewrite", "--> Rewritten TTS URL: %s", url.c_str());
         }
-        id(external_media_player)->play_file(url, true, false);
+        id(external_media_player)->make_call().set_media_url(url).set_announcement(true).perform();
 
   on_end:
     - wait_until:
