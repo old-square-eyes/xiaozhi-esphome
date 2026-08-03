@@ -45,6 +45,9 @@ substitutions:
 
   weather_entity: "weather.forecast_home"
 
+  ha_domain: !secret ha_domain
+  ha_internal_ip: !secret ha_internal_ip
+
 ##################################################################################################################################################
 
   font_glyphsets: "GF_Latin_Core"
