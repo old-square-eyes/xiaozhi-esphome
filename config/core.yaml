@@ -36,6 +36,7 @@ substitutions:
   ha_domain: !secret ha_domain
   ha_internal_ip: !secret ha_internal_ip
   ha_internal_scheme: "https"
+  version: "v1.09-watchdog"
 
 esphome:
   name: ${name}
@@ -43,8 +44,12 @@ esphome:
   min_version: 2026.7.0
   name_add_mac_suffix: false
   on_boot:
-    priority: 600
+    priority: 800
     then:
+      - logger.log:
+          level: INFO
+          format: "Firmware version: %s"
+          args: [ '"${version}"' ]
       - script.execute: draw_display
       - delay: 30s
       - if:
@@ -1595,6 +1600,13 @@ font:
       - ${font_glyphsets}
 
 text_sensor:
+  - platform: template
+    id: firmware_version
+    name: "Firmware Version"
+    entity_category: diagnostic
+    lambda: |-
+      return std::string("${version}");
+
   - id: text_request
     name: "Text Request"
     platform: template
