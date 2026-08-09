@@ -36,7 +36,7 @@ substitutions:
   ha_domain: !secret ha_domain
   ha_internal_ip: !secret ha_internal_ip
   ha_internal_scheme: "https"
-  version: "v1.09-watchdog"
+  version: "v1.09-watchdog-5650cca"
 
 esphome:
   name: ${name}
