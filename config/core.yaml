@@ -546,6 +546,34 @@ voice_assistant:
 
     - wait_until:
         condition:
+          - or:
+              - speaker.is_playing:
+                  id: box_speaker
+              - not:
+                  media_player.is_announcing:
+        timeout: 8s
+
+    - if:
+        condition:
+          - and:
+              - media_player.is_announcing:
+              - not:
+                  speaker.is_playing:
+                    id: box_speaker
+        then:
+          - logger.log:
+              level: ERROR
+              format: "TTS audio failed to connect/play within 8s; stopping announcement."
+          - media_player.stop:
+              id: external_media_player
+          - script.execute:
+              id: set_phase
+              phase: ${voice_assist_error_phase_id}
+          - script.execute: draw_display
+          - delay: 1s
+
+    - wait_until:
+        condition:
           - and:
               - not:
                   media_player.is_announcing:
@@ -573,6 +601,8 @@ voice_assistant:
                 - script.execute: draw_display
 
   on_error:
+    - media_player.stop:
+        id: external_media_player
     - if:
         condition:
           lambda: return !id(init_in_progress);
