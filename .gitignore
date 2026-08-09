@@ -1,0 +1,8 @@
+# User secrets
+secrets.yaml
+
+# AI instructions file
+CLAUDE.md
+
+# ESPHome build output
+.esphome/

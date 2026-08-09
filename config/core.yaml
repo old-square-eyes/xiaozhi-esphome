@@ -120,17 +120,17 @@ api:
                   id: temp_fullscreen
                   url: !lambda |-
                     std::string u = url;
-                    std::string domain = "${ha_domain}";
-                    std::string internal_ip = "${ha_internal_ip}";
-                    std::string scheme = "${ha_internal_scheme}";
-                    if (!domain.empty() && !internal_ip.empty()) {
-                      std::string search = "https://" + domain + "/";
-                      std::string replace = scheme + "://" + internal_ip + "/";
-                      size_t pos = u.find(search);
-                      if (pos != std::string::npos) {
-                        u.replace(pos, search.length(), replace);
-                      }
-                    }
+                    // std::string domain = "${ha_domain}";
+                    // std::string internal_ip = "${ha_internal_ip}";
+                    // std::string scheme = "${ha_internal_scheme}";
+                    // if (!domain.empty() && !internal_ip.empty()) {
+                    //   std::string search = "https://" + domain + "/";
+                    //   std::string replace = scheme + "://" + internal_ip + "/";
+                    //   size_t pos = u.find(search);
+                    //   if (pos != std::string::npos) {
+                    //     u.replace(pos, search.length(), replace);
+                    //   }
+                    // }
                     return u;
                   update: true
               - delay: 600ms
@@ -517,26 +517,25 @@ voice_assistant:
         tts_uri: !lambda 'return x;'
     - lambda: |-
         std::string url = x;
-        ESP_LOGI("tts_rewrite", "Received TTS URL: %s", url.c_str());
-        std::string domain = "${ha_domain}";
-        std::string internal_ip = "${ha_internal_ip}";
-        std::string scheme = "${ha_internal_scheme}";
-        if (!domain.empty() && !internal_ip.empty()) {
-          size_t pos = url.find(domain);
-          if (pos != std::string::npos) {
-            std::string prefix_https_port = "https://" + domain + ":8123/";
-            std::string prefix_https = "https://" + domain + "/";
-            std::string prefix_http_port = "http://" + domain + ":8123/";
-            std::string prefix_http = "http://" + domain + "/";
-            std::string replacement = scheme + "://" + internal_ip + ":8123/";
-
-            if (url.find(prefix_https_port) == 0) url.replace(0, prefix_https_port.length(), replacement);
-            else if (url.find(prefix_https) == 0) url.replace(0, prefix_https.length(), replacement);
-            else if (url.find(prefix_http_port) == 0) url.replace(0, prefix_http_port.length(), replacement);
-            else if (url.find(prefix_http) == 0) url.replace(0, prefix_http.length(), replacement);
-            ESP_LOGI("tts_rewrite", "--> Rewritten TTS URL: %s", url.c_str());
-          }
-        }
+        // std::string domain = "${ha_domain}";
+        // std::string internal_ip = "${ha_internal_ip}";
+        // std::string scheme = "${ha_internal_scheme}";
+        // if (!domain.empty() && !internal_ip.empty()) {
+        //   size_t pos = url.find(domain);
+        //   if (pos != std::string::npos) {
+        //     std::string prefix_https_port = "https://" + domain + ":8123/";
+        //     std::string prefix_https = "https://" + domain + "/";
+        //     std::string prefix_http_port = "http://" + domain + ":8123/";
+        //     std::string prefix_http = "http://" + domain + "/";
+        //     std::string replacement = scheme + "://" + internal_ip + ":8123/";
+        //
+        //     if (url.find(prefix_https_port) == 0) url.replace(0, prefix_https_port.length(), replacement);
+        //     else if (url.find(prefix_https) == 0) url.replace(0, prefix_https.length(), replacement);
+        //     else if (url.find(prefix_http_port) == 0) url.replace(0, prefix_http_port.length(), replacement);
+        //     else if (url.find(prefix_http) == 0) url.replace(0, prefix_http.length(), replacement);
+        //     ESP_LOGI("tts_rewrite", "--> Rewritten TTS URL: %s", url.c_str());
+        //   }
+        // }
         id(external_media_player)->make_call().set_media_url(url).set_announcement(true).perform();
 
   on_end:
