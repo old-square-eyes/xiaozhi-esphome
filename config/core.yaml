@@ -36,7 +36,7 @@ substitutions:
   ha_domain: !secret ha_domain
   ha_internal_ip: !secret ha_internal_ip
   ha_internal_scheme: "https"
-  version: "v1.11-watchdog-44f9546"
+  version: "v1.12-watchdog-bc40a86"
 
 esphome:
   name: ${name}
@@ -703,10 +703,13 @@ script:
       - delay: 8s
       - if:
           condition:
-            - lambda: |-
-                return (id(voice_assistant_phase) == ${voice_assist_replying_phase_id} ||
-                        id(voice_assistant_phase) == ${voice_assist_thinking_phase_id}) &&
-                       !id(box_speaker)->is_playing();
+            - and:
+                - or:
+                    - lambda: return id(voice_assistant_phase) == ${voice_assist_replying_phase_id};
+                    - lambda: return id(voice_assistant_phase) == ${voice_assist_thinking_phase_id};
+                - not:
+                    speaker.is_playing:
+                      id: box_speaker
           then:
             - logger.log:
                 level: ERROR
