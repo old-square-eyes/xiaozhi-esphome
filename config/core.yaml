@@ -552,7 +552,7 @@ voice_assistant:
               - not:
                   speaker.is_playing:
                     id: box_speaker
-        timeout: 5s
+        timeout: 60s
 
     - if:
         condition:
