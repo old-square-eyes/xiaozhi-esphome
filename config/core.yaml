@@ -36,7 +36,7 @@ substitutions:
   ha_domain: !secret ha_domain
   ha_internal_ip: !secret ha_internal_ip
   ha_internal_scheme: "https"
-  version: "v1.12-watchdog-bc40a86"
+  version: "v1.13-watchdog-fd3ac3e"
 
 esphome:
   name: ${name}
@@ -125,17 +125,17 @@ api:
                   id: temp_fullscreen
                   url: !lambda |-
                     std::string u = url;
-                    // std::string domain = "${ha_domain}";
-                    // std::string internal_ip = "${ha_internal_ip}";
-                    // std::string scheme = "${ha_internal_scheme}";
-                    // if (!domain.empty() && !internal_ip.empty()) {
-                    //   std::string search = "https://" + domain + "/";
-                    //   std::string replace = scheme + "://" + internal_ip + "/";
-                    //   size_t pos = u.find(search);
-                    //   if (pos != std::string::npos) {
-                    //     u.replace(pos, search.length(), replace);
-                    //   }
-                    // }
+                    std::string domain = "${ha_domain}";
+                    std::string internal_ip = "${ha_internal_ip}";
+                    std::string scheme = "${ha_internal_scheme}";
+                    if (!domain.empty() && !internal_ip.empty()) {
+                      std::string search = "https://" + domain + "/";
+                      std::string replace = scheme + "://" + internal_ip + "/";
+                      size_t pos = u.find(search);
+                      if (pos != std::string::npos) {
+                        u.replace(pos, search.length(), replace);
+                      }
+                    }
                     return u;
                   update: true
               - delay: 600ms
@@ -462,7 +462,6 @@ micro_wake_word:
 voice_assistant:
   id: va
   microphone: box_mic
-  media_player: external_media_player
   micro_wake_word: mww
   noise_suppression_level: 2
   auto_gain: 31dBFS
@@ -524,25 +523,25 @@ voice_assistant:
     - script.execute: tts_watchdog
     - lambda: |-
         std::string url = x;
-        // std::string domain = "${ha_domain}";
-        // std::string internal_ip = "${ha_internal_ip}";
-        // std::string scheme = "${ha_internal_scheme}";
-        // if (!domain.empty() && !internal_ip.empty()) {
-        //   size_t pos = url.find(domain);
-        //   if (pos != std::string::npos) {
-        //     std::string prefix_https_port = "https://" + domain + ":8123/";
-        //     std::string prefix_https = "https://" + domain + "/";
-        //     std::string prefix_http_port = "http://" + domain + ":8123/";
-        //     std::string prefix_http = "http://" + domain + "/";
-        //     std::string replacement = scheme + "://" + internal_ip + ":8123/";
-        //
-        //     if (url.find(prefix_https_port) == 0) url.replace(0, prefix_https_port.length(), replacement);
-        //     else if (url.find(prefix_https) == 0) url.replace(0, prefix_https.length(), replacement);
-        //     else if (url.find(prefix_http_port) == 0) url.replace(0, prefix_http_port.length(), replacement);
-        //     else if (url.find(prefix_http) == 0) url.replace(0, prefix_http.length(), replacement);
-        //     ESP_LOGI("tts_rewrite", "--> Rewritten TTS URL: %s", url.c_str());
-        //   }
-        // }
+        std::string domain = "${ha_domain}";
+        std::string internal_ip = "${ha_internal_ip}";
+        std::string scheme = "${ha_internal_scheme}";
+        if (!domain.empty() && !internal_ip.empty()) {
+          size_t pos = url.find(domain);
+          if (pos != std::string::npos) {
+            std::string prefix_https_port = "https://" + domain + ":8123/";
+            std::string prefix_https = "https://" + domain + "/";
+            std::string prefix_http_port = "http://" + domain + ":8123/";
+            std::string prefix_http = "http://" + domain + "/";
+            std::string replacement = scheme + "://" + internal_ip + ":8123/";
+
+            if (url.find(prefix_https_port) == 0) url.replace(0, prefix_https_port.length(), replacement);
+            else if (url.find(prefix_https) == 0) url.replace(0, prefix_https.length(), replacement);
+            else if (url.find(prefix_http_port) == 0) url.replace(0, prefix_http_port.length(), replacement);
+            else if (url.find(prefix_http) == 0) url.replace(0, prefix_http.length(), replacement);
+            ESP_LOGI("tts_rewrite", "--> Rewritten TTS URL: %s", url.c_str());
+          }
+        }
         id(external_media_player)->make_call().set_media_url(url).set_announcement(true).perform();
 
   on_end:
@@ -561,8 +560,7 @@ voice_assistant:
           - logger.log:
               level: ERROR
               format: "TTS audio failed to connect/play within 3s; stopping announcement."
-          - media_player.stop:
-              id: external_media_player
+          - script.execute: stop_audio_playback
           - script.execute:
               id: set_phase
               phase: ${voice_assist_error_phase_id}
@@ -598,8 +596,7 @@ voice_assistant:
 
   on_error:
     - script.stop: tts_watchdog
-    - media_player.stop:
-        id: external_media_player
+    - script.execute: stop_audio_playback
     - if:
         condition:
           lambda: return !id(init_in_progress);
@@ -697,6 +694,20 @@ interval:
            - component.update: main_display
 
 script:
+  - id: stop_audio_playback
+    then:
+      - lambda: |-
+          id(external_media_player)
+            ->make_call()
+            .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_STOP)
+            .set_announcement(true)
+            .perform();
+          id(external_media_player)
+            ->make_call()
+            .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_STOP)
+            .set_announcement(false)
+            .perform();
+
   - id: tts_watchdog
     mode: restart
     then:
@@ -714,8 +725,7 @@ script:
             - logger.log:
                 level: ERROR
                 format: "TTS audio failed to connect/play within 8s; forcibly aborting media player."
-            - media_player.stop:
-                id: external_media_player
+            - script.execute: stop_audio_playback
             - script.execute:
                 id: set_phase
                 phase: ${voice_assist_error_phase_id}
