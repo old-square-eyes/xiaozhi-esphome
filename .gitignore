@@ -3,6 +3,7 @@ secrets.yaml
 
 # AI instructions file
 CLAUDE.md
+AGENTS.md
 
 # ESPHome build output
 .esphome/
