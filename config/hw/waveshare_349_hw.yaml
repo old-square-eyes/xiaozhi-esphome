@@ -337,6 +337,7 @@ media_player:
             - component.update: main_display
 
     on_idle:
+      - script.stop: tts_watchdog
       - if:
           condition:
             not:
